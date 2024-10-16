@@ -6,6 +6,6 @@ import { Redirect } from 'expo-router'
 export default function SSOCallback() {
   
   return (
-    <Redirect href="/(tabs)/home" />
+    <Redirect href="/(authenticated)/(tabs)/home/folder" />
   )
 }

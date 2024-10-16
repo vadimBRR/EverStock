@@ -18,7 +18,6 @@ export default function Container({ children, isPadding = true }: Props) {
 	return (
 		<TouchableWithoutFeedback
 			onPress={() => {NavigationBar.setVisibilityAsync('hidden')
-        console.log("hd");
         Keyboard.dismiss()
       }}
 		>

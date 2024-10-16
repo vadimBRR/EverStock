@@ -48,9 +48,15 @@ export default function SignInScreen() {
 						secureTextEntry
 					/>
 				</View>
-				<View className='w-full my-[30px]'>
+				<View className='w-full my-[30px] mb-[15px]'>
 					<CustomButton text='Log in' onClick={onSignInEmailPress} disabled={isLoading} styleContainer='m-0'/>
 				</View>
+        <TouchableOpacity onPress={()=> router.push('/(authorization)/reset_password')}>
+          <Text className='font-lexend_regular text-[16px] mb-[15px]'>
+          Forgot password?
+            </Text>
+
+        </TouchableOpacity>
 				<View className='w-full bg-black/20 h-[1px]' />
 				<TouchableOpacity className='bg-white w-full my-[30px]' onPress={() => signInWithOAuth('oauth_google')}>
 					<View className='border-black/5 border py-[15px] flex items-center justify-center'>
@@ -66,18 +72,20 @@ export default function SignInScreen() {
 
 					</View>
 				</TouchableOpacity>
+
+          <TouchableOpacity onPress={() => {router.push("/(authorization)/sign-up")}}>
 				<View className='flex-row items-center justify-center'>
 					<Text className='font-lexend_regular text-[16px]'>
 						Don’t have an account?{' '}
 					</Text>
 
-          <TouchableOpacity onPress={() => {router.push("/(authorization)/sign-up")}}>
             <Text className='font-lexend_semibold text-[18px] mb-[1px]'>
               Sign up
             </Text>
 
-          </TouchableOpacity>
 				</View>
+          </TouchableOpacity>
+        
 			</View>
 		</Container>
 	)

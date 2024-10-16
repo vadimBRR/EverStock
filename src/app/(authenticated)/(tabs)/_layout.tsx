@@ -7,30 +7,35 @@ import {
 	TouchableOpacity,
 } from 'react-native'
 import React from 'react'
-import { Redirect, Tabs } from 'expo-router'
+import { Redirect, Tabs, useSegments } from 'expo-router'
 import Container from '../../../components/Container'
 import Ionicons from '@expo/vector-icons/Ionicons'
 // import { useAuth } from '../../providers/AuthProvider'
 import Loading from '../../../components/Loading'
 import { useModal } from '../../../providers/ModalProvider'
+import { useAuth } from '@clerk/clerk-expo'
+import { Colors } from '@/src/constants/Colors'
 // import ModalCreateDebt from '@/src/components/debts/ModalCreateDebt'
 
 export default function TabsLayout() {
-	// const { session, isLoading } = useAuth()
+	// const { isSignedIn} = useAuth()
 	const {handleOpen} = useModal()
   
-	// if(isLoading) return <Loading/>
-	// if(!session) return <Redirect href="/(auth)/sign-in" />
+	// if(!isSignedIn) return <Redirect href="/(authorization)/sign-in" />
+  const segments = useSegments();
 
+  const hide = segments.includes("create") || segments.includes("account")  || segments.includes("choose_type")
+  console.log(segments);
 	return (
-		<Container>
+		<Container isPadding={false}>
 			<Tabs
 				screenOptions={{
 					headerShown: false,
 					tabBarShowLabel: false,
 					tabBarStyle: {
+            display: hide ? "none" : "flex",
 						position: 'absolute',
-						backgroundColor: '#5F33E1',
+						backgroundColor: '#ffffff',
 						height: 65,
 						alignItems: 'center',
 						justifyContent: 'center',
@@ -49,10 +54,10 @@ export default function TabsLayout() {
 							<View className='items-center '>
 								<Ionicons
 									name={focused ? 'home' : 'home-outline'}
-									color={focused ? 'white' : '#AF99F0'}
-									size={focused ? 36 : 24}
+									color={focused ? Colors.light.tabIconSelected : Colors.light.tabIconDefault}
+									size={focused ? 30 : 30}
 								/>
-								{/* <Text className= {`${focused ? 'text-[#F02A4B]' : 'gray'} text-sm mt-[4]`}>Home</Text> */}
+								<Text className= {`${focused ? ' text-main_light text-lg' : 'text-gray text-sm'}   font-lexend_extralight`}>Home</Text>
 							</View>
 						),
 					}}
@@ -65,34 +70,16 @@ export default function TabsLayout() {
 							<View className='items-center '>
 								<Ionicons
 									name={focused ? 'person' : 'person-outline'}
-									color={focused ? 'white' : '#AF99F0'}
-									size={focused ? 36 : 24}
+									color={focused ? Colors.light.tabIconSelected : Colors.light.tabIconDefault}
+									size={focused ? 30 : 30}
 								/>
-								{/* <Text className= {`${focused ? 'text-[#F02A4B]' : 'gray'} text-sm mt-[4]`}>Home</Text> */}
+								<Text className= {`${focused ? ' text-main_light text-lg' : 'text-gray text-sm'}   font-lexend_extralight`}>Profile</Text>
 							</View>
 						),
 					}}
 				/>
 			</Tabs>
-			<TouchableOpacity
-				onPress={handleOpen}
-				style={{
-					position: 'absolute',
-					bottom: 6,
-					alignSelf: 'center',
-					zIndex: 1,
-					height: 54,
-					width: 54,
-					borderRadius: 32,
-					// backgroundColor: '#ffffff',
-					borderColor: '#ffffff44',
-					borderWidth: 2,
-					justifyContent: 'center',
-					alignItems: 'center',
-				}}
-			>
-				<Ionicons name='add' color='#ffffff' size={36} />
-			</TouchableOpacity>
+			
 			{/* <ModalCreateDebt /> */}
 		</Container>
 	)

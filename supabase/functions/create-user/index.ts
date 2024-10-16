@@ -12,22 +12,42 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { id, email_addresses, first_name,last_name, image_url } = (await req.json()).data;
-    const full_name = `${first_name} ${last_name}`;
+    const { data, type } = (await req.json());
+
+    const { id, email_addresses, first_name, last_name, image_url } = data;
     const email = email_addresses[0].email_address;
+    const full_name = `${first_name ?? ''} ${last_name ?? ''}`.trim();
 
-    const { data, error } = await supabase
-      .from('users')
-      .insert({ id, email, avatar_url: image_url, full_name: full_name });
+    if (type === 'user.created') {
+      const { data: insertData, error } = await supabase
+        .from('users')
+        .insert({ id, email, avatar_url: image_url, full_name: full_name });
 
-    if (error) {
-      return new Response(JSON.stringify(error), { status: 400 });
+      if (error) {
+        return new Response(JSON.stringify(error), { status: 400 });
+      }
+
+      return new Response(JSON.stringify(insertData), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 201,
+      });
+    } else if (type === 'user.updated') {
+      const { data: updateData, error } = await supabase
+        .from('users')
+        .update({ email, avatar_url: image_url, full_name: full_name })
+        .eq('id', id);
+
+      if (error) {
+        return new Response(JSON.stringify(error), { status: 400 });
+      }
+
+      return new Response(JSON.stringify(updateData), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    } else {
+      return new Response('Invalid event type', { status: 400 });
     }
-
-    return new Response(JSON.stringify(data), {
-      headers: { 'Content-Type': 'application/json' },
-      status: 201,
-    });
   } catch (err) {
     console.log(err);
 

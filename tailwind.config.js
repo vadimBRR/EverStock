@@ -12,6 +12,11 @@ module.exports = {
         lexend_semibold: ['LexendDeca-SemiBold', 'sans-serif'],
         lexend_light: ['LexendDeca-Light', 'sans-serif'],
         lexend_extralight: ['LexendDeca-ExtraLight', 'sans-serif'],
+        poppins_bold: ['LexendDeca-Bold', 'sans-serif'],
+        poppins_light: ['LexendDeca-Light', 'sans-serif'],
+        poppins_medium: ['LexendDeca-Medium', 'sans-serif'],
+        poppins_regular: ['LexendDeca-Regular', 'sans-serif'],
+        poppins_thin: ['LexendDeca-Thin', 'sans-serif'],
         rmono: ["Roboto-Mono", "sans-serif"],
       },
       colors: {

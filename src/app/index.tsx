@@ -20,7 +20,7 @@ export default function RootScreen() {
 	const router = useRouter()
   const {isSignedIn} = useAuth()
 
-  if(isSignedIn) return <Loading/>
+  if(isSignedIn) return <Redirect href="/(authenticated)/(tabs)/home/folder" />
 
 	const handlePress = () => {
     console.log("press");

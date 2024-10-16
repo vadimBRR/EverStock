@@ -4,10 +4,10 @@ import Container from './Container'
 
 export default function Loading() {
   return (
-    <Container>
+    // <Container>
       <View className='flex-1 items-center justify-center'>
         <ActivityIndicator size="large" />
       </View>
-    </Container>
+    // </Container>
   )
 }

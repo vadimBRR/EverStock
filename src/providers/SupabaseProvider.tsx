@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect } from 'react';
 import { client } from '../utils/supabaseClient';
 import { useAuth } from '@clerk/clerk-expo';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import { InsertTables, Tables } from '../types/types'
 
 // Таблиці
 export const USERS_TABLE = 'users';
@@ -12,12 +13,14 @@ export const WAREHOUSE_USERS_TABLE = 'warehouse_users';
 
 type ProviderProps = {
   userId: string | null;
-  createFolder: (name: string) => Promise<any>;
-  getFolders: () => Promise<any>;
-  createItem: (folderId: number, imageUrl: string, price: number, quantity: number) => Promise<any>;
-  getItems: (folderId: number) => Promise<any>;
+  createFolder: (name: string, type: string, currency: string, options: string[] | []) => Promise<InsertTables<'folders'>[] | null>;
+  getFolders: () => Promise<Tables<'folders'>[]>;
+  createItem: (folderId: number, imageUrl: string, price: number, quantity: number) => Promise<InsertTables<'items'>[] | null>;
+  getItems: (folderId: number) => Promise<Tables<'items'>[]>;
   createTransaction: (itemId: number, folderId: number, action: string) => Promise<any>;
-  getTransactions: (folderId: number) => Promise<any>;
+  getTransactions: (folderId: number) => Promise<Tables<'transactions'>[]>;
+  getUserInfo: () => Promise<any>;
+  updateUserInfo: (updates: any) => Promise<any>;
   getRealtimeItemsSubscription: (
     handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
   ) => any;
@@ -45,10 +48,10 @@ export const SupabaseProvider = ({ children }: any) => {
   };
 
   // CRUD операції для таблиці Folders
-  const createFolder = async (name: string) => {
+  const createFolder = async (name: string, type: string, currency: string, options: string[] | []) => {
     const { data, error } = await client
       .from(FOLDERS_TABLE)
-      .insert({ name, user_id: userId, created_at: new Date() }).select();
+      .insert({ name, user_id: userId, created_at: new Date(), type, currency, options }).select();
 
     if (error) {
       console.error('Error creating folder:', error);
@@ -98,6 +101,24 @@ export const SupabaseProvider = ({ children }: any) => {
     return data || [];
   };
 
+  // User Info
+  const getUserInfo = async () => {
+    const { data } = await client.from(USERS_TABLE).select('*').eq('id', userId).single();
+    console.log("data");
+    console.log(data);
+    return data;
+  };
+
+  const updateUserInfo = async (updates: any) => {
+    const { data, error } = await client.from(USERS_TABLE).update(updates).eq('id', userId).select();
+
+    if (error) {
+      console.error('Error updating user info:', error);
+    }
+
+    return data;
+  };
+
   // Реальний час для таблиці Items
   const getRealtimeItemsSubscription = (
     handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
@@ -122,6 +143,8 @@ export const SupabaseProvider = ({ children }: any) => {
     getItems,
     createTransaction,
     getTransactions,
+    getUserInfo,
+    updateUserInfo,
     getRealtimeItemsSubscription,
   };
 

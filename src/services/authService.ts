@@ -29,8 +29,6 @@ export const useAuthService = () => {
       await signUp.create({ emailAddress: email, password, firstName: name });
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
     } catch (err: any) {
-      console.log("hiu");
-      console.log(err.errors);
       if (err.errors && Array.isArray(err.errors)) {
         const messages = err.errors.map((error: any) => error.longMessage).join(', ');
         throw messages;
@@ -52,7 +50,12 @@ export const useAuthService = () => {
         console.error(JSON.stringify(completeSignUp, null, 2));
       }
     } catch (err: any) {
-      console.error(JSON.stringify(err, null, 2));
+      if (err.errors && Array.isArray(err.errors)) {
+        const messages = err.errors.map((error: any) => error.longMessage).join(', ');
+        throw messages;
+      } else {
+        throw err.message || 'Unknown error';
+      }
     }
   };
 

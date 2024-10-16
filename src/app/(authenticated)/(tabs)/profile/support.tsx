@@ -2,12 +2,10 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import Container from '@/src/components/Container'
 
-export default function HomeScreen() {
+export default function SupportScreen() {
   return (
-    <Container>
-      <View>
-        <Text>Home</Text>
-      </View>
+    <Container isPadding={false}>
+      <Text>SupportScreen</Text>
     </Container>
   )
 }

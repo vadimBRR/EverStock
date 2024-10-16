@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { DefaultTheme, TextInput } from 'react-native-paper'
+import { Colors } from '../constants/Colors'
 
 type Props = {
 	name: string
@@ -12,6 +13,7 @@ type Props = {
   marginTop?: number
   keyboardType?: 'default' | 'numeric' | 'email-address' 
   secureTextEntry?: boolean
+  isError?: boolean
 }
 export default function CustomInput({
 	name,
@@ -22,10 +24,11 @@ export default function CustomInput({
 	isMultiline = false,
   marginTop = 0,
   keyboardType = 'default',
-  secureTextEntry = false
+  secureTextEntry = false,
+  isError = false
 }: Props) {
 
-  const [borderColor, setBorderColor] = React.useState('border-black/10')
+  const [borderColor, setBorderColor] = React.useState((isError && name.length===0) ? 'border-red-500' : 'border-black/10')
 	return (
 		<View
 			className={`rounded-2xl bg-white border ${borderColor} overflow-hidden  ${containerStyle}`}
@@ -40,25 +43,26 @@ export default function CustomInput({
 					display: 'none',
 				}}
 				theme={{
-					colors: { text: 'black', primary: 'black' },
+					colors: {  primary: Colors.light.tabIconSelected, onSurfaceVariant: 
+            (isError && name.length===0) ? 'red' : Colors.light.tabIconDefault },
 					fonts: {
 						...DefaultTheme.fonts,
 						bodyLarge: {
-							fontFamily: 'LexendDeca-Regular', // Ваш кастомний шрифт
+							fontFamily: 'LexendDeca-Regular', 
 						},
 					},
 				}}
-				underlineColor='transparent' // Видалення нижньої лінії в обох станах
-				textColor='black' // Колір тексту
+				underlineColor='transparent' 
+				textColor='black' 
 				multiline={isMultiline}
         contentStyle={{
           marginTop: marginTop
         }}
         keyboardType={keyboardType}
         onFocus={() => {setBorderColor('border-main_light')}}
-        onBlur={() => {setBorderColor('border-black/10')}}
+        onBlur={() => {setBorderColor((isError && name.length===0) ? 'border-red-500' : 'border-black/10')}}
         secureTextEntry={secureTextEntry}
-
+        numberOfLines={isMultiline ? 8 : 1}
 			/>
 		</View>
 	)

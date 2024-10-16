@@ -50,7 +50,7 @@ const InitialLayout = () => {
 	const router = useRouter()
 	const { isLoaded, isSignedIn } = useAuth()
 	const segments = useSegments()
-
+  console.log('isSignedIn before:', isSignedIn) ;
 	useEffect(() => {
 		NavigationBar.setVisibilityAsync('hidden')
 
@@ -60,6 +60,11 @@ const InitialLayout = () => {
 				'LexendDeca-SemiBold': require('../../assets/fonts/LexendDeca-SemiBold.ttf'),
 				'LexendDeca-Light': require('../../assets/fonts/LexendDeca-Light.ttf'),
 				'LexendDeca-ExtraLight': require('../../assets/fonts/LexendDeca-ExtraLight.ttf'),
+				'Poppins-Bold': require('../../assets/fonts/Poppins-Bold.ttf'),
+				'Poppins-Light': require('../../assets/fonts/Poppins-Light.ttf'),
+				'Poppins-Medium': require('../../assets/fonts/Poppins-Medium.ttf'),
+				'Poppins-Regular': require('../../assets/fonts/Poppins-Regular.ttf'),
+				'Poppins-Thin': require('../../assets/fonts/Poppins-Regular.ttf'),
 			})
 			setFontsLoaded(true)
 		}
@@ -71,10 +76,13 @@ const InitialLayout = () => {
 		if (!isLoaded || !fontsLoaded) return
 
 		console.log('isSignedIn:', isSignedIn)
-		const inAuthGroup = segments[0] === '(tabs)'
+		const inAuthGroup = segments[0] === '(authenticated)'
 		if (isSignedIn && !inAuthGroup) {
-			router.replace('/(authenticated)/(tabs)/home')
+      console.log("here1");
+			router.replace('/(authenticated)/(tabs)/home/folder')
+      // router.replace('/(authorization)/completed_auth')
 		} else if (!isSignedIn) {
+      console.log("here2");
 			router.replace('/')
 		}
 	}, [isLoaded, isSignedIn, fontsLoaded])

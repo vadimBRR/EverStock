@@ -47,9 +47,16 @@ export default function SignUpScreen() {
 
   const onPressVerify = async () => {
     setIsLoading(true);
-    await verifyEmailCode(code);
-    router.replace('/');
-    setIsLoading(false);
+    try {
+      await verifyEmailCode(code);
+      router.replace('/(authorization)/completed_auth');
+    } catch (error) {
+      Alert.alert('Error', typeof error === 'string' ? error : "An error occurred. Please try again.")
+    }finally{
+      setIsLoading(false);
+    }
+
+    
   };
 
 	
