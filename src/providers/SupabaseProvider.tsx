@@ -4,7 +4,6 @@ import { useAuth } from '@clerk/clerk-expo';
 import { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { InsertTables, Tables } from '../types/types'
 
-// Таблиці
 export const USERS_TABLE = 'users';
 export const FOLDERS_TABLE = 'folders';
 export const ITEMS_TABLE = 'items';
@@ -17,6 +16,9 @@ type ProviderProps = {
   getFolders: () => Promise<Tables<'folders'>[]>;
   createItem: (folderId: number, imageUrl: string, price: number, quantity: number) => Promise<InsertTables<'items'>[] | null>;
   getItems: (folderId: number) => Promise<Tables<'items'>[]>;
+  getFoldersWithStatistic: () => Promise<(Tables<'folders'> & { totalPrice: number, totalQuantity: number, totalMembers: number, lastUpdated: Date, items: Tables<'items'>, warehouse_users: Tables<'warehouse_users'> })[] | null>;
+
+
   createTransaction: (itemId: number, folderId: number, action: string) => Promise<any>;
   getTransactions: (folderId: number) => Promise<Tables<'transactions'>[]>;
   getUserInfo: () => Promise<any>;
@@ -47,7 +49,6 @@ export const SupabaseProvider = ({ children }: any) => {
     client.realtime.setAuth(clerkToken!);
   };
 
-  // CRUD операції для таблиці Folders
   const createFolder = async (name: string, type: string, currency: string, options: string[] | []) => {
     const { data, error } = await client
       .from(FOLDERS_TABLE)
@@ -65,7 +66,6 @@ export const SupabaseProvider = ({ children }: any) => {
     return data || [];
   };
 
-  // CRUD операції для таблиці Items
   const createItem = async (folderId: number, imageUrl: string, price: number, quantity: number) => {
     const { data, error } = await client
       .from(ITEMS_TABLE)
@@ -83,7 +83,56 @@ export const SupabaseProvider = ({ children }: any) => {
     return data || [];
   };
 
-  // CRUD операції для таблиці Transactions
+   const getFoldersWithStatistic = async () => {
+    const { data, error } = await client.from(FOLDERS_TABLE).select('*, items(*), warehouse_users(*)').eq('user_id', userId);
+
+    if (error) {
+      console.error('Error getting folders with items:', error);
+    }
+    
+    if (data) {
+      const foldersWithStatistic = data.map(folder => {
+        const totalPrice = folder.items.reduce((sum: number, item: { price: number, quantity: number }) => sum + item.price * item.quantity, 0) 
+      
+        const totalQuantity = folder.items.reduce((sum: number, item: { price: number, quantity: number }) => sum + item.quantity, 0);
+        const totalMembers = folder.warehouse_users.length +1;
+
+        const lastUpdatedItem = folder.items.reduce(
+          (latest: string | null, item: { updated_at: string | null }) => {
+            return item.updated_at && (!latest || new Date(item.updated_at) > new Date(latest))
+              ? item.updated_at
+              : latest;
+          },
+          null
+        );
+  
+        // Знаходимо останню змінену дату серед користувачів
+        const lastUpdatedUser = folder.warehouse_users.reduce(
+          (latest: string | null, user: { added_at: string | null }) => {
+            return user.added_at && (!latest || new Date(user.added_at) > new Date(latest))
+              ? user.added_at
+              : latest;
+          },
+          null
+        );
+  
+        // Порівнюємо дати елементів та користувачів і вибираємо останню
+        const lastUpdated = [lastUpdatedItem, lastUpdatedUser, folder.created_at].reduce(
+          (latest: string | null, date: string | null) => {
+            return date && (!latest || new Date(date) > new Date(latest)) ? date : latest;
+          },
+          null
+        );
+
+        const { items, warehouse_users,  ...folderWithoutItems } = folder; 
+        return { ...folderWithoutItems, totalPrice, totalQuantity,totalMembers, lastUpdated,items, warehouse_users }; 
+      });
+
+      return foldersWithStatistic;
+    }
+    return [];
+  };
+
   const createTransaction = async (itemId: number, folderId: number, action: string) => {
     const { data, error } = await client
       .from(TRANSACTIONS_TABLE)
@@ -101,7 +150,6 @@ export const SupabaseProvider = ({ children }: any) => {
     return data || [];
   };
 
-  // User Info
   const getUserInfo = async () => {
     const { data } = await client.from(USERS_TABLE).select('*').eq('id', userId).single();
     console.log("data");
@@ -119,7 +167,6 @@ export const SupabaseProvider = ({ children }: any) => {
     return data;
   };
 
-  // Реальний час для таблиці Items
   const getRealtimeItemsSubscription = (
     handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
   ) => {
@@ -146,6 +193,7 @@ export const SupabaseProvider = ({ children }: any) => {
     getUserInfo,
     updateUserInfo,
     getRealtimeItemsSubscription,
+    getFoldersWithStatistic
   };
 
   return <SupabaseContext.Provider value={value}>{children}</SupabaseContext.Provider>;

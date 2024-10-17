@@ -56,6 +56,7 @@ export type Database = {
           folder_id: number | null
           id: number
           image_url: string[] | null
+          name: string
           price: number | null
           quantity: number
           updated_at: string | null
@@ -66,6 +67,7 @@ export type Database = {
           folder_id?: number | null
           id?: number
           image_url?: string[] | null
+          name: string
           price?: number | null
           quantity: number
           updated_at?: string | null
@@ -76,6 +78,7 @@ export type Database = {
           folder_id?: number | null
           id?: number
           image_url?: string[] | null
+          name?: string
           price?: number | null
           quantity?: number
           updated_at?: string | null
