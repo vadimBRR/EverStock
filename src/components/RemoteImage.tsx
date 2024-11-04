@@ -1,19 +1,21 @@
 import { Image } from 'react-native'
-import React, { ComponentProps, useEffect, useMemo, useState } from 'react'
+import React, { ComponentProps, useEffect,  useState } from 'react'
 import { client } from '../utils/supabaseClient'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 type RemoteImageProps = {
 	path?: string | null
-	// fallback: string;
 } & Omit<ComponentProps<typeof Image>, 'source'>
 
-// const RemoteImage = ({ path, fallback, ...imageProps }: RemoteImageProps) => {
 const RemoteImage = ({ path, ...imageProps }: RemoteImageProps) => {
 	const [imageUrl, setImageUrl] = useState('')
 
-	useEffect(() => {
+	const getCachedImageUrl = async () => {
 		if (!path) return
-		const readImageUrl = async () => {
+		const cachedUrl = await AsyncStorage.getItem(path)
+		if (cachedUrl) {
+			setImageUrl(cachedUrl)
+		} else {
 			const { data, error } = await client.storage
 				.from('item-images')
 				.createSignedUrl(path, 60 * 60, {
@@ -22,14 +24,15 @@ const RemoteImage = ({ path, ...imageProps }: RemoteImageProps) => {
 						height: 300,
 					},
 				})
-			if (!error) {
+			if (!error && data?.signedUrl) {
 				setImageUrl(data.signedUrl)
+				await AsyncStorage.setItem(path, data.signedUrl)
 			}
-			console.log(data)
-			console.log(error)
 		}
+	}
 
-    readImageUrl();
+	useEffect(() => {
+		getCachedImageUrl()
 	}, [])
 
 	return (
@@ -42,7 +45,6 @@ const RemoteImage = ({ path, ...imageProps }: RemoteImageProps) => {
 		</>
 	)
 
-	// return <Image source={{ uri: image || fallback }} {...imageProps} />;
 }
 
 export default RemoteImage
