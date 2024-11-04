@@ -17,32 +17,7 @@ type Props = {
 
 export default function CardItem({ item, currencyName }: Props) {
 	const router = useRouter()
-	const [imageUrl, setImageUrl] = useState('')
 	const currencySymbol = currency.find(c => c.name === currencyName)?.value
-
-	console.log(item.image_url)
-	const getImage = async () => {
-		if (!item.image_url) return
-		const { data, error } = await client.storage
-			.from('item-images')
-			.createSignedUrl(item.image_url[0], 60 * 60, {
-				transform: {
-					width: 300,
-					height: 300,
-				},
-			})
-		if (!error) {
-			setImageUrl(data.signedUrl)
-		}
-		console.log(data)
-		console.log(error)
-	}
-
-	useEffect(() => {
-		if (item.image_url) {
-			getImage()
-		}
-	}, [])
 
 	return (
 		<TouchableOpacity
@@ -57,13 +32,28 @@ export default function CardItem({ item, currencyName }: Props) {
 					className='h-[60px] w-[60px] aspect-square mr-3 rounded-md'
 				/>
 				<View>
-					<Text className='font-lexend_regular text-xl'>{item.name}</Text>
+					{item.name.length > 20 ? (
+						<Text className='font-lexend_regular text-base'>
+							{item.name.length > 28
+								? `${item.name.slice(0, 28)}...`
+								: item.name}
+						</Text>
+					) : (
+						<Text className='font-lexend_regular text-xl'>{item.name}</Text>
+					)}
+					{/* <Text className='font-lexend_regular text-xl truncate'>
+            {item.name.length > 20 ? `${item.name.slice(0, 20)}...` : item.name}
+
+					</Text> */}
 					<View className='flex-row'>
-						<Text className='text-gray font-poppins_regular text-sm'>{item.quantity} units </Text>
+						<Text className='text-gray font-poppins_regular text-sm'>
+							{item.quantity} units{' '}
+						</Text>
 						{item.price && (
 							<View className='flex-row'>
 								<Text className='text-gray font-poppins_regular text-sm'>
-									- {currencySymbol}{item.price}&nbsp;
+									- {currencySymbol}
+									{item.price}&nbsp;
 								</Text>
 								<Text className='text-gray font-poppins_regular text-sm'>
 									({currencySymbol}
@@ -77,7 +67,3 @@ export default function CardItem({ item, currencyName }: Props) {
 		</TouchableOpacity>
 	)
 }
-
-const styles = StyleSheet.create({
-	image: {},
-})

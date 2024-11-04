@@ -35,7 +35,7 @@ export const useCreateItem = () => {
 		},
 		async onSuccess() {
 			queryClient.invalidateQueries({
-				queryKey: ['folder'],
+				queryKey: ['folders'],
 			})
 		},
 	})

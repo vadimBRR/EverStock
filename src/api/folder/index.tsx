@@ -24,7 +24,7 @@ export const useCreateFolder = () => {
 		},
 		async onSuccess() {
 			queryClient.invalidateQueries({
-				queryKey: ['folder'],
+				queryKey: ['folders'],
 			})
 		},
 	})

@@ -1,7 +1,7 @@
 import { View, Text, Image, Pressable, Modal, TouchableWithoutFeedback, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import Container from '@/src/components/Container'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Href, Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import CustomInput from '@/src/components/CustomInput'
 import CustomButton from '@/src/components/CustomButton'
 import * as ImagePicker from 'expo-image-picker'
@@ -29,6 +29,7 @@ export default function CreateItem() {
 	const [images, setImages] = useState<string[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const router= useRouter();
   const {mutate:createItem} = useCreateItem();
 
@@ -46,7 +47,6 @@ export default function CreateItem() {
 			if (images.length < 3) {
 				setImages([...images, result.assets[0].uri])
 			}
-			// setImage({...image, result.assets[0].uri});
 		}
 	}
   const deleteImage = () => {
@@ -101,14 +101,22 @@ export default function CreateItem() {
 
 	const handleCreateItem = async () => {
 		console.log('create item')
-    if (!parseFloat(price) || !parseInt(quantity)) return;
+    if(price && !parseFloat(price)) return;
+    console.log("bam1");
+    if(quantity && !parseInt(quantity)) return;
+    console.log("bam2");
+    setIsLoading(true);
     const uploadedImagePaths = await uploadImages();
 
     await createItem({folder_id: folder_id, name: itemName, images: uploadedImagePaths, price:parseFloat(price), quantity:parseInt(quantity), note}  , {
       onSuccess: () => {
-        router.push('/(authenticated)/(tabs)/home/folder/' + folder_id )
+        setIsLoading(false);
+        router.back()
       },
     } )
+
+    setIsLoading(false);
+
 	}
 
 
@@ -192,10 +200,11 @@ export default function CreateItem() {
 
 				</View>
 				<CustomButton
-					text='Create Folder'
+					text='Create Item'
 					onClick={handleCreateItem}
 					styleContainer={`my-4 mx-0 `}
-					disabled={ !itemName || !quantity || !price}
+					disabled={ !itemName ||  (quantity ? isNaN(parseFloat(quantity)) : false) || 
+            (price ? isNaN(parseFloat(price)) : false)}
 				/>
 			</ScrollView>
       <Modal visible={isModalVisible} transparent={true} >

@@ -67,10 +67,13 @@ export const SupabaseProvider = ({ children }: any) => {
   };
 
   const createItem = async (folderId: number,name:string, images: string[], price: number, quantity: number, note:string) => {
+    console.log("crestsodfijsdf");
     const { data, error } = await client
       .from(ITEMS_TABLE)
-      .insert({ folder_id: folderId,name:name, user_id: userId, image_url: images, price, quantity, note, created_at: new Date() }).select();
+      .insert({ folder_id: folderId,name:name, user_id: userId, image_url: images, price, quantity: quantity ||0, note, created_at: new Date() }).select();
 
+    console.log(data);
+    console.log(error);
     if (error) {
       console.error('Error creating item:', error);
     }

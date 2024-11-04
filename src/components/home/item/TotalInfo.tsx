@@ -28,7 +28,7 @@ export default function TotalInfo({
 				<View className='flex-row items-center'>
 					<Text className='font-lexend_regular text-black text-xl'>
 						{currency.find(c => c.name === currencyFolder)?.value}
-						{totalQuantity}
+						{totalPrice}
 					</Text>
 				</View>
 				<View className='flex-row items-center  '>
@@ -37,7 +37,7 @@ export default function TotalInfo({
 						className='w-[22px] h-[22px] aspect-square'
 					/>
 					<Text className='font-lexend_regular text-black text-xl ml-1'>
-						{totalQuantity}
+						{totalMembers}
 					</Text>
 				</View>
 			</View>
