@@ -21,8 +21,7 @@ const SelectDropDownCurency = ({selectedValue,
       disableAutoScroll
 
 			data={currency}
-			// defaultValueByIndex={8} // use default value by index or default value
-			// defaultValue={{title: 'kiss', icon: 'emoticon-kiss-outline'}} // use default value by index or default value
+
 			onSelect={(selectedItem, index) => {
 				console.log(selectedItem, index)
         setSelectedValue(selectedItem)

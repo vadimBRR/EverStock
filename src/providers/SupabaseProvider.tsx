@@ -14,9 +14,9 @@ type ProviderProps = {
   userId: string | null;
   createFolder: (name: string, type: string, currency: string, options: string[] | []) => Promise<InsertTables<'folders'>[] | null>;
   getFolders: () => Promise<Tables<'folders'>[]>;
-  createItem: (folderId: number, imageUrl: string, price: number, quantity: number) => Promise<InsertTables<'items'>[] | null>;
+  createItem: (folderId: number,name:string, images: string[], price: number, quantity: number, note:string) => Promise<InsertTables<'items'>[] | null>;
   getItems: (folderId: number) => Promise<Tables<'items'>[]>;
-  getFoldersWithStatistic: () => Promise<(Tables<'folders'> & { totalPrice: number, totalQuantity: number, totalMembers: number, lastUpdated: Date, items: Tables<'items'>, warehouse_users: Tables<'warehouse_users'> })[] | null>;
+  getFoldersWithStatistic: () => Promise<(Tables<'folders'> & { totalPrice: number, totalQuantity: number, totalMembers: number, lastUpdated: Date, items: Tables<'items'>[], warehouse_users: Tables<'warehouse_users'> })[] | null>;
 
 
   createTransaction: (itemId: number, folderId: number, action: string) => Promise<any>;
@@ -66,10 +66,10 @@ export const SupabaseProvider = ({ children }: any) => {
     return data || [];
   };
 
-  const createItem = async (folderId: number, imageUrl: string, price: number, quantity: number) => {
+  const createItem = async (folderId: number,name:string, images: string[], price: number, quantity: number, note:string) => {
     const { data, error } = await client
       .from(ITEMS_TABLE)
-      .insert({ folder_id: folderId, user_id: userId, image_url: imageUrl, price, quantity, created_at: new Date() }).select();
+      .insert({ folder_id: folderId,name:name, user_id: userId, image_url: images, price, quantity, note, created_at: new Date() }).select();
 
     if (error) {
       console.error('Error creating item:', error);
@@ -106,7 +106,6 @@ export const SupabaseProvider = ({ children }: any) => {
           null
         );
   
-        // Знаходимо останню змінену дату серед користувачів
         const lastUpdatedUser = folder.warehouse_users.reduce(
           (latest: string | null, user: { added_at: string | null }) => {
             return user.added_at && (!latest || new Date(user.added_at) > new Date(latest))
@@ -116,7 +115,6 @@ export const SupabaseProvider = ({ children }: any) => {
           null
         );
   
-        // Порівнюємо дати елементів та користувачів і вибираємо останню
         const lastUpdated = [lastUpdatedItem, lastUpdatedUser, folder.created_at].reduce(
           (latest: string | null, date: string | null) => {
             return date && (!latest || new Date(date) > new Date(latest)) ? date : latest;

@@ -11,8 +11,12 @@ import {
 import BottomSheet from '@gorhom/bottom-sheet/'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import CustomButton from './CustomButton'
-import { useRouter } from 'expo-router'
-export default function ModalCreate() {
+import { Href, useRouter } from 'expo-router'
+
+type Props ={
+  folderId: number
+}
+export default function ModalCreate({folderId} :Props) {
   const router = useRouter()
 
 	const { handleOpen, handleClose, bottomSheetRef } = useModal()
@@ -38,7 +42,7 @@ export default function ModalCreate() {
   }
   const onCreateItem = () => {
     handleClose()
-    router.push('/(authenticated)/home/item/create')
+    router.push('/(authenticated)/home/item/create?id='+folderId as Href)
   }
 	return (
 		<BottomSheetModal

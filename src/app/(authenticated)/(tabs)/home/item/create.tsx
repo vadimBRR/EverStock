@@ -1,16 +1,26 @@
 import { View, Text, Image, Pressable, Modal, TouchableWithoutFeedback, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import Container from '@/src/components/Container'
-import { Stack } from 'expo-router'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import CustomInput from '@/src/components/CustomInput'
 import CustomButton from '@/src/components/CustomButton'
 import * as ImagePicker from 'expo-image-picker'
 import { ScrollView } from 'react-native'
+import * as FileSystem from 'expo-file-system'
+import { useCreateItem } from '@/src/api/item'
+import { randomUUID } from 'expo-crypto'
+import { decode } from 'base64-arraybuffer'
+import { client } from '@/src/utils/supabaseClient'
 
 export default function CreateItem() {
+  const { id:idString } = useLocalSearchParams()
+  const folder_id = parseFloat(
+		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
+	)
 
 
-	const [folderName, setFolderName] = useState('')
+
+	// const [folderName, setFolderName] = useState('')
 	const [itemName, setItemName] = useState('')
   const [quantity, setQuantity] = useState('')
   const [price, setPrice] = useState('')
@@ -19,6 +29,8 @@ export default function CreateItem() {
 	const [images, setImages] = useState<string[]>([])
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const router= useRouter();
+  const {mutate:createItem} = useCreateItem();
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -54,9 +66,51 @@ export default function CreateItem() {
     setSelectedImage(null)
   }
 
-	const handleCreateItem = () => {
-		console.log('create item')
+  
+  if (!folder_id) {
+		<View className='flex-1 justify-center items-center'>
+			<Text className='font-bold'>Failed to fetch</Text>
+		</View>
 	}
+
+  const uploadImages = async () => {
+    const uploadedImagePaths = await Promise.all(
+      images.map(async (image) => {
+        if (image.startsWith('file://')) {
+          const base64 = await FileSystem.readAsStringAsync(image, { encoding: 'base64' });
+          const filePath = `${randomUUID()}.png`;
+          const contentType = 'image/png';
+          
+          const { data, error } = await client.storage
+            .from('item-images')
+            .upload(filePath, decode(base64), { contentType });
+  
+          if (error) {
+            console.error(`Failed to upload image: ${error.message}`);
+            return null;
+          }
+          return data.path;
+        }
+        return null;
+      })
+    );
+  
+    return uploadedImagePaths.filter(path => path !== null); 
+  };
+  
+
+	const handleCreateItem = async () => {
+		console.log('create item')
+    if (!parseFloat(price) || !parseInt(quantity)) return;
+    const uploadedImagePaths = await uploadImages();
+
+    await createItem({folder_id: folder_id, name: itemName, images: uploadedImagePaths, price:parseFloat(price), quantity:parseInt(quantity), note}  , {
+      onSuccess: () => {
+        router.push('/(authenticated)/(tabs)/home/folder/' + folder_id )
+      },
+    } )
+	}
+
 
 	return (
 		<Container isPadding={false}>
@@ -86,12 +140,12 @@ export default function CreateItem() {
 						)}
 					</View>
 
-					<CustomInput
+					{/* <CustomInput
 						label={'Name of the folder'}
 						name={folderName}
 						setName={setFolderName}
             containerStyle='mb-2'
-					/>
+					/> */}
 					<CustomInput
 						label={'Item name *'}
 						name={itemName}
@@ -141,7 +195,7 @@ export default function CreateItem() {
 					text='Create Folder'
 					onClick={handleCreateItem}
 					styleContainer={`my-4 mx-0 `}
-					disabled={!folderName || !itemName || !quantity || !price}
+					disabled={ !itemName || !quantity || !price}
 				/>
 			</ScrollView>
       <Modal visible={isModalVisible} transparent={true} >
