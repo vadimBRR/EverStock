@@ -76,7 +76,7 @@ const MembersScreen = () => {
           className='mx-3 mb-24'
           data={search ? data.filter(member => member.fullName.toLowerCase().includes(search.toLowerCase()) || member.email.toLowerCase().includes(search.toLowerCase()) ) : data}
           keyExtractor={(member) => member.id.toString()}
-          renderItem={({ item }) => <CardMember data={item} />}
+          renderItem={({ item }) => <CardMember data={item} folderId={folder_id}/>}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }

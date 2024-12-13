@@ -51,19 +51,19 @@ export default function RectangleCheckBox({
 	return (
 		<TouchableOpacity
 			className={` rounded-xl items-center justify-center py-3 mx-7 px-4 relative border ${
-				disabled || !isActive ? 'bg-black-600  border-white' : 'bg-[#858585] border-[#858585]'
+				disabled || !isActive ? 'bg-black-600  border-[#B6B6B6]' : 'bg-[#858585] border-[#858585]'
 			} ${styleContainer}`}
 			onPress={onClick}
 			disabled={disabled}
 		>
 			<Text
-				className={`font-lexend_semibold text-[19px] text-white ${styleText}`}
+				className={`font-lexend_semibold text-[19px] text-white/80 ${styleText}`}
 			>
 				{text}
 			</Text>
 			{isIcon &&
 				(icon ? (
-					<Image source={icon} className={`absolute right-4 w-8 h-8 ${imageStyle} `} />
+					<Image source={icon} className={`absolute right-4 w-8 h-8 opacity-80 ${imageStyle} `} />
 				) : (
 					<Image
 						source={require('../assets/icons/arrow-right.png')}

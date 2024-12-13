@@ -113,7 +113,27 @@ type AccountType = {
 			isCanInvite: boolean
 			isAdmin: boolean
 		}
-	}) => void
+	}) => void,
+  handleUpdateMember: ({
+    id,
+    folderId,
+    email,
+    roles,
+  }:{
+    id: number,
+    folderId: number,
+    email:string,
+    roles: {
+      isView: boolean
+      isAddItem: boolean
+      isDeleteItem: boolean
+      isEdit: boolean
+      isCanInvite: boolean
+      isAdmin: boolean
+    }}) => void,
+
+    handleDeleteMember: ({ id,folderId }: { id: number,folderId: number }) => void
+   
 }
 
 const AccountContext = createContext<AccountType>({
@@ -150,6 +170,8 @@ const AccountContext = createContext<AccountType>({
 	handleCloneItem: () => {},
 	handleChangeItemFolder: () => {},
   handleAddMember: () => {},
+  handleUpdateMember: () => {},
+  handleDeleteMember: () => {},
 })
 
 export default function AccountProvider({ children }: PropsWithChildren) {
@@ -510,6 +532,46 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		})
 	}
 
+  const handleUpdateMember = ({id,folderId, email, roles}: {id:number,folderId: number, email: string, roles: {isView: boolean, isAddItem: boolean, isDeleteItem: boolean, isEdit: boolean, isCanInvite: boolean, isAdmin: boolean}}) => {
+    setFolders((prevFolders) => {
+      const folderExists = prevFolders.some((folder) => folder.id === folderId);
+      if (!folderExists) {
+        console.error(`Folder with ID ${folderId} not found.`);
+        return prevFolders;
+      }
+  
+      return prevFolders.map((folder) =>
+        folder.id === folderId
+          ? {
+              ...folder,
+              members: folder.members.map((member) =>
+                member.id === id ? { ...member, email, roles } : member
+              ),
+            }
+          : folder
+      );
+    });
+  }
+
+  const handleDeleteMember = ({id,folderId}: {id:number,folderId: number}) => {
+    setFolders((prevFolders) => {
+      const folderExists = prevFolders.some((folder) => folder.id === folderId);
+      if (!folderExists) {
+        console.error(`Folder with ID ${folderId} not found.`);
+        return prevFolders;
+      }
+  
+      return prevFolders.map((folder) =>
+        folder.id === folderId
+          ? {
+              ...folder,
+              members: folder.members.filter((member) => member.id !== id),
+            }
+          : folder
+      );
+    });
+  }
+
 	return (
 		<AccountContext.Provider
 			value={{
@@ -532,7 +594,9 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				handleDeleteItem,
 				handleCloneItem,
 				handleChangeItemFolder,
-        handleAddMember
+        handleAddMember,
+        handleUpdateMember,
+        handleDeleteMember
 			}}
 		>
 			{children}

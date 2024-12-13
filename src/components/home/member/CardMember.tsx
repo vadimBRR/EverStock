@@ -19,10 +19,11 @@ type Props = {
       isCanInvite: boolean
       isAdmin: boolean
     }
-  }
+  },
+  folderId: number
 }
 
-export default function CardMember({ data }: Props) {
+export default function CardMember({ data,folderId }: Props) {
 	const router = useRouter()
 
 	return (
@@ -33,7 +34,7 @@ export default function CardMember({ data }: Props) {
 					className='flex-col '
 					onPress={() =>
 						router.push(
-							('/(authenticated)/(tabs)/home/folder/' + data.id) as Href
+							('/(authenticated)/(tabs)/home/member/profile/' + data.id + '?folderId=' + folderId) as Href
 						)
 					}
 				>
