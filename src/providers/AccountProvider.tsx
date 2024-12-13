@@ -1,0 +1,542 @@
+import { createContext, PropsWithChildren, useContext, useState } from 'react'
+import { accountType, currencyType, folderType, itemType } from '../types/types'
+import { currency } from '../constants'
+
+type AccountType = {
+	isAuthenticated: boolean
+	account: accountType
+	folders: folderType[]
+	items: itemType[]
+	handleSignUp: ({
+		email,
+		first_name,
+		last_name,
+	}: {
+		email?: string
+		first_name?: string
+		last_name?: string
+	}) => void
+	handleSignIn: ({ email }: { email: string }) => void
+	handleLogout: () => void
+	handleIsAuthenticated: () => void
+	handleTest: () => void
+	handleCreateFolder: ({
+		name,
+		currency,
+		type,
+		options,
+	}: {
+		name: string
+		currency: currencyType
+		type: string
+		options: string[]
+	}) => void
+	handleUpdateFolder: ({
+		id,
+		name,
+		currency,
+		type,
+		options,
+	}: {
+		id: number
+		name: string
+		currency: currencyType
+		type: string
+		options: string[]
+	}) => void
+	switchIsAuthenticated: () => void
+	handleCreateItem: (data: {
+		name: string
+		folder_id: number
+		image_url: string[]
+		price?: number
+		quantity?: number
+		typeAmount?: string
+		note?: string
+		tag?: string
+	}) => void
+	handleChangeQuantity: ({
+		quantity,
+		item_id,
+	}: {
+		quantity: number
+		item_id: number
+	}) => void
+
+	handleChangeImages: ({
+		images,
+		item_id,
+	}: {
+		images: string[]
+		item_id: number
+	}) => void
+	handleUpdateItem: ({
+		id,
+		name,
+		image_url,
+		price,
+		quantity,
+		typeAmount,
+		note,
+		tag,
+	}: {
+		id: number
+		name: string
+		typeAmount: string
+		image_url: string[]
+		price: number
+		quantity: number
+		note: string
+		tag: string
+	}) => void
+	handleDeleteItem: ({ id }: { id: number }) => void
+	handleCloneItem: ({ item_id }: { item_id: number }) => void
+	handleChangeItemFolder: ({
+		item_id,
+		folder_id,
+	}: {
+		item_id: number
+		folder_id: number
+	}) => void
+  handleAddMember: ({
+		folderId,
+    email,
+		role,
+	}: {
+		folderId: number,
+    email:string,
+		role: {
+			isView: boolean
+			isAddItem: boolean
+			isDeleteItem: boolean
+			isEdit: boolean
+			isCanInvite: boolean
+			isAdmin: boolean
+		}
+	}) => void
+}
+
+const AccountContext = createContext<AccountType>({
+	isAuthenticated: false,
+	account: {
+		id: 1,
+		email: '',
+		first_name: '',
+		last_name: '',
+		roles: {
+			isView: false,
+			isAddItem: false,
+			isDeleteItem: false,
+			isEdit: false,
+			isCanInvite: false,
+			isAdmin: true,
+		},
+	},
+	folders: [],
+	items: [],
+	handleSignUp: () => {},
+	handleSignIn: () => {},
+	handleLogout: () => {},
+	handleIsAuthenticated: () => {},
+	handleTest: () => {},
+	handleCreateFolder: () => {},
+	handleUpdateFolder: () => {},
+	switchIsAuthenticated: () => {},
+	handleCreateItem: () => {},
+	handleChangeQuantity: () => {},
+	handleChangeImages: () => {},
+	handleUpdateItem: () => {},
+	handleDeleteItem: () => {},
+	handleCloneItem: () => {},
+	handleChangeItemFolder: () => {},
+  handleAddMember: () => {},
+})
+
+export default function AccountProvider({ children }: PropsWithChildren) {
+	const [isAuthenticated, setIsAuthenticated] = useState(false)
+	const [account, setAccount] = useState<accountType>({
+		id: 1,
+		email: 'admin@gmail.com',
+		first_name: 'Admin Admin',
+		last_name: '',
+		roles: {
+			isView: false,
+			isAddItem: false,
+			isDeleteItem: false,
+			isEdit: false,
+			isCanInvite: false,
+			isAdmin: true,
+		},
+	})
+
+	const [folders, setFolders] = useState<folderType[]>([
+		{
+			created_at: '2024-10-16T17:53:39.031257Z',
+			currency: {
+				name: 'USD',
+				value: '$',
+				countries: ['United States', 'Ecuador', 'El Salvador', 'Zimbabwe'],
+			},
+			id: 0,
+			name: 'Warehouse1',
+			options: [],
+			type: 'Simple',
+			members: [
+				{
+					id: 1,
+					email: account.email,
+					fullName: `${account.first_name}`,
+					roles: {
+						isView: true,
+						isAddItem: true,
+						isDeleteItem: true,
+						isEdit: true,
+						isCanInvite: true,
+						isAdmin: true,
+					},
+				},
+			],
+			totalPrice: 1,
+			totalQuantity: 3,
+			totalMembers: 1,
+		},
+	])
+
+	const [items, setItems] = useState<itemType[]>([
+		{
+			created_at: '2024-10-16T17:53:39.031257Z',
+			folder_id: 0,
+			id: 0,
+			image_url: [],
+			name: 'Item1',
+			note: '',
+			price: 1,
+			tag: 'test',
+			typeAmount: 'quantity',
+			amount: 3,
+			user_id: '1',
+		},
+	])
+
+	const handleSignUp = (data: {
+		email?: string
+		first_name?: string
+		last_name?: string
+	}) => {
+		console.log('handle login -2')
+
+		setAccount({ ...account, ...data })
+		console.log('handle login -3')
+	}
+	const switchIsAuthenticated = () => setIsAuthenticated(true)
+	const handleLogout = () => setIsAuthenticated(false)
+
+	const handleRecalculateFolder = (updatedItems?: itemType[]) => {
+		const itemsToUse = updatedItems || items
+		setFolders(prevFolders =>
+			prevFolders.map(folder => {
+				return {
+					...folder,
+					totalPrice: itemsToUse
+						.filter(item => item.folder_id === folder.id)
+						.reduce((acc, item) => acc + item.price, 0),
+					totalQuantity: itemsToUse
+						.filter(item => item.folder_id === folder.id)
+						.reduce((acc, item) => acc + item.amount, 0),
+				}
+			})
+		)
+	}
+
+	const handleSignIn = ({ email }: { email: string }) => {
+		setAccount({ ...account, email, first_name: 'Vadym', last_name: 'Brovych' })
+		setIsAuthenticated(true)
+	}
+
+	const handleIsAuthenticated = () => {
+		console.log('прозьба прийшла')
+		return isAuthenticated
+	}
+	const handleTest = () => {
+		console.log('test')
+	}
+	console.log('AccountProvider is rendering')
+
+
+	const handleCreateFolder = ({
+		name,
+		currency,
+		type,
+		options,
+	}: {
+		name: string
+		currency: currencyType
+		type: string
+		options: string[]
+	}) => {
+		setFolders([
+			...folders,
+			{
+				created_at: new Date().toISOString(),
+				currency: currency,
+				type: type,
+				name: name,
+				options: options,
+				id: folders.length + 1,
+				members: [
+					{
+						id: 1,
+						email: account.email,
+						fullName: `${account.first_name}`,
+						roles: {
+							isView: false,
+							isAddItem: false,
+							isDeleteItem: false,
+							isEdit: false,
+							isCanInvite: false,
+							isAdmin: true,
+						},
+					},
+				],
+				totalPrice: 0,
+				totalQuantity: 0,
+				totalMembers: 1,
+			},
+		])
+	}
+
+	const handleUpdateFolder = ({
+		id,
+		name,
+		currency,
+		type,
+		options,
+	}: {
+		id: number
+		name: string
+		currency: currencyType
+		type: string
+		options: string[]
+	}) => {
+		setFolders(
+			folders.map(folder =>
+				folder.id === id ? { ...folder, name, currency, type, options } : folder
+			)
+		)
+	}
+
+	const handleCreateItem = (data: {
+		name: string
+		folder_id: number
+		image_url: string[]
+		price?: number
+		typeAmount?: string
+		quantity?: number
+		note?: string
+		tag?: string
+	}) => {
+		setItems(prevItems => {
+			const updatedItems = [
+				...prevItems,
+				{
+					name: data.name,
+					folder_id: data.folder_id,
+					image_url: data.image_url,
+					price: data.price || 0,
+					typeAmount: data.typeAmount || 'quantity',
+					amount: data.quantity || 0,
+					note: data.note || '',
+					tag: data.tag || '',
+					created_at: new Date().toISOString(),
+					id: items.length + 1,
+					user_id: '1',
+				},
+			]
+			handleRecalculateFolder(updatedItems)
+			return updatedItems
+		})
+	}
+
+	const handleChangeQuantity = ({
+		quantity,
+		item_id,
+	}: {
+		quantity: number
+		item_id: number
+	}) => {
+		if (quantity < 0) return
+		setItems(
+			items.map(item =>
+				item.id === item_id ? { ...item, quantity } : { ...item }
+			)
+		)
+		setFolders(
+			folders.map(folder =>
+				folder.id === item_id
+					? { ...folder, totalQuantity: folder.totalQuantity + quantity }
+					: { ...folder }
+			)
+		)
+		handleRecalculateFolder()
+	}
+
+	const handleChangeImages = ({
+		images,
+		item_id,
+	}: {
+		images: string[]
+		item_id: number
+	}) => {
+		console.log('changed photos')
+		setItems(
+			items.map(item =>
+				item.id === item_id ? { ...item, image_url: images } : { ...item }
+			)
+		)
+	}
+
+	const handleAddMember = ({
+    folderId,
+    email,
+    role,
+  }: {
+    folderId: number;
+    email: string;
+    role: {
+      isView: boolean;
+      isAddItem: boolean;
+      isDeleteItem: boolean;
+      isEdit: boolean;
+      isCanInvite: boolean;
+      isAdmin: boolean;
+    };
+  }) => {
+    setFolders((prevFolders) => {
+      const folderExists = prevFolders.some((folder) => folder.id === folderId);
+      if (!folderExists) {
+        console.error(`Folder with ID ${folderId} not found.`);
+        return prevFolders;
+      }
+  
+      return prevFolders.map((folder) =>
+        folder.id === folderId
+          ? {
+              ...folder,
+              members: [
+                ...(folder.members || []),
+                {
+                  id: (folder.members?.length || 0) + 1,
+                  email: email,
+                  roles: role,
+                  fullName: `Tester Tester${(folder.members?.length || 0) + 1}`,
+                },
+              ],
+            }
+          : folder
+      );
+    });
+  };
+  
+
+	const handleUpdateItem = ({
+		id,
+		name,
+		image_url,
+		price,
+		quantity,
+		typeAmount,
+		note,
+		tag,
+	}: {
+		id: number
+		name: string
+		typeAmount: string
+		image_url: string[]
+		price: number
+		quantity: number
+		note: string
+		tag: string
+	}) => {
+		setItems(prevItems => {
+			const updatedItems = prevItems.map(item =>
+				item.id === id
+					? {
+							...item,
+							name,
+							typeAmount,
+							image_url,
+							price,
+							amount: quantity,
+							note,
+							tag,
+					  }
+					: item
+			)
+			handleRecalculateFolder(updatedItems)
+			return updatedItems
+		})
+	}
+	const handleDeleteItem = ({ id }: { id: number }) => {
+		setItems(prevItems => {
+			const updatedItems = prevItems.filter(item => item.id !== id)
+			handleRecalculateFolder(updatedItems)
+			return updatedItems
+		})
+	}
+
+	const handleChangeItemFolder = ({
+		item_id,
+		folder_id,
+	}: {
+		item_id: number
+		folder_id: number
+	}) => {
+		setItems(prevItems => {
+			const updatedItems = prevItems.map(item =>
+				item.id === item_id ? { ...item, folder_id } : item
+			)
+			handleRecalculateFolder(updatedItems)
+			return updatedItems
+		})
+	}
+
+	const handleCloneItem = ({ item_id }: { item_id: number }) => {
+		setItems(prevItems => {
+			const item = prevItems.find(item => item.id === item_id)
+			if (!item) return prevItems
+			const updatedItems = [...prevItems, { ...item, id: prevItems.length + 1 }]
+			handleRecalculateFolder(updatedItems)
+			return updatedItems
+		})
+	}
+
+	return (
+		<AccountContext.Provider
+			value={{
+				isAuthenticated,
+				account,
+				folders,
+				items,
+				handleSignUp,
+				handleSignIn,
+				handleLogout,
+				handleIsAuthenticated,
+				handleTest,
+				handleCreateFolder,
+				handleUpdateFolder,
+				switchIsAuthenticated,
+				handleCreateItem,
+				handleChangeQuantity,
+				handleChangeImages,
+				handleUpdateItem,
+				handleDeleteItem,
+				handleCloneItem,
+				handleChangeItemFolder,
+        handleAddMember
+			}}
+		>
+			{children}
+		</AccountContext.Provider>
+	)
+}
+export const useAccount = () => useContext(AccountContext)
