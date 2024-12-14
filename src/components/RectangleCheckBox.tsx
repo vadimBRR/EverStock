@@ -68,7 +68,7 @@ export default function RectangleCheckBox({
 					<Image
 						source={require('../assets/icons/arrow-right.png')}
 						style={{ width: 38, height: 27 }}
-						className='absolute right-4'
+						className=' absolute right-4'
 					/>
 				))}
 		</TouchableOpacity>

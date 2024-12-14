@@ -16,6 +16,8 @@ type AccountType = {
 		first_name?: string
 		last_name?: string
 	}) => void
+  viewSettings:{sortBy: string, isAsc: boolean, viewOptions: {name: boolean, image: boolean, quantity: boolean, price: boolean}}
+  handleUpdateViewSettings: (data: {sortBy: string, isAsc: boolean, viewOptions: {name: boolean, image: boolean, quantity: boolean, price: boolean}}) => void
 	handleSignIn: ({ email }: { email: string }) => void
 	handleLogout: () => void
 	handleIsAuthenticated: () => void
@@ -154,6 +156,7 @@ const AccountContext = createContext<AccountType>({
 	},
 	folders: [],
 	items: [],
+  viewSettings:{sortBy: 'name', isAsc: true, viewOptions: {name: true, image: true, quantity: true, price: true}},
 	handleSignUp: () => {},
 	handleSignIn: () => {},
 	handleLogout: () => {},
@@ -172,6 +175,7 @@ const AccountContext = createContext<AccountType>({
   handleAddMember: () => {},
   handleUpdateMember: () => {},
   handleDeleteMember: () => {},
+  handleUpdateViewSettings: () => {},
 })
 
 export default function AccountProvider({ children }: PropsWithChildren) {
@@ -239,6 +243,21 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			user_id: '1',
 		},
 	])
+
+  const [viewSettings, setSettings] = useState<{sortBy: string, isAsc: boolean, viewOptions: {name: boolean, image: boolean, quantity: boolean, price: boolean}}>({
+    sortBy: 'name',
+    isAsc: false,
+    viewOptions: {
+      name: true,
+      image: true,
+      quantity: true,
+      price: true,
+    }
+  })
+
+  const handleUpdateViewSettings = (data: {sortBy: string, isAsc: boolean, viewOptions: {name: boolean, image: boolean, quantity: boolean, price: boolean}}) => {
+    setSettings(data)
+  }
 
 	const handleSignUp = (data: {
 		email?: string
@@ -596,7 +615,9 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				handleChangeItemFolder,
         handleAddMember,
         handleUpdateMember,
-        handleDeleteMember
+        handleDeleteMember,
+        handleUpdateViewSettings,
+        viewSettings
 			}}
 		>
 			{children}

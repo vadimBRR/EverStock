@@ -1,6 +1,6 @@
-import { View, Text,  FlatList, RefreshControl } from 'react-native'
-import React, { useCallback, useState } from 'react'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { View, Text,  FlatList, RefreshControl, TouchableOpacity } from 'react-native'
+import React, { useCallback, useMemo, useState } from 'react'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 // import { useGetFoldersWithItems } from '@/src/api/folder'
 import Loading from '@/src/components/Loading'
 import Container from '@/src/components/Container'
@@ -10,9 +10,10 @@ import { useModal } from '@/src/providers/ModalProvider'
 import TotalInfo from '@/src/components/home/item/TotalInfo'
 import ModalCreate from '@/src/components/ModalCreate'
 import CardItem from '@/src/components/home/item/CardItem'
-import { folderType } from '@/src/types/types'
+import { folderType, itemType } from '@/src/types/types'
 import { useAccount } from '@/src/providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
+import { Ionicons } from '@expo/vector-icons'
 
 export default function FolderScreen() {
 	const { id: idString } = useLocalSearchParams()
@@ -23,6 +24,8 @@ export default function FolderScreen() {
 
 	const [search, setSearch] = useState('')
 	const [refreshing, setRefreshing] = useState(false)
+
+  
 	const handleSearch = (value: string) => {
 		setSearch(value)
 	}
@@ -33,7 +36,7 @@ export default function FolderScreen() {
 			<Text className='font-bold'>Failed to fetch</Text>
 		</View>
 	}
-
+  const {viewSettings} = useAccount()
   const folder = useAccount().folders.find(folder => folder.id === id)
   if (!folder) return <Text>Folder not found</Text>
   const items = useAccount().items.filter(item => item.folder_id === id)
@@ -54,6 +57,44 @@ export default function FolderScreen() {
 	// if (!folder) return <Text>Folder not found</Text>
   
 
+// Визначення типу для item
+
+
+const handleOpenViewSettings = () => {
+  router.push('/(authenticated)/(tabs)/home/item/settings')
+  // router.setParams({ id })
+}
+// Тип для viewSettings
+type ViewSettings = {
+  sortBy: keyof itemType; 
+  isAsc: boolean;
+  viewOptions: {
+    name: boolean;
+    image: boolean;
+    quantity: boolean;
+    price: boolean;
+  };
+};
+
+const sortedItems = useMemo(() => {
+  const sortBy = viewSettings.sortBy;
+  const sortByCorrect = sortBy === 'name' ? 'name' : sortBy === 'quantity' ? 'amount' : sortBy === 'price' ? 'price' : sortBy === 'total price' ? 'totalPrice' : sortBy === 'last updated' ? 'created_at' : '';
+  console.log(sortByCorrect);
+  
+  return items
+    .filter((item: itemType) => 
+      !search || item.name.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a: itemType, b: itemType) => {
+      const field = sortByCorrect as keyof itemType; 
+      const ascMultiplier = viewSettings.isAsc ? 1 : -1; 
+      if (a[field] < b[field]) return -1 * ascMultiplier;
+      if (a[field] > b[field]) return 1 * ascMultiplier;
+      return 0;
+    });
+
+}, [items, search, viewSettings]);
+
 
 	return (
 		<Container isPadding={false}>
@@ -66,6 +107,11 @@ export default function FolderScreen() {
             backgroundColor: '#242121',
           },
           headerTintColor: '#fff',
+          headerRight: () => (
+            <TouchableOpacity className='flex-row items-center' onPress={() => handleOpenViewSettings()}>
+              <Ionicons name='options-outline' size={24} color='white' />
+            </TouchableOpacity>
+          )
 				}}
 			/>
 			<View className='flex-row w-full justify-center my-2'>
@@ -86,7 +132,7 @@ export default function FolderScreen() {
 
 			<FlatList
 				className='mx-3 mb-24 '
-				data={search ? items.filter(item => item.name.toLowerCase().includes(search.toLowerCase())) : items}
+				data={sortedItems}
 				keyExtractor={item => item.id.toString()}
         extraData={items}
 				renderItem={({ item }) => (

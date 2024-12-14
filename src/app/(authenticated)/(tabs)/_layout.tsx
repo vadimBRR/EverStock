@@ -17,7 +17,6 @@ export default function TabsLayout() {
 	// const { isSignedIn} = useAuth()
   SystemUI.setBackgroundColorAsync("#1C1A1A")
 
-	const {handleOpen} = useModal()
   
 	// if(!isSignedIn) return <Redirect href="/(authorization)/sign-in" />
   const segments = useSegments();
@@ -30,7 +29,6 @@ export default function TabsLayout() {
 				screenOptions={{
 					headerShown: false,
 					tabBarShowLabel: false,
-          
 					tabBarStyle: {
             display: hide ? "none" : "flex",
 						// position: 'absolute',  
