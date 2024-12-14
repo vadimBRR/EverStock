@@ -21,7 +21,7 @@ export default function TabsLayout() {
 	// if(!isSignedIn) return <Redirect href="/(authorization)/sign-in" />
   const segments = useSegments();
 
-  const hide = segments.includes("create") || segments.includes("account")  || segments.includes("choose_type") || segments.includes("edit") || segments.includes("[id]") && segments.includes("item")
+  const hide = segments.includes("create") || segments.includes("account")  || segments.includes("choose_type") || segments.includes("edit") || segments.includes("[id]") && segments.includes("item") || segments.includes("settings") ||segments.includes("profile") && segments.includes("[id]") 
   console.log(segments);
 	return (
 		<Container isPadding={false}>
@@ -35,14 +35,7 @@ export default function TabsLayout() {
 						backgroundColor: '#242121',
 						height: 65,
             paddingTop: 10,
-						// alignItems: 'center',
-						// justifyContent: 'center',
             borderColor: '#272424',
-						// borderRadius: 20,
-						// 			bottom: 10,
-						// 			left: 16,
-						// 			right: 16,
-						// 			elevation: 0,
 					},
 				}}
 			>

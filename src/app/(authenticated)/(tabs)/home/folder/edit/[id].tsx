@@ -113,7 +113,7 @@ export default function EditFolder() {
 					</View>
 				</View>
 				<CustomButton
-					text='Create Folder'
+					text='Apply'
 					onClick={updateFolder}
 					styleContainer={`my-4 mx-0`}
 					// disabled={!folderName}

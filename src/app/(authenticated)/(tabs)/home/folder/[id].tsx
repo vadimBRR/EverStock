@@ -108,7 +108,7 @@ const sortedItems = useMemo(() => {
           },
           headerTintColor: '#fff',
           headerRight: () => (
-            <TouchableOpacity className='flex-row items-center' onPress={() => handleOpenViewSettings()}>
+            <TouchableOpacity className='flex-row items-center p-2' onPress={() => handleOpenViewSettings()}>
               <Ionicons name='options-outline' size={24} color='white' />
             </TouchableOpacity>
           )

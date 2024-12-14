@@ -113,7 +113,7 @@ return (
 					
 				</View>
 				<CustomButton
-					text='Create Folder'
+					text='Add Member'
 					onClick={handleCreateMember}
 					styleContainer={`my-4 mx-0`}
 					// disabled={!folderName}

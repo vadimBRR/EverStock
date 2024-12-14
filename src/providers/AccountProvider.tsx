@@ -1,5 +1,11 @@
 import { createContext, PropsWithChildren, useContext, useState } from 'react'
-import { accountType, currencyType, folderType, itemType } from '../types/types'
+import {
+	accountType,
+	currencyType,
+	folderType,
+	itemType,
+	transactionType,
+} from '../types/types'
 import { currency } from '../constants'
 
 type AccountType = {
@@ -16,8 +22,28 @@ type AccountType = {
 		first_name?: string
 		last_name?: string
 	}) => void
-  viewSettings:{sortBy: string, isAsc: boolean, viewOptions: {name: boolean, image: boolean, quantity: boolean, price: boolean}}
-  handleUpdateViewSettings: (data: {sortBy: string, isAsc: boolean, viewOptions: {name: boolean, image: boolean, quantity: boolean, price: boolean}}) => void
+	viewSettings: {
+		sortBy: string
+		isAsc: boolean
+		viewOptions: {
+			name: boolean
+			image: boolean
+			quantity: boolean
+			price: boolean
+			totalPrice: boolean
+		}
+	}
+	handleUpdateViewSettings: (data: {
+		sortBy: string
+		isAsc: boolean
+		viewOptions: {
+			name: boolean
+			image: boolean
+			quantity: boolean
+			price: boolean
+			totalPrice: boolean
+		}
+	}) => void
 	handleSignIn: ({ email }: { email: string }) => void
 	handleLogout: () => void
 	handleIsAuthenticated: () => void
@@ -100,13 +126,13 @@ type AccountType = {
 		item_id: number
 		folder_id: number
 	}) => void
-  handleAddMember: ({
+	handleAddMember: ({
 		folderId,
-    email,
+		email,
 		role,
 	}: {
-		folderId: number,
-    email:string,
+		folderId: number
+		email: string
 		role: {
 			isView: boolean
 			isAddItem: boolean
@@ -115,27 +141,33 @@ type AccountType = {
 			isCanInvite: boolean
 			isAdmin: boolean
 		}
-	}) => void,
-  handleUpdateMember: ({
-    id,
-    folderId,
-    email,
-    roles,
-  }:{
-    id: number,
-    folderId: number,
-    email:string,
-    roles: {
-      isView: boolean
-      isAddItem: boolean
-      isDeleteItem: boolean
-      isEdit: boolean
-      isCanInvite: boolean
-      isAdmin: boolean
-    }}) => void,
+	}) => void
+	handleUpdateMember: ({
+		id,
+		folderId,
+		email,
+		roles,
+	}: {
+		id: number
+		folderId: number
+		email: string
+		roles: {
+			isView: boolean
+			isAddItem: boolean
+			isDeleteItem: boolean
+			isEdit: boolean
+			isCanInvite: boolean
+			isAdmin: boolean
+		}
+	}) => void
 
-    handleDeleteMember: ({ id,folderId }: { id: number,folderId: number }) => void
-   
+	handleDeleteMember: ({
+		id,
+		folderId,
+	}: {
+		id: number
+		folderId: number
+	}) => void
 }
 
 const AccountContext = createContext<AccountType>({
@@ -156,7 +188,17 @@ const AccountContext = createContext<AccountType>({
 	},
 	folders: [],
 	items: [],
-  viewSettings:{sortBy: 'name', isAsc: true, viewOptions: {name: true, image: true, quantity: true, price: true}},
+	viewSettings: {
+		sortBy: 'name',
+		isAsc: true,
+		viewOptions: {
+			name: true,
+			image: true,
+			quantity: true,
+			price: true,
+			totalPrice: true,
+		},
+	},
 	handleSignUp: () => {},
 	handleSignIn: () => {},
 	handleLogout: () => {},
@@ -172,10 +214,10 @@ const AccountContext = createContext<AccountType>({
 	handleDeleteItem: () => {},
 	handleCloneItem: () => {},
 	handleChangeItemFolder: () => {},
-  handleAddMember: () => {},
-  handleUpdateMember: () => {},
-  handleDeleteMember: () => {},
-  handleUpdateViewSettings: () => {},
+	handleAddMember: () => {},
+	handleUpdateMember: () => {},
+	handleDeleteMember: () => {},
+	handleUpdateViewSettings: () => {},
 })
 
 export default function AccountProvider({ children }: PropsWithChildren) {
@@ -244,20 +286,117 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		},
 	])
 
-  const [viewSettings, setSettings] = useState<{sortBy: string, isAsc: boolean, viewOptions: {name: boolean, image: boolean, quantity: boolean, price: boolean}}>({
-    sortBy: 'name',
-    isAsc: false,
-    viewOptions: {
-      name: true,
-      image: true,
-      quantity: true,
-      price: true,
-    }
-  })
+	const [viewSettings, setSettings] = useState<{
+		sortBy: string
+		isAsc: boolean
+		viewOptions: {
+			name: boolean
+			image: boolean
+			quantity: boolean
+			price: boolean
+			totalPrice: boolean
+		}
+	}>({
+		sortBy: 'name',
+		isAsc: false,
+		viewOptions: {
+			name: true,
+			image: true,
+			quantity: false,
+			price: false,
+			totalPrice: false,
+		},
+	})
 
-  const handleUpdateViewSettings = (data: {sortBy: string, isAsc: boolean, viewOptions: {name: boolean, image: boolean, quantity: boolean, price: boolean}}) => {
-    setSettings(data)
-  }
+	const [transactions, setTransactions] = useState<transactionType[]>([
+		{
+			folder_id: 0,
+			info: [{
+        id: 0,
+				user_id: 1,
+				item_id: 0,
+				prev_item: {
+					id: 0,
+					name: 'Item1',
+					image_url: [],
+					note: '',
+					tag: 'test',
+					typeAmount: 'quantity',
+					amount: 3,
+					price: 1,
+				},
+				changed_item: {
+					id: 0,
+					name: 'Item1',
+					image_url: [],
+					note: '',
+					tag: 'test',
+					typeAmount: 'quantity',
+					amount: 4,
+					price: 1,
+				},
+				date: '2024-10-16T17:53:39.031257Z',
+			}],
+		},
+	])
+
+	const handleAddTransaction = ({
+    folder_id,
+    prev_item,
+    changed_item,
+  }: {
+    folder_id: number;
+    prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
+    changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
+  }) => {
+    const newTransaction = {
+      id: Date.now(), // Унікальний ідентифікатор транзакції
+      user_id: 1, // Тут можна вставити ID користувача (можливо, отриманий із контексту або з іншого джерела)
+      item_id: prev_item.id, // ID предмета
+      prev_item,
+      changed_item,
+      date: new Date().toISOString(),
+    };
+
+    setTransactions((prevTransactions) => {
+      const folderIndex = prevTransactions.findIndex(
+        (transaction) => transaction.folder_id === folder_id
+      );
+
+      if (folderIndex !== -1) {
+        // Якщо папка існує, додаємо нову транзакцію до цієї папки
+        const updatedTransactions = [...prevTransactions];
+        updatedTransactions[folderIndex].info.push(newTransaction);
+        return updatedTransactions;
+      } else {
+        // Якщо папки немає, створюємо нову
+        return [
+          ...prevTransactions,
+          {
+            folder_id,
+            info: [newTransaction],
+          },
+        ];
+      }
+    });
+  };
+
+
+
+
+	const handleUpdateViewSettings = (data: {
+		sortBy: string
+		isAsc: boolean
+		viewOptions: {
+			name: boolean
+			image: boolean
+			quantity: boolean
+			price: boolean
+			totalPrice: boolean
+		}
+	}) => {
+		setSettings(data)
+	}
 
 	const handleSignUp = (data: {
 		email?: string
@@ -302,7 +441,6 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		console.log('test')
 	}
 	console.log('AccountProvider is rendering')
-
 
 	const handleCreateFolder = ({
 		name,
@@ -376,26 +514,31 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		note?: string
 		tag?: string
 	}) => {
-		setItems(prevItems => {
-			const updatedItems = [
-				...prevItems,
-				{
-					name: data.name,
-					folder_id: data.folder_id,
-					image_url: data.image_url,
-					price: data.price || 0,
-					typeAmount: data.typeAmount || 'quantity',
-					amount: data.quantity || 0,
-					note: data.note || '',
-					tag: data.tag || '',
-					created_at: new Date().toISOString(),
-					id: items.length + 1,
-					user_id: '1',
-				},
-			]
-			handleRecalculateFolder(updatedItems)
-			return updatedItems
-		})
+		setItems((prevItems) => {
+      const newItem = {
+        name: data.name,
+        folder_id: data.folder_id,
+        image_url: data.image_url,
+        price: data.price || 0,
+        typeAmount: data.typeAmount || 'quantity',
+        amount: data.quantity || 0,
+        note: data.note || '',
+        tag: data.tag || '',
+        created_at: new Date().toISOString(),
+        id: prevItems.length + 1,
+        user_id: '1',
+      };
+
+      handleAddTransaction({
+        folder_id: data.folder_id,
+        prev_item: { ...newItem, amount: 0 }, // Перед додаванням
+        changed_item: newItem, // Після додавання
+      });
+
+      const updatedItems = [...prevItems, newItem];
+      handleRecalculateFolder(updatedItems);
+      return updatedItems;
+    });
 	}
 
 	const handleChangeQuantity = ({
@@ -437,47 +580,46 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 	}
 
 	const handleAddMember = ({
-    folderId,
-    email,
-    role,
-  }: {
-    folderId: number;
-    email: string;
-    role: {
-      isView: boolean;
-      isAddItem: boolean;
-      isDeleteItem: boolean;
-      isEdit: boolean;
-      isCanInvite: boolean;
-      isAdmin: boolean;
-    };
-  }) => {
-    setFolders((prevFolders) => {
-      const folderExists = prevFolders.some((folder) => folder.id === folderId);
-      if (!folderExists) {
-        console.error(`Folder with ID ${folderId} not found.`);
-        return prevFolders;
-      }
-  
-      return prevFolders.map((folder) =>
-        folder.id === folderId
-          ? {
-              ...folder,
-              members: [
-                ...(folder.members || []),
-                {
-                  id: (folder.members?.length || 0) + 1,
-                  email: email,
-                  roles: role,
-                  fullName: `Tester Tester${(folder.members?.length || 0) + 1}`,
-                },
-              ],
-            }
-          : folder
-      );
-    });
-  };
-  
+		folderId,
+		email,
+		role,
+	}: {
+		folderId: number
+		email: string
+		role: {
+			isView: boolean
+			isAddItem: boolean
+			isDeleteItem: boolean
+			isEdit: boolean
+			isCanInvite: boolean
+			isAdmin: boolean
+		}
+	}) => {
+		setFolders(prevFolders => {
+			const folderExists = prevFolders.some(folder => folder.id === folderId)
+			if (!folderExists) {
+				console.error(`Folder with ID ${folderId} not found.`)
+				return prevFolders
+			}
+
+			return prevFolders.map(folder =>
+				folder.id === folderId
+					? {
+							...folder,
+							members: [
+								...(folder.members || []),
+								{
+									id: (folder.members?.length || 0) + 1,
+									email: email,
+									roles: role,
+									fullName: `Tester Tester${(folder.members?.length || 0) + 1}`,
+								},
+							],
+					  }
+					: folder
+			)
+		})
+	}
 
 	const handleUpdateItem = ({
 		id,
@@ -498,31 +640,51 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		note: string
 		tag: string
 	}) => {
-		setItems(prevItems => {
-			const updatedItems = prevItems.map(item =>
-				item.id === id
-					? {
-							...item,
-							name,
-							typeAmount,
-							image_url,
-							price,
-							amount: quantity,
-							note,
-							tag,
-					  }
-					: item
-			)
-			handleRecalculateFolder(updatedItems)
-			return updatedItems
-		})
+		setItems((prevItems) => {
+      const updatedItems = prevItems.map((item) => {
+        if (item.id === id) {
+          const updatedItem = {
+            ...item,
+            name,
+            typeAmount,
+            image_url,
+            price,
+            amount: quantity,
+            note,
+            tag,
+          };
+
+          handleAddTransaction({
+            folder_id: item.folder_id!,
+            prev_item: item,
+            changed_item: updatedItem,
+          });
+
+          return updatedItem;
+        }
+        return item;
+      });
+
+      handleRecalculateFolder(updatedItems);
+      return updatedItems;
+    });
 	}
 	const handleDeleteItem = ({ id }: { id: number }) => {
-		setItems(prevItems => {
-			const updatedItems = prevItems.filter(item => item.id !== id)
-			handleRecalculateFolder(updatedItems)
-			return updatedItems
-		})
+		setItems((prevItems) => {
+      const itemToDelete = prevItems.find((item) => item.id === id);
+      const updatedItems = prevItems.filter((item) => item.id !== id);
+
+      if (itemToDelete) {
+        handleAddTransaction({
+          folder_id: itemToDelete.folder_id!,
+          prev_item: itemToDelete,
+          changed_item: { ...itemToDelete, amount: 0 },
+        });
+      }
+
+      handleRecalculateFolder(updatedItems);
+      return updatedItems;
+    });
 	}
 
 	const handleChangeItemFolder = ({
@@ -551,45 +713,68 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		})
 	}
 
-  const handleUpdateMember = ({id,folderId, email, roles}: {id:number,folderId: number, email: string, roles: {isView: boolean, isAddItem: boolean, isDeleteItem: boolean, isEdit: boolean, isCanInvite: boolean, isAdmin: boolean}}) => {
-    setFolders((prevFolders) => {
-      const folderExists = prevFolders.some((folder) => folder.id === folderId);
-      if (!folderExists) {
-        console.error(`Folder with ID ${folderId} not found.`);
-        return prevFolders;
-      }
-  
-      return prevFolders.map((folder) =>
-        folder.id === folderId
-          ? {
-              ...folder,
-              members: folder.members.map((member) =>
-                member.id === id ? { ...member, email, roles } : member
-              ),
-            }
-          : folder
-      );
-    });
-  }
+	const handleUpdateMember = ({
+		id,
+		folderId,
+		email,
+		roles,
+	}: {
+		id: number
+		folderId: number
+		email: string
+		roles: {
+			isView: boolean
+			isAddItem: boolean
+			isDeleteItem: boolean
+			isEdit: boolean
+			isCanInvite: boolean
+			isAdmin: boolean
+		}
+	}) => {
+		setFolders(prevFolders => {
+			const folderExists = prevFolders.some(folder => folder.id === folderId)
+			if (!folderExists) {
+				console.error(`Folder with ID ${folderId} not found.`)
+				return prevFolders
+			}
 
-  const handleDeleteMember = ({id,folderId}: {id:number,folderId: number}) => {
-    setFolders((prevFolders) => {
-      const folderExists = prevFolders.some((folder) => folder.id === folderId);
-      if (!folderExists) {
-        console.error(`Folder with ID ${folderId} not found.`);
-        return prevFolders;
-      }
-  
-      return prevFolders.map((folder) =>
-        folder.id === folderId
-          ? {
-              ...folder,
-              members: folder.members.filter((member) => member.id !== id),
-            }
-          : folder
-      );
-    });
-  }
+			return prevFolders.map(folder =>
+				folder.id === folderId
+					? {
+							...folder,
+							members: folder.members.map(member =>
+								member.id === id ? { ...member, email, roles } : member
+							),
+					  }
+					: folder
+			)
+		})
+	}
+
+	const handleDeleteMember = ({
+		id,
+		folderId,
+	}: {
+		id: number
+		folderId: number
+	}) => {
+		setFolders(prevFolders => {
+			const folderExists = prevFolders.some(folder => folder.id === folderId)
+			if (!folderExists) {
+				console.error(`Folder with ID ${folderId} not found.`)
+				return prevFolders
+			}
+
+			return prevFolders.map(folder =>
+				folder.id === folderId
+					? {
+							...folder,
+							members: folder.members.filter(member => member.id !== id),
+					  }
+					: folder
+			)
+		})
+	}
 
 	return (
 		<AccountContext.Provider
@@ -613,11 +798,11 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				handleDeleteItem,
 				handleCloneItem,
 				handleChangeItemFolder,
-        handleAddMember,
-        handleUpdateMember,
-        handleDeleteMember,
-        handleUpdateViewSettings,
-        viewSettings
+				handleAddMember,
+				handleUpdateMember,
+				handleDeleteMember,
+				handleUpdateViewSettings,
+				viewSettings,
 			}}
 		>
 			{children}
