@@ -1,64 +1,81 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
 import Container from '@/src/components/Container'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import CustomButton from '@/src/components/CustomButton'
 import { useAccount } from '@/src/providers/AccountProvider'
 import RectangleCheckBox from '@/src/components/RectangleCheckBox'
+import CardMember from '@/src/components/home/member/CardMember'
+import { Feather, Ionicons } from '@expo/vector-icons'
 
 const ViewSettingsScreen = () => {
-	// const { id: idString } = useLocalSearchParams()
-	// const id = parseFloat(
-	// 	idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
-	// )
+	const { id: idString } = useLocalSearchParams()
+	const id = parseFloat(
+		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
+	)
 	const router = useRouter()
-	const { transactionSettings, handleUpdateTransactionSettings, addFilterItemId, handleFilterAddMemberId, deleteFilterMemberId, deleteFilterItemId } = useAccount()
-	const [settings, setSettings] = React.useState(transactionSettings)
-  const sortOptions = ['item name', 'member name', 'last updated']
-  const actions: ["Created", "Edited", "Deleted"]=["Created", "Edited", "Deleted"]
-  // const [viewOptions, setViewOptions] = React.useState(settings.)
-  // const viewOptionsList: (keyof typeof settings.viewOptions)[] = ['name', 'image', 'quantity', 'price', 'totalPrice']
+	const {
+		transactionSettings,
+		handleUpdateTransactionSettings,
+		addFilterItemId,
+		handleFilterAddMemberId,
+		deleteFilterMemberId,
+		deleteFilterItemId,
+	} = useAccount()
+	const [settings, setSettings] = useState(transactionSettings)
+	const sortOptions = ['item name', 'member name', 'last updated']
+	const actions: ['Created', 'Edited', 'Deleted'] = [
+		'Created',
+		'Edited',
+		'Deleted',
+	]
+	React.useEffect(() => {
+		setSettings(transactionSettings)
+	}, [transactionSettings])
+
+	const users = useAccount()
+		.folders.find(folder => folder.id === id)
+		?.members.filter(member => settings.membersId.includes(member.id))
+
+	// const [viewOptions, setViewOptions] = React.useState(settings.)
+	// const viewOptionsList: (keyof typeof settings.viewOptions)[] = ['name', 'image', 'quantity', 'price', 'totalPrice']
 	const applySettings = () => {
-    handleUpdateTransactionSettings(settings)
-		// handleUpdateViewSettings(settings)
+		handleUpdateTransactionSettings(settings)
 		router.back()
-		// router.setParams({ id })
 	}
 
-  const handleToggleSortBy = (sortBy: string) => {
-    if (settings.sortBy === sortBy) {
-      setSettings({ ...settings, isAsc: !settings.isAsc })
-    } else {
-      setSettings({ ...settings, sortBy, isAsc: true })
-    }
-  }
+	const handleOpenChooseMember = () => {
+		router.push(`/analytics/history/choose_member?id=${id}`)
+	}
+	const handleOpenChooseItem = () => {
+		router.push(`/analytics/history/settings/choose_item?id=${id}`)
+	}
 
-  const handleToggleActions = (action: 'Created' | 'Edited' | 'Deleted') => {
-    const formattedAction: 'isCreated' | 'isEdited' | 'isDeleted' = action === 'Created' ? 'isCreated' : action === 'Edited' ? 'isEdited' : 'isDeleted'
-    console.log(settings.actions[formattedAction]);
-    setSettings({
-      ...settings,
-      actions: {
-        ...settings.actions,
-        [formattedAction]: !settings.actions[formattedAction]
-      }
-    })
-  }
+	const handleToggleSortBy = (sortBy: string) => {
+		if (settings.sortBy === sortBy) {
+			setSettings({ ...settings, isAsc: !settings.isAsc })
+		} else {
+			setSettings({ ...settings, sortBy, isAsc: true })
+		}
+	}
 
-  // const handleToggleViewOption = (option: keyof typeof viewOptions) => {
-  //   setViewOptions({
-  //     ...viewOptions,
-  //     [option]: !viewOptions[option]
+	const handleToggleActions = (action: 'Created' | 'Edited' | 'Deleted') => {
+		const formattedAction: 'isCreated' | 'isEdited' | 'isDeleted' =
+			action === 'Created'
+				? 'isCreated'
+				: action === 'Edited'
+				? 'isEdited'
+				: 'isDeleted'
+		console.log(settings.actions[formattedAction])
+		setSettings({
+			...settings,
+			actions: {
+				...settings.actions,
+				[formattedAction]: !settings.actions[formattedAction],
+			},
+		})
+	}
 
-  //   })
-  //   setSettings({
-  //     ...settings,
-  //     viewOptions: {
-  //       ...settings.viewOptions,
-  //       [option]: !settings.viewOptions[option]
-  //     }
-  //   })
-  // }
 	return (
 		<Container isPadding={false}>
 			<Stack.Screen
@@ -72,63 +89,98 @@ const ViewSettingsScreen = () => {
 				}}
 			/>
 			<View className='mx-4 mt-2 flex-1 justify-between'>
-        <View>
+				<View>
+					<Text className='font-lexend_light text-white text-2xl mb-2'>
+						Sort By:
+					</Text>
+					{sortOptions.map((option, index) => (
+						<RectangleCheckBox
+							key={index}
+							text={option.charAt(0).toUpperCase() + option.slice(1)}
+							isActive={settings.sortBy === option}
+							onClick={() => handleToggleSortBy(option)}
+							isIcon={settings.sortBy === option}
+							icon={
+								settings.sortBy === option && settings.isAsc
+									? require('@/src/assets/icons/arrow_up.png')
+									: require('@/src/assets/icons/arrow_down.png')
+							}
+							styleContainer='items-start m-0 p-2 px-4 mb-2'
+							customBg='dark_gray'
+							imageStyle='w-4 h-4 aspect-square'
+						/>
+					))}
+					<Text className='font-lexend_light text-white text-2xl mb-2'>
+						To show:
+					</Text>
 
-          <Text className='font-lexend_light text-white text-2xl mb-2'>Sort By:</Text>
-          {sortOptions.map((option, index) => (
-            <RectangleCheckBox
-              key={index}
-              text={option.charAt(0).toUpperCase() + option.slice(1)}
-              isActive={settings.sortBy === option}
-              onClick={() => handleToggleSortBy(option)}
-              isIcon={settings.sortBy === option}
-              icon={settings.sortBy === option && settings.isAsc ? require('@/src/assets/icons/arrow_up.png') : require('@/src/assets/icons/arrow_down.png')}
-              styleContainer='items-start m-0 p-2 px-4 mb-2'
-              customBg='dark_gray'
-              imageStyle='w-4 h-4 aspect-square'
-            />
-          ))}
-          <Text className='font-lexend_light text-white text-2xl mb-2'>To show:</Text>
+					{actions.map((option, index) => (
+						<RectangleCheckBox
+							key={index}
+							text={option.charAt(0).toUpperCase() + option.slice(1)}
+							isActive={settings.actions[`is${option}`]}
+							onClick={() => handleToggleActions(option)}
+							isIcon={settings.sortBy === option}
+							icon={
+								settings.sortBy === option && settings.isAsc
+									? require('@/src/assets/icons/arrow_up.png')
+									: require('@/src/assets/icons/arrow_down.png')
+							}
+							styleContainer='items-start m-0 p-2 px-4 mb-2'
+							customBg='dark_gray'
+							imageStyle='w-4 h-4 aspect-square'
+						/>
+					))}
 
-          {actions.map((option, index) => (
-            <RectangleCheckBox
-              key={index}
-              text={option.charAt(0).toUpperCase() + option.slice(1)}
-              isActive={settings.actions[`is${option}`]}
-              onClick={() => handleToggleActions(option)}
-              isIcon={settings.sortBy === option}
-              icon={settings.sortBy === option && settings.isAsc ? require('@/src/assets/icons/arrow_up.png') : require('@/src/assets/icons/arrow_down.png')}
-              styleContainer='items-start m-0 p-2 px-4 mb-2'
-              customBg='dark_gray'
-              imageStyle='w-4 h-4 aspect-square'
-            />
-          ))}
-
-          {/* <Text className='font-lexend_light text-white text-2xl my-2'>View Options:</Text>
-          {viewOptionsList.map((option, index) => (
-            <RectangleCheckBox
-              key={index}
-              text={option.charAt(0).toUpperCase() + option.slice(1)}
-              isActive={viewOptions[option]}
-              onClick={() => handleToggleViewOption(option)}
-              isIcon={false}
-              styleContainer='items-start m-0 p-1 px-4 mb-2'
-              customBg='dark_gray'
-              imageStyle='w-4 h-4 aspect-square'
-            />
-          ))} */}
-        </View>
-				{/* <RectangleCheckBox
-					text='Name'
-          isActive={viewSettings.sortBy === 'name'}
-          onClick={() => setSettings({ ...settings, sortBy: 'name', isAsc: !settings.isAsc })}
-					isIcon={true}
-					icon={settings.sortBy === 'name' && settings.isAsc ? require('@/src/assets/icons/arrow_up.png') : require('@/src/assets/icons/arrow_down.png')}
-					styleContainer='items-start m-0 p-2 px-4 mb-2'
-					customBg='dark_gray'
-          imageStyle='w-4 h-4 aspect-square'
-				/> */}
-
+					<Text className='font-lexend_light text-white text-2xl mb-2'>
+						Filter by:
+					</Text>
+					{settings.membersId.length === 0 ? (
+						<TouchableOpacity
+							onPress={handleOpenChooseMember}
+							className='bg-dark_gray w-full p-2 rounded-lg mb-2'
+						>
+							<Text className='font-lexend_semibold text-white text-center text-xl '>
+								Choose Member
+							</Text>
+						</TouchableOpacity>
+					) : (
+						<View>
+							<View className='flex-row justify-between items-end mx-2 mb-2'>
+								<Text className='font-lexend_regular text-white text-xl mb-1'>
+									Member
+								</Text>
+								<View className='flex-row gap-2'>
+									<TouchableOpacity className='bg-dark_gray p-1 px-3 rounded-lg'>
+										<Text className='text-white text-lg'>Reset</Text>
+									</TouchableOpacity>
+									<TouchableOpacity className='bg-dark_gray p-2 rounded-lg flex items-center justify-center'>
+										<Feather name='plus' size={20} color='white' />
+									</TouchableOpacity>
+								</View>
+							</View>
+							{users?.map((user, index) => (
+								<View key={index} className='relative z-0'>
+									<CardMember
+										data={user}
+										folderId={id}
+										isPressable={false}
+										isIcons={false}
+									/>
+									<TouchableOpacity className='absolute  top-[17px]  right-5 p-2 border border-white rounded-xl'>
+										<Ionicons
+											name='trash-outline'
+											size={20}
+											color='white'
+											className=' '
+											onPress={() => deleteFilterMemberId(user.id)}
+										/>
+									</TouchableOpacity>
+								</View>
+							))}
+						</View>
+					)}
+				</View>
 
 				<CustomButton
 					text='Apply'

@@ -22,8 +22,8 @@ export default function TabsLayout() {
 	// if(!isSignedIn) return <Redirect href="/(authorization)/sign-in" />
   const segments = useSegments();
 
-  const hide = segments.includes("create") || segments.includes("account")  || segments.includes("choose_type") || segments.includes("edit") || segments.includes("[id]") && segments.includes("item") || segments.includes("settings") ||segments.includes("profile") && segments.includes("[id]") 
-  console.log(segments);
+  const hide = segments.includes("create") || segments.includes("account")  || segments.includes("choose_type") || segments.includes("edit") || segments.includes("[id]") && segments.includes("item") || segments.includes("settings") ||segments.includes("profile") && segments.includes("[id]") || segments.includes("choose_member");
+  console.log(segments) 
 	return (
 		<Container isPadding={false}>
 			<Tabs

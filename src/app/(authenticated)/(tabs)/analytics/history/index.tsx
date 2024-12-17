@@ -107,11 +107,11 @@ const HistoryScreen = () => {
   
 
 	const handleOpenViewSettings = () => {
-		router.push('/(authenticated)/(tabs)/analytics/history/settings')
+		router.push('/(authenticated)/(tabs)/analytics/history/settings?id=' + id)
 		// router.setParams({ id })
 	}
 	return (
-		<Container isPadding={false} container_style='mx-4 pt-4'>
+		<Container isPadding={false} container_style='mx-2 pt-2'>
 			<Stack.Screen
 				options={{
 					headerShown: true,
