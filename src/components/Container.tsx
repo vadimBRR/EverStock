@@ -14,8 +14,9 @@ import * as SystemUI from 'expo-system-ui';
 type Props = {
 	children: React.ReactNode
 	isPadding?: boolean
+  container_style?: string
 }
-export default function Container({ children, isPadding = true }: Props) {
+export default function Container({ children, isPadding = true,container_style }: Props) {
   SystemUI.setBackgroundColorAsync('#1C1A1A');
 
 	return (
@@ -25,7 +26,7 @@ export default function Container({ children, isPadding = true }: Props) {
         Keyboard.dismiss()
       }}
 		>
-			<View className='flex-1 bg-bg'>
+			<View className={`flex-1 bg-bg ${container_style}`}>
 				{/* <ImageBackground
 					source={require('../assets/bg.jpg')}
 					className={`flex-1 `}

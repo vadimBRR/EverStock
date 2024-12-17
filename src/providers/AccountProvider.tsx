@@ -13,6 +13,8 @@ type AccountType = {
 	account: accountType
 	folders: folderType[]
 	items: itemType[]
+  transactions: transactionType[]
+  
 	handleSignUp: ({
 		email,
 		first_name,
@@ -167,7 +169,9 @@ type AccountType = {
 	}: {
 		id: number
 		folderId: number
-	}) => void
+	}) => void,
+  handleAddTransaction: ({ folder_id, prev_item, changed_item }: { folder_id: number; prev_item: itemType; changed_item: itemType }) => void,
+  getChangesByField: (folder_id: number, field: 'price' | 'amount',  timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' ) => { date: string; value: number }[],
 }
 
 const AccountContext = createContext<AccountType>({
@@ -199,6 +203,7 @@ const AccountContext = createContext<AccountType>({
 			totalPrice: true,
 		},
 	},
+  transactions: [],
 	handleSignUp: () => {},
 	handleSignIn: () => {},
 	handleLogout: () => {},
@@ -218,6 +223,8 @@ const AccountContext = createContext<AccountType>({
 	handleUpdateMember: () => {},
 	handleDeleteMember: () => {},
 	handleUpdateViewSettings: () => {},
+  handleAddTransaction: () => {},
+  getChangesByField: () => [],
 })
 
 export default function AccountProvider({ children }: PropsWithChildren) {
@@ -333,12 +340,31 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 					tag: 'test',
 					typeAmount: 'quantity',
 					amount: 4,
-					price: 1,
+					price: 2,
 				},
+        changes: ['amount', 'price'],
 				date: '2024-10-16T17:53:39.031257Z',
 			}],
 		},
 	])
+  
+
+  const handleChangesInTransactions = ({prev_item, changed_item}: {prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>, changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>}) => {
+
+    const changes: (keyof Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>)[] = [];
+
+    if (prev_item.name !== changed_item.name) changes.push('name')
+    if (prev_item.image_url !== changed_item.image_url) changes.push('image_url')
+    if (prev_item.note !== changed_item.note) changes.push('note')
+    if (prev_item.tag !== changed_item.tag) changes.push('tag')
+    if (prev_item.typeAmount !== changed_item.typeAmount) changes.push('typeAmount')
+    if (prev_item.price !== changed_item.price) changes.push('price')
+    if (prev_item.amount !== changed_item.amount) changes.push('amount')
+
+    return changes
+
+
+  }
 
 	const handleAddTransaction = ({
     folder_id,
@@ -350,11 +376,12 @@ export default function AccountProvider({ children }: PropsWithChildren) {
     changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
   }) => {
     const newTransaction = {
-      id: Date.now(), // Унікальний ідентифікатор транзакції
-      user_id: 1, // Тут можна вставити ID користувача (можливо, отриманий із контексту або з іншого джерела)
-      item_id: prev_item.id, // ID предмета
+      id: Date.now(), 
+      user_id: 1, 
+      item_id: prev_item.id, 
       prev_item,
       changed_item,
+      changes: handleChangesInTransactions({prev_item, changed_item}),
       date: new Date().toISOString(),
     };
 
@@ -380,8 +407,64 @@ export default function AccountProvider({ children }: PropsWithChildren) {
       }
     });
   };
-
-
+  const getChangesByField = (
+    folder_id: number,
+    field: 'price' | 'amount',
+    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' // Додано timeRange
+  ) => {
+    const folderTransactions = transactions.find(
+      (transaction) => transaction.folder_id === folder_id
+    );
+  
+    if (!folderTransactions) return [];
+  
+    // Отримання поточної дати
+    const now = new Date();
+  
+    // Визначення дати початку залежно від timeRange
+    const getStartDate = (range: string) => {
+      const startDate = new Date(now);
+      switch (range) {
+        case 'today':
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case '1_week':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case '2_weeks':
+          startDate.setDate(now.getDate() - 14);
+          break;
+        case '1_month':
+          startDate.setMonth(now.getMonth() - 1);
+          break;
+        case 'all':
+        default:
+          return null; // Якщо "all", фільтрація за часом не потрібна
+      }
+      return startDate;
+    };
+  
+    const startDate = getStartDate(timeRange);
+  
+    return folderTransactions.info
+      .filter((transaction) => {
+        // Фільтрація за полем
+        const includesField = transaction.changes.includes(field);
+  
+        // Фільтрація за часовим діапазоном
+        if (startDate) {
+          const transactionDate = new Date(transaction.date);
+          return includesField && transactionDate >= startDate;
+        }
+  
+        return includesField;
+      })
+      .map((transaction) => ({
+        date: transaction.date,
+        value: transaction.changed_item[field],
+      }));
+  };
+  
 
 
 	const handleUpdateViewSettings = (data: {
@@ -453,35 +536,44 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		type: string
 		options: string[]
 	}) => {
-		setFolders([
-			...folders,
-			{
-				created_at: new Date().toISOString(),
-				currency: currency,
-				type: type,
-				name: name,
-				options: options,
-				id: folders.length + 1,
-				members: [
-					{
-						id: 1,
-						email: account.email,
-						fullName: `${account.first_name}`,
-						roles: {
-							isView: false,
-							isAddItem: false,
-							isDeleteItem: false,
-							isEdit: false,
-							isCanInvite: false,
-							isAdmin: true,
-						},
-					},
-				],
-				totalPrice: 0,
-				totalQuantity: 0,
-				totalMembers: 1,
-			},
-		])
+		setFolders((prevFolders) => {
+      const newFolder = {
+        created_at: new Date().toISOString(),
+        currency,
+        type,
+        name,
+        options,
+        id: prevFolders.length + 1,
+        members: [
+          {
+            id: 1,
+            email: account.email,
+            fullName: `${account.first_name}`,
+            roles: {
+              isView: false,
+              isAddItem: false,
+              isDeleteItem: false,
+              isEdit: false,
+              isCanInvite: false,
+              isAdmin: true,
+            },
+          },
+        ],
+        totalPrice: 0,
+        totalQuantity: 0,
+        totalMembers: 1,
+      };
+
+      setTransactions((prevTransactions) => [
+        ...prevTransactions,
+        {
+          folder_id: newFolder.id,
+          info: [],
+        },
+      ]);
+
+      return [...prevFolders, newFolder];
+    });
 	}
 
 	const handleUpdateFolder = ({
@@ -803,6 +895,9 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				handleDeleteMember,
 				handleUpdateViewSettings,
 				viewSettings,
+        transactions,
+        handleAddTransaction,
+        getChangesByField
 			}}
 		>
 			{children}

@@ -12,6 +12,7 @@ import { useModal } from '../../../providers/ModalProvider'
 import { Colors } from '@/src/constants/Colors'
 // import ModalCreateDebt from '@/src/components/debts/ModalCreateDebt'
 import * as SystemUI from 'expo-system-ui'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 export default function TabsLayout() {
 	// const { isSignedIn} = useAuth()
@@ -55,6 +56,20 @@ export default function TabsLayout() {
 					}}
 				/>
 
+				<Tabs.Screen
+					name='analytics'
+					options={{
+						tabBarIcon: ({ focused }) => (
+							<View className='items-center w-20'>
+								
+                <MaterialCommunityIcons name="google-analytics" color={focused ? Colors.light.tabIconSelected : Colors.light.tabIconDefault}
+									size={focused ? 30 : 30} />
+
+								<Text className= {`${focused ? ' text-main_light text-lg' : 'text-gray text-sm'}   font-lexend_extralight`}>Analytics</Text>
+							</View>
+						),
+					}}
+				/>
 				<Tabs.Screen
 					name='profile'
 					options={{

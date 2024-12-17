@@ -66,6 +66,7 @@ export type transactionType = {
 		item_id: number
 		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
 		changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+    changes: (keyof itemType)[]
 		date: string
 	}[]
 }
