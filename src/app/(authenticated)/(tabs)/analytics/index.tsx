@@ -6,14 +6,19 @@ import { useAccount } from '@/src/providers/AccountProvider'
 import HeaderAnalytics from '@/src/components/analytics/SliderFolders'
 import AnalyticsChart from '@/src/components/analytics/AnalyticsChart'
 import HistoryContainer from '@/src/components/analytics/HistoryContainer'
+import TransactionCard from '@/src/components/analytics/TransactionCard'
+import { ScrollView } from 'react-native-gesture-handler'
 
 const AnalyticsScreen = () => {
 	const { transactions, folders } = useAccount()
 	const folders_id = transactions.map(transaction => transaction.folder_id)
 	const [activeIndex, setActiveIndex] = React.useState(folders_id[0])
+  const [transaction, setTransaction] = React.useState(transactions.find(transaction => transaction.folder_id === activeIndex))
+
+  if(!transaction) return <Text>Transaction not found</Text>
 
 	return (
-		<Container isPadding={false} container_style=''>
+		<Container isPadding={false} container_style='mx-'>
 			<Stack.Screen
 				options={{
 					headerShown: true,
@@ -25,7 +30,7 @@ const AnalyticsScreen = () => {
 					headerTintColor: '#fff',
 				}}
 			/>
-			{transactions.length === 0 ? (
+			{transaction.info.length === 0 ? (
 				<View className='flex-1 justify-center items-center px-2'>
 					<Text className='font-lexend_semibold text-[24px] text-white text-center'>
 						No transactions found
@@ -35,7 +40,7 @@ const AnalyticsScreen = () => {
 					</Text>
 				</View>
 			) : folders_id ? (
-				<View className='flex-1 mt-2'>
+				<ScrollView className='flex-1 mt-2'>
 					<HeaderAnalytics
 						activeIndex={activeIndex}
 						setActiveIndex={setActiveIndex}
@@ -44,10 +49,11 @@ const AnalyticsScreen = () => {
 
 					<AnalyticsChart folder_id={activeIndex} />
 
-					<View className='w-full'>
-						<HistoryContainer />
+					<View className='w-full mt-2'>
+						<HistoryContainer transaction={transaction} activeIndex={activeIndex}/>
+            
 					</View>
-				</View>
+				</ScrollView>
 			) : (
 				<View className='flex-1 justify-center items-center'>
 					<Text className='font-lexend_semibold text-[24px]'>

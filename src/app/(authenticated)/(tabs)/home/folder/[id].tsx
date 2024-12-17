@@ -40,31 +40,19 @@ export default function FolderScreen() {
   const folder = useAccount().folders.find(folder => folder.id === id)
   if (!folder) return <Text>Folder not found</Text>
   const items = useAccount().items.filter(item => item.folder_id === id)
-	// const { data, isLoading, ♠refetch } = useGetFoldersWithItems()
-  // const {data, setData} = useState<folder([])  
-
-	// if (isLoading) return <Loading />
-	// const folder = data?.find(folder => folder.id === id)
-	// const items: Tables<'items'>[] | [] = folder?.items || []
-  // console.log(items);
-
+	
 	const onRefresh = useCallback(async () => {
 		setRefreshing(true)
 		// await refetch()
 		setRefreshing(false)
 	}, [])
 
-	// if (!folder) return <Text>Folder not found</Text>
-  
-
-// Визначення типу для item
 
 
 const handleOpenViewSettings = () => {
   router.push('/(authenticated)/(tabs)/home/item/settings')
   // router.setParams({ id })
 }
-// Тип для viewSettings
 type ViewSettings = {
   sortBy: keyof itemType; 
   isAsc: boolean;

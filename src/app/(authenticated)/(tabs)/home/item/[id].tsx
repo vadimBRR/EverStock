@@ -79,29 +79,6 @@ export default function ItemScreen() {
 		</View>
 	}
 
-	// const { handleCreateItem: createItem } = useAccount()
-
-	// const handleCreateItem = async () => {
-	// 	console.log('create item')
-	// 	if (price && !parseFloat(price)) return
-	// 	console.log('bam1')
-	// 	if (quantity && !parseInt(quantity)) return
-	// 	console.log('bam2')
-	// 	setIsLoading(true)
-	// 	createItem({
-	// 		folder_id: item_id,
-	// 		name: itemName,
-	// 		image_url: images,
-	// 		price: parseFloat(price),
-	// 		quantity: parseInt(quantity),
-	// 		note,
-	// 		tag,
-	// 	})
-
-	// 	setIsLoading(false)
-	//   router.back()
-	// }
-
 	return (
 		<Container isPadding={false}>
 			<Stack.Screen

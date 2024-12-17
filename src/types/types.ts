@@ -60,13 +60,19 @@ export type accountType = {
 
 export type transactionType = {
 	folder_id: number
-	info: {
-    id:number
+	info: infoTransactionType[]
+}
+
+export type infoTransactionType = {
+  id:number
 		user_id: number
 		item_id: number
 		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
 		changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
     changes: (keyof itemType)[]
 		date: string
-	}[]
+    isCreated?: boolean
+    isEdited?:boolean
+    isDeleted?:boolean
+
 }

@@ -3,6 +3,7 @@ import {
 	accountType,
 	currencyType,
 	folderType,
+	infoTransactionType,
 	itemType,
 	transactionType,
 } from '../types/types'
@@ -13,8 +14,14 @@ type AccountType = {
 	account: accountType
 	folders: folderType[]
 	items: itemType[]
-  transactions: transactionType[]
-  
+	transactions: transactionType[]
+	transactionSettings: {
+		sortBy: string
+		isAsc: boolean
+		membersId: number[]
+		itemsId: number[]
+	}
+
 	handleSignUp: ({
 		email,
 		first_name,
@@ -169,9 +176,44 @@ type AccountType = {
 	}: {
 		id: number
 		folderId: number
-	}) => void,
-  handleAddTransaction: ({ folder_id, prev_item, changed_item }: { folder_id: number; prev_item: itemType; changed_item: itemType }) => void,
-  getChangesByField: (folder_id: number, field: 'price' | 'amount',  timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' ) => { date: string; value: number }[],
+	}) => void
+	handleAddTransaction: ({
+		folder_id,
+		prev_item,
+		changed_item,
+	}: {
+		folder_id: number
+		prev_item: itemType
+		changed_item: itemType
+	}) => void
+	getChangesByField: (
+		folder_id: number,
+		field: 'price' | 'amount',
+		timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all'
+	) => { date: string; value: number }[]
+	getUserFullName: ({
+		user_id,
+		activeIndex,
+	}: {
+		user_id: number
+		activeIndex: number
+	}) => string
+	getAction: (info: infoTransactionType) => string
+	handleUpdateTransactionSettings: ({
+		sortBy,
+		isAsc,
+		membersId,
+		itemsId,
+	}: {
+		sortBy: string
+		isAsc: boolean
+		membersId: number[]
+		itemsId: number[]
+	}) => void
+	handleFilterAddMemberId: (id: number) => void
+	deleteFilterMemberId: (id: number) => void
+	addFilterItemId: (id: number) => void
+	deleteFilterItemId: (id: number) => void
 }
 
 const AccountContext = createContext<AccountType>({
@@ -203,7 +245,7 @@ const AccountContext = createContext<AccountType>({
 			totalPrice: true,
 		},
 	},
-  transactions: [],
+	transactions: [],
 	handleSignUp: () => {},
 	handleSignIn: () => {},
 	handleLogout: () => {},
@@ -223,8 +265,21 @@ const AccountContext = createContext<AccountType>({
 	handleUpdateMember: () => {},
 	handleDeleteMember: () => {},
 	handleUpdateViewSettings: () => {},
-  handleAddTransaction: () => {},
-  getChangesByField: () => [],
+	handleAddTransaction: () => {},
+	getChangesByField: () => [],
+	getUserFullName: () => '',
+	getAction: () => '',
+	transactionSettings: {
+		sortBy: 'date',
+		isAsc: true,
+		membersId: [],
+		itemsId: [],
+	},
+	handleUpdateTransactionSettings: () => {},
+	handleFilterAddMemberId: () => {},
+	deleteFilterMemberId: () => {},
+	addFilterItemId: () => {},
+	deleteFilterItemId: () => {},
 })
 
 export default function AccountProvider({ children }: PropsWithChildren) {
@@ -315,153 +370,180 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		},
 	})
 
+	const [transactionSettings, setTransactionSettings] = useState<{
+		sortBy: string
+		isAsc: boolean
+		membersId: number[]
+		itemsId: number[]
+	}>({
+		sortBy: 'name',
+		isAsc: false,
+		membersId: [],
+		itemsId: [],
+	})
+
 	const [transactions, setTransactions] = useState<transactionType[]>([
 		{
 			folder_id: 0,
-			info: [{
-        id: 0,
-				user_id: 1,
-				item_id: 0,
-				prev_item: {
+			info: [
+				{
 					id: 0,
-					name: 'Item1',
-					image_url: [],
-					note: '',
-					tag: 'test',
-					typeAmount: 'quantity',
-					amount: 3,
-					price: 1,
+					user_id: 1,
+					item_id: 0,
+					prev_item: {
+						id: 0,
+						name: 'Item1',
+						image_url: [],
+						note: '',
+						tag: 'test',
+						typeAmount: 'quantity',
+						amount: 3,
+						price: 1,
+					},
+					changed_item: {
+						id: 0,
+						name: 'Item1',
+						image_url: [],
+						note: '',
+						tag: 'test',
+						typeAmount: 'quantity',
+						amount: 4,
+						price: 2,
+					},
+					changes: ['amount', 'price'],
+					isCreated: true,
+					date: '2024-10-16T17:53:39.031257Z',
 				},
-				changed_item: {
-					id: 0,
-					name: 'Item1',
-					image_url: [],
-					note: '',
-					tag: 'test',
-					typeAmount: 'quantity',
-					amount: 4,
-					price: 2,
-				},
-        changes: ['amount', 'price'],
-				date: '2024-10-16T17:53:39.031257Z',
-			}],
+			],
 		},
 	])
 
+	const handleChangesInTransactions = ({
+		prev_item,
+		changed_item,
+	}: {
+		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+		changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+	}) => {
+		const changes: (keyof Omit<
+			itemType,
+			'created_at' | 'folder_id' | 'user_id'
+		>)[] = []
 
-  const handleChangesInTransactions = ({prev_item, changed_item}: {prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>, changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>}) => {
+		if (prev_item.name !== changed_item.name) changes.push('name')
+		if (prev_item.image_url !== changed_item.image_url)
+			changes.push('image_url')
+		if (prev_item.note !== changed_item.note) changes.push('note')
+		if (prev_item.tag !== changed_item.tag) changes.push('tag')
+		if (prev_item.typeAmount !== changed_item.typeAmount)
+			changes.push('typeAmount')
+		if (prev_item.price !== changed_item.price) changes.push('price')
+		if (prev_item.amount !== changed_item.amount) changes.push('amount')
 
-    const changes: (keyof Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>)[] = [];
-
-    if (prev_item.name !== changed_item.name) changes.push('name')
-    if (prev_item.image_url !== changed_item.image_url) changes.push('image_url')
-    if (prev_item.note !== changed_item.note) changes.push('note')
-    if (prev_item.tag !== changed_item.tag) changes.push('tag')
-    if (prev_item.typeAmount !== changed_item.typeAmount) changes.push('typeAmount')
-    if (prev_item.price !== changed_item.price) changes.push('price')
-    if (prev_item.amount !== changed_item.amount) changes.push('amount')
-
-    return changes
-
-
-  }
+		return changes
+	}
 
 	const handleAddTransaction = ({
-    folder_id,
-    prev_item,
-    changed_item,
-  }: {
-    folder_id: number;
-    prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
-    changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
-  }) => {
-    const newTransaction = {
-      id: Date.now(), 
-      user_id: 1, 
-      item_id: prev_item.id, 
-      prev_item,
-      changed_item,
-      changes: handleChangesInTransactions({prev_item, changed_item}),
-      date: new Date().toISOString(),
-    };
+		folder_id,
+		prev_item,
+		changed_item,
+		isCreated = false,
+		isEdited = false,
+		isDeleted = false,
+	}: {
+		folder_id: number
+		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+		changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+		isCreated?: boolean
+		isEdited?: boolean
+		isDeleted?: boolean
+	}) => {
+		const newTransaction = {
+			id: Date.now(),
+			user_id: 1,
+			item_id: prev_item.id,
+			prev_item,
+			changed_item,
+			changes: handleChangesInTransactions({ prev_item, changed_item }),
+			date: new Date().toISOString(),
+			isCreated,
+			isEdited,
+			isDeleted,
+		}
 
-    setTransactions((prevTransactions) => {
-      const folderIndex = prevTransactions.findIndex(
-        (transaction) => transaction.folder_id === folder_id
-      );
+		setTransactions(prevTransactions => {
+			const folderIndex = prevTransactions.findIndex(
+				transaction => transaction.folder_id === folder_id
+			)
 
-      if (folderIndex !== -1) {
-        // Якщо папка існує, додаємо нову транзакцію до цієї папки
-        const updatedTransactions = [...prevTransactions];
-        updatedTransactions[folderIndex].info.push(newTransaction);
-        return updatedTransactions;
-      } else {
-        // Якщо папки немає, створюємо нову
-        return [
-          ...prevTransactions,
-          {
-            folder_id,
-            info: [newTransaction],
-          },
-        ];
-      }
-    });
-  };
-  const getChangesByField = (
-    folder_id: number,
-    field: 'price' | 'amount',
-    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' 
-  ) => {
-    const folderTransactions = transactions.find(
-      (transaction) => transaction.folder_id === folder_id
-    );
-  
-    if (!folderTransactions) return [];
-  
-    const now = new Date();
-  
-    const getStartDate = (range: string) => {
-      const startDate = new Date(now);
-      switch (range) {
-        case 'today':
-          startDate.setHours(0, 0, 0, 0);
-          break;
-        case '1_week':
-          startDate.setDate(now.getDate() - 7);
-          break;
-        case '2_weeks':
-          startDate.setDate(now.getDate() - 14);
-          break;
-        case '1_month':
-          startDate.setMonth(now.getMonth() - 1);
-          break;
-        case 'all':
-        default:
-          return null; 
-      }
-      return startDate;
-    };
-  
-    const startDate = getStartDate(timeRange);
-  
-    return folderTransactions.info
-      .filter((transaction) => {
-        const includesField = transaction.changes.includes(field);
-  
-        if (startDate) {
-          const transactionDate = new Date(transaction.date);
-          return includesField && transactionDate >= startDate;
-        }
-  
-        return includesField;
-      })
-      .map((transaction) => ({
-        date: transaction.date,
-        value: transaction.changed_item[field],
-      }));
-  };
-  
+			if (folderIndex !== -1) {
+				const updatedTransactions = [...prevTransactions]
+				updatedTransactions[folderIndex].info.push(newTransaction)
+				return updatedTransactions
+			} else {
+				return [
+					...prevTransactions,
+					{
+						folder_id,
+						info: [newTransaction],
+					},
+				]
+			}
+		})
+	}
+	const getChangesByField = (
+		folder_id: number,
+		field: 'price' | 'amount',
+		timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all'
+	) => {
+		const folderTransactions = transactions.find(
+			transaction => transaction.folder_id === folder_id
+		)
 
+		if (!folderTransactions) return []
+
+		const now = new Date()
+
+		const getStartDate = (range: string) => {
+			const startDate = new Date(now)
+			switch (range) {
+				case 'today':
+					startDate.setHours(0, 0, 0, 0)
+					break
+				case '1_week':
+					startDate.setDate(now.getDate() - 7)
+					break
+				case '2_weeks':
+					startDate.setDate(now.getDate() - 14)
+					break
+				case '1_month':
+					startDate.setMonth(now.getMonth() - 1)
+					break
+				case 'all':
+				default:
+					return null
+			}
+			return startDate
+		}
+
+		const startDate = getStartDate(timeRange)
+
+		return folderTransactions.info
+			.filter(transaction => {
+				const includesField = transaction.changes.includes(field)
+
+				if (startDate) {
+					const transactionDate = new Date(transaction.date)
+					return includesField && transactionDate >= startDate
+				}
+
+				return includesField
+			})
+			.map(transaction => ({
+				date: transaction.date,
+				value: transaction.changed_item[field],
+			}))
+	}
 
 	const handleUpdateViewSettings = (data: {
 		sortBy: string
@@ -475,6 +557,43 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		}
 	}) => {
 		setSettings(data)
+	}
+
+	const handleUpdateTransactionSettings = (data: {
+		sortBy: string
+		isAsc: boolean
+		membersId: number[]
+		itemsId: number[]
+	}) => {
+		setTransactionSettings(data)
+	}
+
+	const handleFilterAddMemberId = (id: number) => {
+		setTransactionSettings(prevSettings => ({
+			...prevSettings,
+			membersId: [...prevSettings.membersId, id],
+		}))
+	}
+
+	const deleteFilterMemberId = (id: number) => {
+		setTransactionSettings(prevSettings => ({
+			...prevSettings,
+			membersId: prevSettings.membersId.filter(memberId => memberId !== id),
+		}))
+	}
+
+	const addFilterItemId = (id: number) => {
+		setTransactionSettings(prevSettings => ({
+			...prevSettings,
+			itemsId: [...prevSettings.itemsId, id],
+		}))
+	}
+
+	const deleteFilterItemId = (id: number) => {
+		setTransactionSettings(prevSettings => ({
+			...prevSettings,
+			itemsId: prevSettings.itemsId.filter(itemId => itemId !== id),
+		}))
 	}
 
 	const handleSignUp = (data: {
@@ -532,44 +651,44 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		type: string
 		options: string[]
 	}) => {
-		setFolders((prevFolders) => {
-      const newFolder = {
-        created_at: new Date().toISOString(),
-        currency,
-        type,
-        name,
-        options,
-        id: prevFolders.length + 1,
-        members: [
-          {
-            id: 1,
-            email: account.email,
-            fullName: `${account.first_name}`,
-            roles: {
-              isView: false,
-              isAddItem: false,
-              isDeleteItem: false,
-              isEdit: false,
-              isCanInvite: false,
-              isAdmin: true,
-            },
-          },
-        ],
-        totalPrice: 0,
-        totalQuantity: 0,
-        totalMembers: 1,
-      };
+		setFolders(prevFolders => {
+			const newFolder = {
+				created_at: new Date().toISOString(),
+				currency,
+				type,
+				name,
+				options,
+				id: prevFolders.length + 1,
+				members: [
+					{
+						id: 1,
+						email: account.email,
+						fullName: `${account.first_name}`,
+						roles: {
+							isView: false,
+							isAddItem: false,
+							isDeleteItem: false,
+							isEdit: false,
+							isCanInvite: false,
+							isAdmin: true,
+						},
+					},
+				],
+				totalPrice: 0,
+				totalQuantity: 0,
+				totalMembers: 1,
+			}
 
-      setTransactions((prevTransactions) => [
-        ...prevTransactions,
-        {
-          folder_id: newFolder.id,
-          info: [],
-        },
-      ]);
+			setTransactions(prevTransactions => [
+				...prevTransactions,
+				{
+					folder_id: newFolder.id,
+					info: [],
+				},
+			])
 
-      return [...prevFolders, newFolder];
-    });
+			return [...prevFolders, newFolder]
+		})
 	}
 
 	const handleUpdateFolder = ({
@@ -602,31 +721,32 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		note?: string
 		tag?: string
 	}) => {
-		setItems((prevItems) => {
-      const newItem = {
-        name: data.name,
-        folder_id: data.folder_id,
-        image_url: data.image_url,
-        price: data.price || 0,
-        typeAmount: data.typeAmount || 'quantity',
-        amount: data.quantity || 0,
-        note: data.note || '',
-        tag: data.tag || '',
-        created_at: new Date().toISOString(),
-        id: prevItems.length + 1,
-        user_id: '1',
-      };
+		setItems(prevItems => {
+			const newItem = {
+				name: data.name,
+				folder_id: data.folder_id,
+				image_url: data.image_url,
+				price: data.price || 0,
+				typeAmount: data.typeAmount || 'quantity',
+				amount: data.quantity || 0,
+				note: data.note || '',
+				tag: data.tag || '',
+				created_at: new Date().toISOString(),
+				id: prevItems.length + 1,
+				user_id: '1',
+			}
 
-      handleAddTransaction({
-        folder_id: data.folder_id,
-        prev_item: { ...newItem, amount: 0 }, 
-        changed_item: newItem, 
-      });
+			handleAddTransaction({
+				folder_id: data.folder_id,
+				prev_item: { ...newItem, amount: 0 },
+				changed_item: newItem,
+				isCreated: true,
+			})
 
-      const updatedItems = [...prevItems, newItem];
-      handleRecalculateFolder(updatedItems);
-      return updatedItems;
-    });
+			const updatedItems = [...prevItems, newItem]
+			handleRecalculateFolder(updatedItems)
+			return updatedItems
+		})
 	}
 
 	const handleChangeQuantity = ({
@@ -728,51 +848,53 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		note: string
 		tag: string
 	}) => {
-		setItems((prevItems) => {
-      const updatedItems = prevItems.map((item) => {
-        if (item.id === id) {
-          const updatedItem = {
-            ...item,
-            name,
-            typeAmount,
-            image_url,
-            price,
-            amount: quantity,
-            note,
-            tag,
-          };
+		setItems(prevItems => {
+			const updatedItems = prevItems.map(item => {
+				if (item.id === id) {
+					const updatedItem = {
+						...item,
+						name,
+						typeAmount,
+						image_url,
+						price,
+						amount: quantity,
+						note,
+						tag,
+					}
 
-          handleAddTransaction({
-            folder_id: item.folder_id!,
-            prev_item: item,
-            changed_item: updatedItem,
-          });
+					handleAddTransaction({
+						folder_id: item.folder_id!,
+						prev_item: item,
+						changed_item: updatedItem,
+						isEdited: true,
+					})
 
-          return updatedItem;
-        }
-        return item;
-      });
+					return updatedItem
+				}
+				return item
+			})
 
-      handleRecalculateFolder(updatedItems);
-      return updatedItems;
-    });
+			handleRecalculateFolder(updatedItems)
+			return updatedItems
+		})
 	}
 	const handleDeleteItem = ({ id }: { id: number }) => {
-		setItems((prevItems) => {
-      const itemToDelete = prevItems.find((item) => item.id === id);
-      const updatedItems = prevItems.filter((item) => item.id !== id);
+		setItems(prevItems => {
+			const itemToDelete = prevItems.find(item => item.id === id)
+			const updatedItems = prevItems.filter(item => item.id !== id)
 
-      if (itemToDelete) {
-        handleAddTransaction({
-          folder_id: itemToDelete.folder_id!,
-          prev_item: itemToDelete,
-          changed_item: { ...itemToDelete, amount: 0 },
-        });
-      }
+			if (itemToDelete) {
+				handleAddTransaction({
+					folder_id: itemToDelete.folder_id!,
+					prev_item: itemToDelete,
+					changed_item: { ...itemToDelete, amount: 0 },
+					isDeleted: true,
+				})
+			}
 
-      handleRecalculateFolder(updatedItems);
-      return updatedItems;
-    });
+			handleRecalculateFolder(updatedItems)
+			return updatedItems
+		})
 	}
 
 	const handleChangeItemFolder = ({
@@ -864,6 +986,29 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		})
 	}
 
+	const getUserFullName = ({
+		user_id,
+		activeIndex,
+	}: {
+		user_id: number
+		activeIndex: number
+	}) => {
+		const fullName =
+			folders
+				.find(folder => folder.id === activeIndex)
+				?.members.find(member => member.id === user_id)?.fullName || ''
+
+		return fullName
+	}
+
+	const getAction = (info: infoTransactionType) => {
+		if (info.isCreated) return 'created item ' + info.changed_item.name
+		if (info.isEdited) return 'edited item ' + info.changed_item.name
+		if (info.isDeleted) return 'deleted item ' + info.prev_item.name
+
+		return ''
+	}
+
 	return (
 		<AccountContext.Provider
 			value={{
@@ -891,9 +1036,17 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				handleDeleteMember,
 				handleUpdateViewSettings,
 				viewSettings,
-        transactions,
-        handleAddTransaction,
-        getChangesByField
+				transactions,
+				handleAddTransaction,
+				getChangesByField,
+				getUserFullName,
+				getAction,
+				transactionSettings,
+				handleUpdateTransactionSettings,
+				handleFilterAddMemberId,
+				deleteFilterMemberId,
+				addFilterItemId,
+				deleteFilterItemId,
 			}}
 		>
 			{children}
