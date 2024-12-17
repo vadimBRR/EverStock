@@ -154,7 +154,7 @@ const HistoryScreen = () => {
 					scrollEnabled={false}
 					contentContainerStyle={{ gap: 10 }}
 					renderItem={({ item, index }) => (
-						<TouchableOpacity onPress={() => {}}>
+						<TouchableOpacity onPress={() => {router.push(`/(authenticated)/(tabs)/analytics/history/details?id=${item.id}&folder_id=${id}`)}}>
 							<TransactionCard
 								key={index}
 								fullName={getUserFullName({
