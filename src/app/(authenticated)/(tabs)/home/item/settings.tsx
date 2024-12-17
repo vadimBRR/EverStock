@@ -6,7 +6,7 @@ import CustomButton from '@/src/components/CustomButton'
 import { useAccount } from '@/src/providers/AccountProvider'
 import RectangleCheckBox from '@/src/components/RectangleCheckBox'
 
-const ViewSettingsScreen = () => {
+const ViewSettingsTransactionScreen = () => {
 	// const { id: idString } = useLocalSearchParams()
 	// const id = parseFloat(
 	// 	idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
@@ -114,4 +114,4 @@ const ViewSettingsScreen = () => {
 	)
 }
 
-export default ViewSettingsScreen
+export default ViewSettingsTransactionScreen

@@ -20,6 +20,11 @@ type AccountType = {
 		isAsc: boolean
 		membersId: number[]
 		itemsId: number[]
+    actions: {
+      isCreated: boolean
+      isEdited: boolean
+      isDeleted: boolean
+    }
 	}
 
 	handleSignUp: ({
@@ -204,11 +209,17 @@ type AccountType = {
 		isAsc,
 		membersId,
 		itemsId,
+    actions
 	}: {
 		sortBy: string
 		isAsc: boolean
 		membersId: number[]
 		itemsId: number[]
+    actions: {
+      isCreated: boolean
+      isEdited: boolean
+      isDeleted: boolean
+    }
 	}) => void
 	handleFilterAddMemberId: (id: number) => void
 	deleteFilterMemberId: (id: number) => void
@@ -270,10 +281,15 @@ const AccountContext = createContext<AccountType>({
 	getUserFullName: () => '',
 	getAction: () => '',
 	transactionSettings: {
-		sortBy: 'date',
+		sortBy: 'last updated',
 		isAsc: true,
 		membersId: [],
 		itemsId: [],
+    actions: {
+      isCreated: true,
+      isEdited: true,
+      isDeleted: true
+    }
 	},
 	handleUpdateTransactionSettings: () => {},
 	handleFilterAddMemberId: () => {},
@@ -375,11 +391,21 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		isAsc: boolean
 		membersId: number[]
 		itemsId: number[]
+    actions: {
+      isCreated: boolean
+      isEdited: boolean
+      isDeleted: boolean
+    }
 	}>({
-		sortBy: 'name',
+		sortBy: 'last updated',
 		isAsc: false,
 		membersId: [],
 		itemsId: [],
+    actions: {
+      isCreated: true,
+      isEdited: true,
+      isDeleted: true
+    }
 	})
 
 	const [transactions, setTransactions] = useState<transactionType[]>([
@@ -564,6 +590,11 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		isAsc: boolean
 		membersId: number[]
 		itemsId: number[]
+    actions: {
+      isCreated: boolean
+      isEdited: boolean
+      isDeleted: boolean
+    }
 	}) => {
 		setTransactionSettings(data)
 	}

@@ -14,7 +14,7 @@ export default function SearchBar({
 }: Props) {
 	return (
 		<View
-			className={`${containerStyle} w-4/5 bg-black-800 border border-black/10  flex-row items-center  rounded-[14px] h-[45px] px-2`}
+			className={` w-4/5 bg-black-800 border border-black/10  flex-row items-center  rounded-[14px] h-[45px] px-2 ${containerStyle}`}
 		>
 			<Image source={require('@/src/assets/icons/search.png')} />
 			<TextInput

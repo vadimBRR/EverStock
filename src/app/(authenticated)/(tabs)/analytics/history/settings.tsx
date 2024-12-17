@@ -6,20 +6,21 @@ import CustomButton from '@/src/components/CustomButton'
 import { useAccount } from '@/src/providers/AccountProvider'
 import RectangleCheckBox from '@/src/components/RectangleCheckBox'
 
-const ViewSettingsTransactionScreen = () => {
+const ViewSettingsScreen = () => {
 	// const { id: idString } = useLocalSearchParams()
 	// const id = parseFloat(
 	// 	idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	// )
 	const router = useRouter()
-	const { viewSettings, handleUpdateViewSettings } = useAccount()
-	const [settings, setSettings] = React.useState(viewSettings)
-  const sortOptions = ['name', 'quantity', 'price', 'total price', 'last updated']
-  const [viewOptions, setViewOptions] = React.useState(settings.viewOptions)
-  const viewOptionsList: (keyof typeof settings.viewOptions)[] = ['name', 'image', 'quantity', 'price', 'totalPrice']
+	const { transactionSettings, handleUpdateTransactionSettings, addFilterItemId, handleFilterAddMemberId, deleteFilterMemberId, deleteFilterItemId } = useAccount()
+	const [settings, setSettings] = React.useState(transactionSettings)
+  const sortOptions = ['item name', 'member name', 'last updated']
+  const actions: ["Created", "Edited", "Deleted"]=["Created", "Edited", "Deleted"]
+  // const [viewOptions, setViewOptions] = React.useState(settings.)
+  // const viewOptionsList: (keyof typeof settings.viewOptions)[] = ['name', 'image', 'quantity', 'price', 'totalPrice']
 	const applySettings = () => {
-    
-		handleUpdateViewSettings(settings)
+    handleUpdateTransactionSettings(settings)
+		// handleUpdateViewSettings(settings)
 		router.back()
 		// router.setParams({ id })
 	}
@@ -30,23 +31,34 @@ const ViewSettingsTransactionScreen = () => {
     } else {
       setSettings({ ...settings, sortBy, isAsc: true })
     }
-
   }
 
-  const handleToggleViewOption = (option: keyof typeof viewOptions) => {
-    setViewOptions({
-      ...viewOptions,
-      [option]: !viewOptions[option]
-
-    })
+  const handleToggleActions = (action: 'Created' | 'Edited' | 'Deleted') => {
+    const formattedAction: 'isCreated' | 'isEdited' | 'isDeleted' = action === 'Created' ? 'isCreated' : action === 'Edited' ? 'isEdited' : 'isDeleted'
+    console.log(settings.actions[formattedAction]);
     setSettings({
       ...settings,
-      viewOptions: {
-        ...settings.viewOptions,
-        [option]: !settings.viewOptions[option]
+      actions: {
+        ...settings.actions,
+        [formattedAction]: !settings.actions[formattedAction]
       }
     })
   }
+
+  // const handleToggleViewOption = (option: keyof typeof viewOptions) => {
+  //   setViewOptions({
+  //     ...viewOptions,
+  //     [option]: !viewOptions[option]
+
+  //   })
+  //   setSettings({
+  //     ...settings,
+  //     viewOptions: {
+  //       ...settings.viewOptions,
+  //       [option]: !settings.viewOptions[option]
+  //     }
+  //   })
+  // }
 	return (
 		<Container isPadding={false}>
 			<Stack.Screen
@@ -76,8 +88,23 @@ const ViewSettingsTransactionScreen = () => {
               imageStyle='w-4 h-4 aspect-square'
             />
           ))}
+          <Text className='font-lexend_light text-white text-2xl mb-2'>To show:</Text>
 
-          <Text className='font-lexend_light text-white text-2xl my-2'>View Options:</Text>
+          {actions.map((option, index) => (
+            <RectangleCheckBox
+              key={index}
+              text={option.charAt(0).toUpperCase() + option.slice(1)}
+              isActive={settings.actions[`is${option}`]}
+              onClick={() => handleToggleActions(option)}
+              isIcon={settings.sortBy === option}
+              icon={settings.sortBy === option && settings.isAsc ? require('@/src/assets/icons/arrow_up.png') : require('@/src/assets/icons/arrow_down.png')}
+              styleContainer='items-start m-0 p-2 px-4 mb-2'
+              customBg='dark_gray'
+              imageStyle='w-4 h-4 aspect-square'
+            />
+          ))}
+
+          {/* <Text className='font-lexend_light text-white text-2xl my-2'>View Options:</Text>
           {viewOptionsList.map((option, index) => (
             <RectangleCheckBox
               key={index}
@@ -89,7 +116,7 @@ const ViewSettingsTransactionScreen = () => {
               customBg='dark_gray'
               imageStyle='w-4 h-4 aspect-square'
             />
-          ))}
+          ))} */}
         </View>
 				{/* <RectangleCheckBox
 					text='Name'
@@ -114,4 +141,4 @@ const ViewSettingsTransactionScreen = () => {
 	)
 }
 
-export default ViewSettingsTransactionScreen
+export default ViewSettingsScreen
