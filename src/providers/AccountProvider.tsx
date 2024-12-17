@@ -347,7 +347,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			}],
 		},
 	])
-  
+
 
   const handleChangesInTransactions = ({prev_item, changed_item}: {prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>, changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>}) => {
 
@@ -410,7 +410,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
   const getChangesByField = (
     folder_id: number,
     field: 'price' | 'amount',
-    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' // Додано timeRange
+    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' 
   ) => {
     const folderTransactions = transactions.find(
       (transaction) => transaction.folder_id === folder_id
@@ -418,10 +418,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
   
     if (!folderTransactions) return [];
   
-    // Отримання поточної дати
     const now = new Date();
   
-    // Визначення дати початку залежно від timeRange
     const getStartDate = (range: string) => {
       const startDate = new Date(now);
       switch (range) {
@@ -439,7 +437,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
           break;
         case 'all':
         default:
-          return null; // Якщо "all", фільтрація за часом не потрібна
+          return null; 
       }
       return startDate;
     };
@@ -448,10 +446,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
   
     return folderTransactions.info
       .filter((transaction) => {
-        // Фільтрація за полем
         const includesField = transaction.changes.includes(field);
   
-        // Фільтрація за часовим діапазоном
         if (startDate) {
           const transactionDate = new Date(transaction.date);
           return includesField && transactionDate >= startDate;
@@ -623,8 +619,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 
       handleAddTransaction({
         folder_id: data.folder_id,
-        prev_item: { ...newItem, amount: 0 }, // Перед додаванням
-        changed_item: newItem, // Після додавання
+        prev_item: { ...newItem, amount: 0 }, 
+        changed_item: newItem, 
       });
 
       const updatedItems = [...prevItems, newItem];

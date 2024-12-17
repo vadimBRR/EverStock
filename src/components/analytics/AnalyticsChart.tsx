@@ -65,7 +65,7 @@ const AnalyticsChart = ({ folder_id }: { folder_id: number }) => {
 	}
 
 	return (
-		<GestureHandlerRootView className='flex-1 bg-gray-900'>
+		<GestureHandlerRootView className='bg-bg'>
 			<View className='mx-4 mt-2'>
 				<Text className='text-lg text-white font-lexend_semibold'>
 					Inventory Changes
