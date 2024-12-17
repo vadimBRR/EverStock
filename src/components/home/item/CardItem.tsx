@@ -13,9 +13,11 @@ dayjs.extend(relativeTime)
 type Props = {
 	item: itemType
 	currencyName: string
+  isPressable?:boolean
+  containerStyle?:string
 }
 
-export default function CardItem({ item, currencyName }: Props) {
+export default function CardItem({ item, currencyName,  isPressable=true, containerStyle}: Props) {
 	const router = useRouter()
 	const currencySymbol = currency.find(c => c.name === currencyName)?.value
 
@@ -23,8 +25,9 @@ export default function CardItem({ item, currencyName }: Props) {
 
 	return (
 		<TouchableOpacity
-			className='w-full bg-black-700 rounded-[17px] py-2 px-3 mb-2 border border-black/10'
+			className={`w-full bg-black-700 rounded-[17px] py-2 px-3 mb-2 border border-black/10 ${containerStyle}`}
 			onPress={() =>
+        isPressable &&
 				router.push(('/(authenticated)/(tabs)/home/item/' + item.id) as Href)
 			}
 		>

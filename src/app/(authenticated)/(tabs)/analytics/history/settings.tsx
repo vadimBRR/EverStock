@@ -7,6 +7,8 @@ import { useAccount } from '@/src/providers/AccountProvider'
 import RectangleCheckBox from '@/src/components/RectangleCheckBox'
 import CardMember from '@/src/components/home/member/CardMember'
 import { Feather, Ionicons } from '@expo/vector-icons'
+import CardItem from '@/src/components/home/item/CardItem'
+import { ScrollView } from 'react-native-gesture-handler'
 
 const ViewSettingsScreen = () => {
 	const { id: idString } = useLocalSearchParams()
@@ -37,6 +39,7 @@ const ViewSettingsScreen = () => {
 		.folders.find(folder => folder.id === id)
 		?.members.filter(member => settings.membersId.includes(member.id))
 
+  const items = useAccount().items.filter(item => settings.itemsId.includes(item.id))
 	// const [viewOptions, setViewOptions] = React.useState(settings.)
 	// const viewOptionsList: (keyof typeof settings.viewOptions)[] = ['name', 'image', 'quantity', 'price', 'totalPrice']
 	const applySettings = () => {
@@ -48,7 +51,7 @@ const ViewSettingsScreen = () => {
 		router.push(`/analytics/history/choose_member?id=${id}`)
 	}
 	const handleOpenChooseItem = () => {
-		router.push(`/analytics/history/settings/choose_item?id=${id}`)
+		router.push(`/analytics/history/choose_item?id=${id}`)
 	}
 
 	const handleToggleSortBy = (sortBy: string) => {
@@ -76,6 +79,24 @@ const ViewSettingsScreen = () => {
 		})
 	}
 
+  const defaultSettings = {
+    sortBy: 'last updated',
+    isAsc: true,
+    membersId: [],
+    itemsId: [],
+    actions: {
+      isCreated: true,
+      isEdited: true,
+      isDeleted: true
+    }
+  }
+
+  const handleReset = () => {
+    setSettings(defaultSettings)
+  }
+
+  const isDefaultSettings = settings.actions.isCreated && settings.actions.isEdited && settings.actions.isDeleted && settings.sortBy === 'last updated' && settings.isAsc && settings.membersId.length === 0 && settings.itemsId.length === 0 
+
 	return (
 		<Container isPadding={false}>
 			<Stack.Screen
@@ -86,10 +107,25 @@ const ViewSettingsScreen = () => {
 						backgroundColor: '#242121',
 					},
 					headerTintColor: '#fff',
+          headerRight: () => {
+            return (
+              <View className='flex-row gap-5'>
+                {JSON.stringify(settings) !== JSON.stringify(defaultSettings)  && (
+                  <TouchableOpacity onPress={handleReset} className=''>
+                    <Ionicons name='refresh' size={24} color='white' />
+                  </TouchableOpacity>
+                )}
+
+              <TouchableOpacity onPress={applySettings} className=''>
+                <Ionicons name='checkmark' size={24} color='white' />
+              </TouchableOpacity>
+              </View>
+            )
+          }
 				}}
 			/>
 			<View className='mx-4 mt-2 flex-1 justify-between'>
-				<View>
+				<ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
 					<Text className='font-lexend_light text-white text-2xl mb-2'>
 						Sort By:
 					</Text>
@@ -151,10 +187,10 @@ const ViewSettingsScreen = () => {
 									Member
 								</Text>
 								<View className='flex-row gap-2'>
-									<TouchableOpacity className='bg-dark_gray p-1 px-3 rounded-lg'>
+									<TouchableOpacity className='bg-dark_gray p-1 px-3 rounded-lg' onPress={() => {setSettings({...settings, membersId: []})}}>
 										<Text className='text-white text-lg'>Reset</Text>
 									</TouchableOpacity>
-									<TouchableOpacity className='bg-dark_gray p-2 rounded-lg flex items-center justify-center'>
+									<TouchableOpacity className='bg-dark_gray p-2 rounded-lg flex items-center justify-center' onPress={handleOpenChooseMember}>
 										<Feather name='plus' size={20} color='white' />
 									</TouchableOpacity>
 								</View>
@@ -180,14 +216,63 @@ const ViewSettingsScreen = () => {
 							))}
 						</View>
 					)}
-				</View>
 
-				<CustomButton
+
+					{settings.itemsId.length === 0 ? (
+						<TouchableOpacity
+							onPress={handleOpenChooseItem}
+							className='bg-dark_gray w-full p-2 rounded-lg mb-2 '
+						>
+							<Text className='font-lexend_semibold text-white text-center text-xl '>
+								Choose Item
+							</Text>
+						</TouchableOpacity>
+					) : (
+						<View>
+							<View className='flex-row justify-between items-end mx-2 mb-2 mt-2'>
+								<Text className='font-lexend_regular text-white text-xl mb-1'>
+									Item
+								</Text>
+								<View className='flex-row gap-2'>
+									<TouchableOpacity className='bg-dark_gray p-1 px-3 rounded-lg'>
+										<Text className='text-white text-lg'>Reset</Text>
+									</TouchableOpacity>
+									<TouchableOpacity className='bg-dark_gray p-2 rounded-lg flex items-center justify-center' onPress={handleOpenChooseItem}>
+										<Feather name='plus' size={20} color='white' />
+									</TouchableOpacity>
+								</View>
+							</View>
+							{items?.map((item, index) => (
+								<View key={index} className='relative z-0'>
+                  <CardItem item={item} currencyName={item.typeAmount} isPressable={false}/>
+									{/* <CardMember
+										data={user}
+										folderId={id}
+										isPressable={false}
+										isIcons={false}
+									/> */}
+									<TouchableOpacity className='absolute  top-[17px]  right-5 p-2 border border-white rounded-xl'>
+										<Ionicons
+											name='trash-outline'
+											size={20}
+											color='white'
+											className=' '
+											onPress={() => deleteFilterItemId(item.id)}
+										/>
+
+									</TouchableOpacity>
+								</View>
+							))}
+						</View>
+					)}
+				</ScrollView>
+
+				{/* <CustomButton
 					text='Apply'
 					onClick={applySettings}
 					styleContainer={`my-4 mx-0`}
 					// disabled={!folderName}
-				/>
+				/> */}
 			</View>
 		</Container>
 	)

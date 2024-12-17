@@ -87,7 +87,7 @@ const ChooseItemScreen = ({}) => {
 						keyExtractor={member => member.id.toString()}
 						renderItem={({ item }) => (
 							<TouchableOpacity onPress={() => toggleItems(item.id)}>
-                <CardItem item={item} currencyName={item.typeAmount} />
+                <CardItem item={item} currencyName={item.typeAmount} isPressable={false} containerStyle={`${choseItems.includes(item.id) ? 'border-1 border-white  bg-dark_gray' : ''} `}/>
 								{/* <CardMember
 									data={item}
 									folderId={id}
