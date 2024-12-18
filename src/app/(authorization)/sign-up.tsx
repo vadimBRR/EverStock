@@ -6,6 +6,7 @@ import CustomInput from '../../components/CustomInput'
 import { useRouter } from 'expo-router'
 import { useAccount } from '@/src/providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
+import VerificationCodeInput from '@/src/components/auth/VerificationCodeInput'
 
 export default function SignUpScreen() {
 	const [password, setPassword] = useState('')
@@ -132,12 +133,7 @@ export default function SignUpScreen() {
 							We have sent the verification code to your email address
 						</Text>
 						<View className='w-full mt-[30px] '>
-							<CustomInput
-								label='Code'
-								name={code}
-								setName={setCode}
-								containerStyle=''
-							/>
+            <VerificationCodeInput />
 
 							<CustomButton
 								text='Verify Email'

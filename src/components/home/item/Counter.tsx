@@ -30,7 +30,7 @@ const Counter = ({
 					<TextInput
 						label={'.'}
 						value={quantity + ''}
-						onChangeText={text => setQuantity(parseInt(text))}
+						onChangeText={text => setQuantity(parseInt(text) || 0)}
 						className={`bg-black-600 h-[54px] text-center`}
 						underlineStyle={{
 							display: 'none',

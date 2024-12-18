@@ -72,6 +72,8 @@ export default function CreateItem() {
 			<ScrollView
 				className='mx-4 mt-3 flex-1'
 				contentContainerStyle={{ justifyContent: 'space-between' }}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
 			>
 				<View className='flex flex-col flex-1 justify-around'>
 					<View className=''>
@@ -124,7 +126,7 @@ export default function CreateItem() {
 
 						<View className='bg-black-600 h-[54px] border border-dark_gray rounded-2xl justify-center  mb-2'>
 							<Text className='font-lexend_regular text-lg text-gray mx-3'>
-								Total price: {+price * +quantity}
+								Total price: {(+price * +quantity).toFixed(2)}
 							</Text>
 						</View>
 						<View className='bg-black-600  border border-dark_gray rounded-2xl   mb-2'>

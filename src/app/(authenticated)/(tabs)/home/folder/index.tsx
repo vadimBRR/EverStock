@@ -1,4 +1,4 @@
-import { View, FlatList, RefreshControl } from 'react-native'
+import { View, FlatList, RefreshControl, Text } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import Container from '@/src/components/Container'
 import { Stack, useRouter } from 'expo-router'
@@ -55,25 +55,29 @@ export default function HomeScreen() {
 					/>
 					<AddButton handlePressAdd={openCreateFolder} />
 				</View>
-				{isLoading ? (
-					<Loading />
-				) : (
-					<FlatList
-						className='mx-3 '
-						data={
-							search
-								? data.filter(folder =>
-										folder.name.toLowerCase().includes(search.toLowerCase())
-								  )
-								: data
-						}
-						keyExtractor={folder => folder.id.toString()}
-						renderItem={({ item }) => <CardFolder data={item} />}
-						refreshControl={
-							<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-						}
-					/>
-				)}
+				{data.length ? (
+          <FlatList
+          className='mx-3 '
+          data={
+            search
+              ? data.filter(folder =>
+                  folder.name.toLowerCase().includes(search.toLowerCase())
+                )
+              : data
+          }
+          keyExtractor={folder => folder.id.toString()}
+          renderItem={({ item }) => <CardFolder data={item} />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+        ) : (
+          <View className='flex-1 justify-center items-center px-2'>
+            <Text className='font-lexend_semibold text-[24px] text-white text-center'>No folders found :(</Text>
+            <Text className='font-lexend_light text-[16px] text-white text-center'>Click on the + button at the top to add folders</Text>
+          </View>
+
+        )}
 			</View>
 		</Container>
 	)

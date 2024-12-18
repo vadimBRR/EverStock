@@ -6,7 +6,13 @@ export default function AuthLayout() {
   SystemUI.setBackgroundColorAsync("#1C1A1A")
   return (
 
-    <Stack screenOptions={{headerShown: false}}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animationDuration: 500,
+            contentStyle: { backgroundColor: '#1C1A1A' },
+          }}
+        >
       {/* <Stack.Screen name="index" /> */}
       <Stack.Screen name="sign-in" />
       <Stack.Screen name="completed_auth" />

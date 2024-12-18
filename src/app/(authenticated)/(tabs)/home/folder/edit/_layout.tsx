@@ -1,7 +1,10 @@
 import React from 'react'
 import { Stack } from 'expo-router'
+import * as SystemUI from 'expo-system-ui'
 
-const AnalyticsLayout = () => {
+export default function EditLayout() {
+	SystemUI.setBackgroundColorAsync('#1C1A1A')
+
 	return (
 		<Stack
 			screenOptions={{
@@ -12,5 +15,3 @@ const AnalyticsLayout = () => {
 		></Stack>
 	)
 }
-
-export default AnalyticsLayout

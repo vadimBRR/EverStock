@@ -14,7 +14,7 @@ import { useModal } from '@/src/providers/ModalProvider'
 import TotalInfo from '@/src/components/home/item/TotalInfo'
 import ModalCreate from '@/src/components/ModalCreate'
 import CardItem from '@/src/components/home/item/CardItem'
-import {  itemType } from '@/src/types/types'
+import { itemType } from '@/src/types/types'
 import { useAccount } from '@/src/providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
 import { Ionicons } from '@expo/vector-icons'
@@ -35,7 +35,7 @@ export default function FolderScreen() {
 	const { handleOpenCreate } = useModal()
 
 	if (!id) {
-		<View className='flex-1 justify-center items-center'>
+		;<View className='flex-1 justify-center items-center'>
 			<Text className='font-bold'>Failed to fetch</Text>
 		</View>
 	}
@@ -53,7 +53,6 @@ export default function FolderScreen() {
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/home/item/settings')
 	}
-	
 
 	const sortedItems = useMemo(() => {
 		const sortBy = viewSettings.sortBy
@@ -119,23 +118,34 @@ export default function FolderScreen() {
 				totalQuantity={folder.totalQuantity}
 				currencyFolder={folder.currency.name}
 			/>
+			{sortedItems.length === 0 ? (
+				<View className='flex-1 justify-center items-center px-2'>
+					<Text className='font-lexend_semibold text-[24px] text-white text-center'>
+          No items found :(
+					</Text>
+					<Text className='font-lexend_light text-[16px] text-white text-center'>
+          Click on the + button at the top to add item
+					</Text>
+				</View>
+			) : (
+				<FlatList
+					className='mx-3 '
+					data={sortedItems}
+					keyExtractor={item => item.id.toString()}
+					extraData={items}
+					renderItem={({ item }) => (
+						<CardItem
+							item={item}
+							currencyName={folder.currency.name || 'USD'}
+							key={item.id}
+						/>
+					)}
+					refreshControl={
+						<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+					}
+				/>
+			)}
 
-			<FlatList
-				className='mx-3 '
-				data={sortedItems}
-				keyExtractor={item => item.id.toString()}
-				extraData={items}
-				renderItem={({ item }) => (
-					<CardItem
-						item={item}
-						currencyName={folder.currency.name || 'USD'}
-						key={item.id}
-					/>
-				)}
-				refreshControl={
-					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-				}
-			/>
 			<ModalCreate folderId={folder.id} />
 		</Container>
 	)

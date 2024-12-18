@@ -321,52 +321,53 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 	})
 
 	const [folders, setFolders] = useState<folderType[]>([
-		{
-			created_at: '2024-10-16T17:53:39.031257Z',
-			currency: {
-				name: 'USD',
-				value: '$',
-				countries: ['United States', 'Ecuador', 'El Salvador', 'Zimbabwe'],
-			},
-			id: 0,
-			name: 'Warehouse1',
-			options: [],
-			type: 'Simple',
-			members: [
-				{
-					id: 1,
-					email: account.email,
-					fullName: `${account.first_name}`,
-					roles: {
-						isView: true,
-						isAddItem: true,
-						isDeleteItem: true,
-						isEdit: true,
-						isCanInvite: true,
-						isAdmin: true,
-					},
-				},
-			],
-			totalPrice: 1,
-			totalQuantity: 3,
-			totalMembers: 1,
-		},
+		// {
+		// 	created_at: '2024-10-16T17:53:39.031257Z',
+		// 	lastUpdated: '2024-10-16T17:53:39.031257Z',
+		// 	currency: {
+		// 		name: 'USD',
+		// 		value: '$',
+		// 		countries: ['United States', 'Ecuador', 'El Salvador', 'Zimbabwe'],
+		// 	},
+		// 	id: 0,
+		// 	name: 'Warehouse1',
+		// 	options: [],
+		// 	type: 'Simple',
+		// 	members: [
+		// 		{
+		// 			id: 1,
+		// 			email: account.email,
+		// 			fullName: `${account.first_name}`,
+		// 			roles: {
+		// 				isView: true,
+		// 				isAddItem: true,
+		// 				isDeleteItem: true,
+		// 				isEdit: true,
+		// 				isCanInvite: true,
+		// 				isAdmin: true,
+		// 			},
+		// 		},
+		// 	],
+		// 	totalPrice: 1,
+		// 	totalQuantity: 3,
+		// 	totalMembers: 1,
+		// },
 	])
 
 	const [items, setItems] = useState<itemType[]>([
-		{
-			created_at: '2024-10-16T17:53:39.031257Z',
-			folder_id: 0,
-			id: 0,
-			image_url: [],
-			name: 'Item1',
-			note: '',
-			price: 1,
-			tag: 'test',
-			typeAmount: 'quantity',
-			amount: 3,
-			user_id: '1',
-		},
+		// {
+		// 	created_at: '2024-10-16T17:53:39.031257Z',
+		// 	folder_id: 0,
+		// 	id: 0,
+		// 	image_url: [],
+		// 	name: 'Item1',
+		// 	note: '',
+		// 	price: 1,
+		// 	tag: 'test',
+		// 	typeAmount: 'quantity',
+		// 	amount: 3,
+		// 	user_id: '1',
+		// },
 	])
 
 	const [viewSettings, setSettings] = useState<{
@@ -416,41 +417,41 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 	})
 
 	const [transactions, setTransactions] = useState<transactionType[]>([
-		{
-			folder_id: 0,
-			info: [
-				{
-					id: 0,
-					user_id: 1,
-					item_id: 0,
-					prev_item: {
-						id: 0,
-						name: 'Item1',
-						image_url: [],
-						note: '',
-						tag: 'test',
-						typeAmount: 'quantity',
-						amount: 3,
-						price: 1,
-					},
-					changed_item: {
-						id: 0,
-						name: 'Item1',
-						image_url: [],
-						note: '',
-						tag: 'test',
-						typeAmount: 'quantity',
-						amount: 4,
-						price: 2,
-					},
-					changes: ['amount', 'price'],
-					isCreated: true,
-					date: '2024-10-16T17:53:39.031257Z',
-				},
-			],
-      amount_changes: [],
-      price_changes: [],
-		},
+		// {
+		// 	folder_id: 0,
+		// 	info: [
+		// 		{
+		// 			id: 0,
+		// 			user_id: 1,
+		// 			item_id: 0,
+		// 			prev_item: {
+		// 				id: 0,
+		// 				name: 'Item1',
+		// 				image_url: [],
+		// 				note: '',
+		// 				tag: 'test',
+		// 				typeAmount: 'quantity',
+		// 				amount: 3,
+		// 				price: 1,
+		// 			},
+		// 			changed_item: {
+		// 				id: 0,
+		// 				name: 'Item1',
+		// 				image_url: [],
+		// 				note: '',
+		// 				tag: 'test',
+		// 				typeAmount: 'quantity',
+		// 				amount: 4,
+		// 				price: 2,
+		// 			},
+		// 			changes: ['amount', 'price'],
+		// 			isCreated: true,
+		// 			date: '2024-10-16T17:53:39.031257Z',
+		// 		},
+		// 	],
+		// 	amount_changes: [],
+		// 	price_changes: [],
+		// },
 	])
 
 	const handleChangesInTransactions = ({
@@ -477,148 +478,145 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 
 		return changes
 	}
-  const handleAddTransaction = ({
-    folder_id,
-    prev_item,
-    changed_item,
-    isCreated = false,
-    isEdited = false,
-    isDeleted = false,
-    isReverted = false,
-  }: {
-    folder_id: number;
-    prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
-    changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
-    isCreated?: boolean;
-    isEdited?: boolean;
-    isDeleted?: boolean;
-    isReverted?: boolean;
-  }) => {
-    const newTransaction = {
-      id: Date.now(),
-      user_id: 1,
-      item_id: prev_item.id,
-      prev_item,
-      changed_item,
-      changes: handleChangesInTransactions({ prev_item, changed_item }),
-      date: new Date().toISOString(),
-      isCreated,
-      isEdited,
-      isDeleted,
-      isReverted,
-    };
-  
-    setTransactions(prevTransactions => {
-      const folderIndex = prevTransactions.findIndex(
-        transaction => transaction.folder_id === folder_id
-      );
-  
-      const amountChange = (changed_item.amount || 0) - (prev_item.amount || 0);
-      const priceChange = (changed_item.price || 0) - (prev_item.price || 0);
+	const handleAddTransaction = ({
+		folder_id,
+		prev_item,
+		changed_item,
+		isCreated = false,
+		isEdited = false,
+		isDeleted = false,
+		isReverted = false,
+	}: {
+		folder_id: number
+		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+		changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+		isCreated?: boolean
+		isEdited?: boolean
+		isDeleted?: boolean
+		isReverted?: boolean
+	}) => {
+		const newTransaction = {
+			id: Date.now(),
+			user_id: 1,
+			item_id: prev_item.id,
+			prev_item,
+			changed_item,
+			changes: handleChangesInTransactions({ prev_item, changed_item }),
+			date: new Date().toISOString(),
+			isCreated,
+			isEdited,
+			isDeleted,
+			isReverted,
+		}
 
-      console.log(changed_item.amount, prev_item.amount);
-      console.log(changed_item.price, prev_item.price);
-  
-      if (folderIndex !== -1) {
-        const updatedTransactions = [...prevTransactions];
-        const folder = updatedTransactions[folderIndex];
-  
-        const lastAmount =
-          folder.amount_changes.length > 0
-            ? folder.amount_changes[folder.amount_changes.length - 1].value
-            : 0;
-  
-        folder.amount_changes.push({
-          date: new Date().toISOString(),
-          value: lastAmount + amountChange,
-        });
-  
-        const lastPrice =
-          folder.price_changes.length > 0
-            ? folder.price_changes[folder.price_changes.length - 1].value
-            : 0;
-  
-        folder.price_changes.push({
-          date: new Date().toISOString(),
-          value: lastPrice + priceChange,
-        });
-  
-        folder.info.push(newTransaction);
-        return updatedTransactions;
-      } else {
-        return [
-          ...prevTransactions,
-          {
-            folder_id,
-            info: [newTransaction],
-            amount_changes: [
-              {
-                date: new Date().toISOString(),
-                value: changed_item.amount || 0,
-              },
-            ],
-            price_changes: [
-              {
-                date: new Date().toISOString(),
-                value: changed_item.price || 0,
-              },
-            ],
-          },
-        ];
-      }
-    });
-  };
-  const getChangesByField = (
-    folder_id: number,
-    field: 'price' | 'amount',
-    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all'
-  ) => {
-    const folderTransactions = transactions.find(
-      transaction => transaction.folder_id === folder_id
-    );
-  
-    if (!folderTransactions) return [];
-  
-    const now = new Date();
-  
-    const getStartDate = (range: string) => {
-      const startDate = new Date(now);
-      switch (range) {
-        case 'today':
-          startDate.setHours(0, 0, 0, 0);
-          break;
-        case '1_week':
-          startDate.setDate(now.getDate() - 7);
-          break;
-        case '2_weeks':
-          startDate.setDate(now.getDate() - 14);
-          break;
-        case '1_month':
-          startDate.setMonth(now.getMonth() - 1);
-          break;
-        case 'all':
-        default:
-          return null;
-      }
-      return startDate;
-    };
-  
-    const startDate = getStartDate(timeRange);
-  
-    const changes =
-      field === 'amount'
-        ? folderTransactions.amount_changes
-        : folderTransactions.price_changes;
-  
-    return changes.filter(change => {
-      if (startDate) {
-        const changeDate = new Date(change.date);
-        return changeDate >= startDate;
-      }
-      return true;
-    });
-  };
-  
+		setTransactions(prevTransactions => {
+			const folderIndex = prevTransactions.findIndex(
+				transaction => transaction.folder_id === folder_id
+			)
+
+			const amountChange = (changed_item.amount || 0) - (prev_item.amount || 0)
+			const priceChange = (changed_item.price || 0) - (prev_item.price || 0)
+
+
+			if (folderIndex !== -1) {
+				const updatedTransactions = [...prevTransactions]
+				const folder = updatedTransactions[folderIndex]
+
+				const lastAmount =
+					folder.amount_changes.length > 0
+						? folder.amount_changes[folder.amount_changes.length - 1].value
+						: 0
+
+				folder.amount_changes.push({
+					date: new Date().toISOString(),
+					value: lastAmount + amountChange,
+				})
+
+				const lastPrice =
+					folder.price_changes.length > 0
+						? folder.price_changes[folder.price_changes.length - 1].value
+						: 0
+
+				folder.price_changes.push({
+					date: new Date().toISOString(),
+					value: lastPrice + priceChange,
+				})
+
+				folder.info.push(newTransaction)
+				return updatedTransactions
+			} else {
+				return [
+					...prevTransactions,
+					{
+						folder_id,
+						info: [newTransaction],
+						amount_changes: [
+							{
+								date: new Date().toISOString(),
+								value: changed_item.amount || 0,
+							},
+						],
+						price_changes: [
+							{
+								date: new Date().toISOString(),
+								value: changed_item.price || 0,
+							},
+						],
+					},
+				]
+			}
+		})
+	}
+	const getChangesByField = (
+		folder_id: number,
+		field: 'price' | 'amount',
+		timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all'
+	) => {
+		const folderTransactions = transactions.find(
+			transaction => transaction.folder_id === folder_id
+		)
+
+		if (!folderTransactions) return []
+
+		const now = new Date()
+
+		const getStartDate = (range: string) => {
+			const startDate = new Date(now)
+			switch (range) {
+				case 'today':
+					startDate.setHours(0, 0, 0, 0)
+					break
+				case '1_week':
+					startDate.setDate(now.getDate() - 7)
+					break
+				case '2_weeks':
+					startDate.setDate(now.getDate() - 14)
+					break
+				case '1_month':
+					startDate.setMonth(now.getMonth() - 1)
+					break
+				case 'all':
+				default:
+					return null
+			}
+			return startDate
+		}
+
+		const startDate = getStartDate(timeRange)
+
+		const changes =
+			field === 'amount'
+				? folderTransactions.amount_changes
+				: folderTransactions.price_changes
+
+		return changes.filter(change => {
+			if (startDate) {
+				const changeDate = new Date(change.date)
+				return changeDate >= startDate
+			}
+			return true
+		})
+	}
 
 	const handleUpdateViewSettings = (data: {
 		sortBy: string
@@ -693,6 +691,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			prevFolders.map(folder => {
 				return {
 					...folder,
+					lastUpdated: new Date().toISOString(),
 					totalPrice: itemsToUse
 						.filter(item => item.folder_id === folder.id)
 						.reduce((acc, item) => acc + item.price, 0),
@@ -725,9 +724,11 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		type: string
 		options: string[]
 	}) => {
+		console.log(currency)
 		setFolders(prevFolders => {
 			const newFolder = {
 				created_at: new Date().toISOString(),
+				lastUpdated: new Date().toISOString(),
 				currency,
 				type,
 				name,
@@ -758,8 +759,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				{
 					folder_id: newFolder.id,
 					info: [],
-          amount_changes: [],
-          price_changes: [],
+					amount_changes: [],
+					price_changes: [],
 				},
 			])
 
@@ -782,7 +783,16 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 	}) => {
 		setFolders(
 			folders.map(folder =>
-				folder.id === id ? { ...folder, name, currency, type, options } : folder
+				folder.id === id
+					? {
+							...folder,
+							name,
+							currency,
+							type,
+							options,
+							lastUpdated: new Date().toISOString(),
+					  }
+					: folder
 			)
 		)
 	}
@@ -841,8 +851,12 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		setFolders(
 			folders.map(folder =>
 				folder.id === item_id
-					? { ...folder, totalQuantity: folder.totalQuantity + quantity }
-					: { ...folder }
+					? {
+							...folder,
+							totalQuantity: folder.totalQuantity + quantity,
+							lastUpdated: new Date().toISOString(),
+					  }
+					: { ...folder, lastUpdated: new Date().toISOString() }
 			)
 		)
 		handleRecalculateFolder()
@@ -889,6 +903,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				folder.id === folderId
 					? {
 							...folder,
+							lastUpdated: new Date().toISOString(),
+							totalMembers: folder.totalMembers + 1,
 							members: [
 								...(folder.members || []),
 								{
@@ -942,8 +958,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 					if (isReverted) {
 						handleAddTransaction({
 							folder_id: item.folder_id!,
-							prev_item: updatedItem,
-							changed_item: item,
+							prev_item: item,
+							changed_item: updatedItem,
 							isReverted: true,
 						})
 					} else {
@@ -1038,6 +1054,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				folder.id === folderId
 					? {
 							...folder,
+							lastUpdated: new Date().toISOString(),
 							members: folder.members.map(member =>
 								member.id === id ? { ...member, email, roles } : member
 							),
@@ -1065,6 +1082,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				folder.id === folderId
 					? {
 							...folder,
+							lastUpdated: new Date().toISOString(),
+							totalMembers: folder.totalMembers - 1,
 							members: folder.members.filter(member => member.id !== id),
 					  }
 					: folder
@@ -1095,6 +1114,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 
 		return ''
 	}
+
+  console.log("rerender");
 
 	return (
 		<AccountContext.Provider

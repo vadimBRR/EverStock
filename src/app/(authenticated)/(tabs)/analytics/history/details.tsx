@@ -71,7 +71,7 @@ const HistoryDetailed = () => {
       isReverted: true
 		})
 
-		router.push(`/(authenticated)/(tabs)/home/folder/${folder_id}`)
+		router.back()
 	}
 	return (
 		<Container isPadding={false} container_style='mx-2 pt-2'>

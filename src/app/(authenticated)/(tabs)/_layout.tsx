@@ -6,6 +6,8 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { Colors } from '@/src/constants/Colors'
 import * as SystemUI from 'expo-system-ui'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { enableScreens } from 'react-native-screens';
+
 
 export default function TabsLayout() {
 	// const { isSignedIn} = useAuth()
@@ -26,10 +28,14 @@ export default function TabsLayout() {
 		segments.includes('choose_item') ||
 		segments.includes('history')
 
+  console.log(hide);
 	return (
 		<Container isPadding={false}>
+      
 			<Tabs
+        
 				screenOptions={{
+          
 					headerShown: false,
 					tabBarShowLabel: false,
 					tabBarStyle: {
@@ -40,6 +46,7 @@ export default function TabsLayout() {
 						paddingTop: 10,
 						borderColor: '#272424',
 					},
+          
 				}}
 			>
 				<Tabs.Screen

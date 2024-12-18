@@ -15,18 +15,20 @@ const HeaderAnalytics = ({
 }: Props) => {
 	const { folders } = useAccount()
 	if (!folders_id) return null
+  const folder = folders.find(folder => folder.id === activeIndex)
+
 	return (
 		<View className='flex flex-col w-full '>
 			<FlatList
 				data={folders_id}
 				horizontal
 				showsHorizontalScrollIndicator={false}
-				contentContainerStyle={{ gap: 10 }}
-        style={{marginBottom: 15, marginLeft: 10, marginRight: 10}}
+				contentContainerStyle={{ gap: 5 }}
+				style={{ marginBottom: 15, marginLeft: 10, marginRight: 10 }}
 				renderItem={({ item, index }) => (
 					<TouchableOpacity
 						onPress={() => setActiveIndex(item)}
-						className={`rounded-full border  ${
+						className={`rounded-2xl border  ${
 							activeIndex === item ? 'bg-main_light' : 'border-white'
 						} mr-1 p-2 px-4`}
 					>
@@ -36,7 +38,12 @@ const HeaderAnalytics = ({
 					</TouchableOpacity>
 				)}
 			/>
-      <TotalInfo currencyFolder={folders[activeIndex].currency.name} totalQuantity={folders[activeIndex].totalQuantity} totalPrice={folders[activeIndex].totalPrice} totalMembers={folders[activeIndex].totalMembers}/>
+			<TotalInfo
+				currencyFolder={folder?.currency? folder.currency.name : 'USD'}
+				totalQuantity={folder?.totalQuantity || 0}
+				totalPrice={folder?.totalPrice|| 0}
+				totalMembers={folder?.totalMembers|| 0}
+			/>
 		</View>
 	)
 }

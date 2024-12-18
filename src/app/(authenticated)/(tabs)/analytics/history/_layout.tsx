@@ -7,6 +7,7 @@ const HistoryLayout = () => {
 			screenOptions={{
 				headerShown: false,
 				contentStyle: { backgroundColor: '#1C1A1A' },
+				animationDuration: 500,
 			}}
 		></Stack>
 	)

@@ -91,6 +91,8 @@ export default function ItemScreen() {
 			/>
 			<ScrollView
 				className='mx-4 mt-3 flex-1'
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
 				contentContainerStyle={{ justifyContent: 'space-between' }}
 			>
 				<View className='flex flex-col flex-1'>
@@ -150,7 +152,7 @@ export default function ItemScreen() {
 
 						<View className='bg-black-600 h-[54px] border border-dark_gray rounded-2xl justify-center  mb-3'>
 							<Text className='font-lexend_regular text-lg text-gray mx-3'>
-								Total price: {+price * +amount}
+								Total price: {(+price * +amount).toFixed(2)}
 							</Text>
 						</View>
 						<View className='bg-black-600  border border-dark_gray rounded-2xl   mb-2'>

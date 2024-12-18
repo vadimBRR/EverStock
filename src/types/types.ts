@@ -6,6 +6,7 @@ export type currencyType = {
 
 export type folderType = {
 	created_at: string
+  lastUpdated: string
 	currency: currencyType
 	id: number
 	name: string

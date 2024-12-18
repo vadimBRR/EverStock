@@ -19,6 +19,10 @@ const HistoryContainer = ({
   const handleOpenDetailedView = () => {
 		router.push(`/(authenticated)/(tabs)/analytics/history?activeIndex=${activeIndex}`)
 	}
+
+  const handleOpenTransaction = () => {
+
+  }
 	return (
 		<View className=' bg-black-600 rounded-[17px] py-3 mb-2 border border-black/10 mx-2 mt-4'>
 			<View className='flex flex-row items-center justify-between px-2 mb-2'>
@@ -33,7 +37,7 @@ const HistoryContainer = ({
 							Export
 						</Text>
 					</TouchableOpacity>
-					<TouchableOpacity className='bg-main_light rounded-[17px] py-2 px-3 '>
+					<TouchableOpacity className='bg-main_light rounded-[17px] py-2 px-3 ' onPress={handleOpenDetailedView}>
 						<Text className='font-lexend_semibold text-[14px] text-white'>
 							Detailed View
 						</Text>
@@ -46,7 +50,11 @@ const HistoryContainer = ({
         scrollEnabled={false}
         contentContainerStyle={{ gap: 10 }}
         renderItem={({ item, index }) => (
-          <TouchableOpacity onPress={() => handleOpenDetailedView()}>
+          <TouchableOpacity onPress={() => {
+            router.push(
+              `/(authenticated)/(tabs)/analytics/history/details?id=${item.id}&folder_id=${activeIndex}`
+            )
+          }}>
             <TransactionCard
               key={index}
               fullName={getUserFullName({ user_id: item.user_id, activeIndex })}

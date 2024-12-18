@@ -13,9 +13,8 @@ import * as SystemUI from 'expo-system-ui'
 
 export default function RootScreen() {
 	const router = useRouter()
-	const { isAuthenticated, handleIsAuthenticated } = useAccount()
+	const { isAuthenticated } = useAccount()
 
-	handleIsAuthenticated()
 	useEffect(() => {
 		NavigationBar.setBackgroundColorAsync('#242121')
 		SystemUI.setBackgroundColorAsync('#1C1A1A')
@@ -39,11 +38,7 @@ export default function RootScreen() {
 						<Text className='font-lexend_semibold text-[32px] text-center text-white'>
 							Organize Your Inventory Fast
 						</Text>
-						<Text className='text-white text-xl'>
-							{isAuthenticated
-								? 'You are authenticated'
-								: 'You are not authenticated'}
-						</Text>
+						
 						<Text className='font-lexend_regular text-gray text-[14px] text-center mt-[19] mb-8'>
 							Keep all your stock organized in one place. Whether managing large
 							or small inventories, track it effortlessly with easy-to-use tools

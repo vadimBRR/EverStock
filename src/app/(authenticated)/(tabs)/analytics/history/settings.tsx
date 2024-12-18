@@ -53,6 +53,8 @@ const ViewSettingsScreen = () => {
 		router.push(`/analytics/history/choose_item?id=${id}`)
 	}
 
+
+
 	const handleToggleSortBy = (sortBy: string) => {
 		if (settings.sortBy === sortBy) {
 			setSettings({ ...settings, isAsc: !settings.isAsc })

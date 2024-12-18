@@ -20,7 +20,7 @@ const InitialLayout = () => {
 	useEffect(() => {
 		NavigationBar.setBackgroundColorAsync('#123456')
 		NavigationBar.setButtonStyleAsync('dark')
-		NavigationBar.setVisibilityAsync('hidden')
+		// NavigationBar.setVisibilityAsync('hidden')
 
 		const loadFonts = async () => {
 			await Font.loadAsync({
@@ -60,6 +60,9 @@ const InitialLayout = () => {
 			screenOptions={{
 				headerShown: false,
 				contentStyle: { backgroundColor: '#1C1A1A' },
+        animation: 'fade_from_bottom',
+        animationDuration: 500
+        
 			}}
 		>
 			<Stack.Screen name='index' />
