@@ -52,7 +52,7 @@ const ChooseItemScreen = ({}) => {
 			<Stack.Screen
 				options={{
 					headerShown: true,
-					title: 'Choose member',
+					title: 'Choose item',
 					headerStyle: {
 						backgroundColor: '#242121',
 					},

@@ -27,7 +27,7 @@ export default function VerificationCodeInput() {
   };
 
   return (
-    <View className="flex-row justify-center mt-5">
+    <View className="flex-row justify-center items-center mt-5">
       {code.map((value, index) => (
         <TextInput
           key={index}
@@ -42,7 +42,7 @@ export default function VerificationCodeInput() {
             fontSize: 24,
             color: 'white',
           }}
-          className="w-12 h-12 border border-gray rounded-md bg-gray-800 mx-2"
+          className="w-12 h-12 border border-gray rounded-md bg-gray-800 mx-2 font-lexend_semibold "
         />
       ))}
     </View>

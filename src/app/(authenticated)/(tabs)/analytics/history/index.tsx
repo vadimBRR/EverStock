@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Container from '@/src/components/Container'
 import { useAccount } from '@/src/providers/AccountProvider'
@@ -118,6 +118,7 @@ const HistoryScreen = () => {
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/analytics/history/settings?id=' + id)
 	}
+
 	return (
 		<Container isPadding={false} container_style='mx-2 pt-2'>
 			<Stack.Screen

@@ -41,7 +41,7 @@ export default function SignInScreen() {
 	return (
 		<Container>
 			<View className='flex-1 items-center justify-end mb-10 mx-[33px]'>
-				<View className='flex items-center justify-center mb-[70px]'>
+				<View className='flex items-center justify-center mb-[20px]'>
 					<Text className='font-lexend_semibold text-[32px] text-white'>
 						Welcome!
 					</Text>
@@ -81,11 +81,11 @@ export default function SignInScreen() {
 				<TouchableOpacity
 					onPress={() => router.push('/(authorization)/reset_password')}
 				>
-					<Text className='font-lexend_regular text-[16px] mb-[15px] text-white'>
+					<Text className='font-lexend_regular text-[16px] mb-[20px] text-white'>
 						Forgot password?
 					</Text>
 				</TouchableOpacity>
-				<View className='w-full bg-black/20 h-[1px] ' />
+				<View className='w-full bg-dark_gray/20 h-[1px] ' />
 				<TouchableOpacity
 					className='bg-black-400  w-full my-[30px] rounded-xl overflow-hidden border border-dark_gray'
 					onPress={() => signInWithOAuth('oauth_google')}

@@ -189,7 +189,9 @@ const AnalyticsChart = ({ folder_id }: { folder_id: number }) => {
 												}}
 											>
 												<Text className='text-white font-bold'>
-													{selectedPoint.value}
+													{filter === 'amount'
+                            ? selectedPoint.value
+                            : selectedPoint.value.toFixed(2)}
 												</Text>
 											</View>
 										)}

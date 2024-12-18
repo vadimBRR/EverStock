@@ -8,6 +8,7 @@ import {
 	transactionType,
 } from '../types/types'
 import { currency } from '../constants'
+import { parse } from '@babel/core'
 
 type AccountType = {
 	isAuthenticated: boolean
@@ -517,7 +518,6 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			const amountChange = (changed_item.amount || 0) - (prev_item.amount || 0)
 			const priceChange = (changed_item.price || 0) - (prev_item.price || 0)
 
-
 			if (folderIndex !== -1) {
 				const updatedTransactions = [...prevTransactions]
 				const folder = updatedTransactions[folderIndex]
@@ -692,9 +692,12 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				return {
 					...folder,
 					lastUpdated: new Date().toISOString(),
-					totalPrice: itemsToUse
-						.filter(item => item.folder_id === folder.id)
-						.reduce((acc, item) => acc + item.price, 0),
+					totalPrice: parseFloat(
+						itemsToUse
+							.filter(item => item.folder_id === folder.id)
+							.reduce((acc, item) => acc + item.price * item.amount, 0)
+							.toFixed(2)
+					),
 					totalQuantity: itemsToUse
 						.filter(item => item.folder_id === folder.id)
 						.reduce((acc, item) => acc + item.amount, 0),
@@ -1115,7 +1118,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		return ''
 	}
 
-  console.log("rerender");
+	console.log('rerender')
 
 	return (
 		<AccountContext.Provider

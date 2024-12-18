@@ -11,41 +11,7 @@ export default function ResetPassword() {
 	const [password, setPassword] = useState('')
 	const [code, setCode] = useState('')
 	const [successfulCreation, setSuccessfulCreation] = useState(false)
-	// const { signIn, setActive } = useSignIn()
 	const router = useRouter()
-
-	// const onRequestReset = async () => {
-	// 	try {
-	// 		await signIn!.create({
-	// 			strategy: 'reset_password_email_code',
-	// 			identifier: emailAddress,
-	// 		})
-	// 		setSuccessfulCreation(true)
-	// 	} catch (err: any) {
-	// 		const messages = err.errors
-	// 			.map((error: any) => error.longMessage)
-	// 			.join(', ')
-	// 		alert(messages)
-	// 	}
-	// }
-
-	// // Reset the password with the code and the new password
-	// const onReset = async () => {
-	// 	try {
-	// 		const result = await signIn!.attemptFirstFactor({
-	// 			strategy: 'reset_password_email_code',
-	// 			code,
-	// 			password,
-	// 		})
-
-	// 		alert('Password reset successfully')
-
-	// 		// Set the user session active, which will log in the user automatically
-	// 		await setActive!({ session: result.createdSessionId })
-	// 	} catch (err: any) {
-	// 		alert(err.errors[0].message)
-	// 	}
-	// }
 
 	return (
 		<Container>
@@ -53,15 +19,15 @@ export default function ResetPassword() {
 				<Ionicons
 					name='arrow-back'
 					size={24}
-					color='black'
+					color='white'
 					onPress={() => router.back()}
 				/>
 			</View>
 			<View className='flex-1 items-center justify-center mb-10 mx-[33px]'>
 				<View className='flex items-center justify-center mb-[70px]'>
-					<Text className='font-lexend_semibold text-[32px]'>Welcome!</Text>
+					<Text className='font-lexend_semibold text-[32px] text-white'>Welcome!</Text>
 					<View className='flex flex-row'>
-						<Text className='font-lexend_semibold text-[32px]'>to </Text>
+						<Text className='font-lexend_semibold text-[32px] text-white'>to </Text>
 						<Text className='font-lexend_semibold text-[32px] text-main_light'>
 							EverStock
 						</Text>
