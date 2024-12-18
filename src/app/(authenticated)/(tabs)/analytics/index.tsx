@@ -26,13 +26,8 @@ const AnalyticsScreen = () => {
 
     setTransaction(transactions.find(transaction => transaction.folder_id === activeIndex))
 
-    console.log(transactions);
 
   }, [transactions])
-
-  useEffect(() => {
-    console.log("rerender");
-  }, [])
 
 	return (
 		<Container isPadding={false} container_style='mx-'>
