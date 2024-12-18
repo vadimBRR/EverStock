@@ -448,6 +448,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 					date: '2024-10-16T17:53:39.031257Z',
 				},
 			],
+      amount_changes: [],
+      price_changes: [],
 		},
 	])
 
@@ -475,111 +477,148 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 
 		return changes
 	}
+  const handleAddTransaction = ({
+    folder_id,
+    prev_item,
+    changed_item,
+    isCreated = false,
+    isEdited = false,
+    isDeleted = false,
+    isReverted = false,
+  }: {
+    folder_id: number;
+    prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
+    changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>;
+    isCreated?: boolean;
+    isEdited?: boolean;
+    isDeleted?: boolean;
+    isReverted?: boolean;
+  }) => {
+    const newTransaction = {
+      id: Date.now(),
+      user_id: 1,
+      item_id: prev_item.id,
+      prev_item,
+      changed_item,
+      changes: handleChangesInTransactions({ prev_item, changed_item }),
+      date: new Date().toISOString(),
+      isCreated,
+      isEdited,
+      isDeleted,
+      isReverted,
+    };
+  
+    setTransactions(prevTransactions => {
+      const folderIndex = prevTransactions.findIndex(
+        transaction => transaction.folder_id === folder_id
+      );
+  
+      const amountChange = (changed_item.amount || 0) - (prev_item.amount || 0);
+      const priceChange = (changed_item.price || 0) - (prev_item.price || 0);
 
-	const handleAddTransaction = ({
-		folder_id,
-		prev_item,
-		changed_item,
-		isCreated = false,
-		isEdited = false,
-		isDeleted = false,
-		isReverted = false,
-	}: {
-		folder_id: number
-		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
-		changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
-		isCreated?: boolean
-		isEdited?: boolean
-		isDeleted?: boolean
-		isReverted?: boolean
-	}) => {
-		const newTransaction = {
-			id: Date.now(),
-			user_id: 1,
-			item_id: prev_item.id,
-			prev_item,
-			changed_item,
-			changes: handleChangesInTransactions({ prev_item, changed_item }),
-			date: new Date().toISOString(),
-			isCreated,
-			isEdited,
-			isDeleted,
-			isReverted,
-		}
-
-		setTransactions(prevTransactions => {
-			const folderIndex = prevTransactions.findIndex(
-				transaction => transaction.folder_id === folder_id
-			)
-
-			if (folderIndex !== -1) {
-				const updatedTransactions = [...prevTransactions]
-				updatedTransactions[folderIndex].info.push(newTransaction)
-				return updatedTransactions
-			} else {
-				return [
-					...prevTransactions,
-					{
-						folder_id,
-						info: [newTransaction],
-					},
-				]
-			}
-		})
-	}
-	const getChangesByField = (
-		folder_id: number,
-		field: 'price' | 'amount',
-		timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all'
-	) => {
-		const folderTransactions = transactions.find(
-			transaction => transaction.folder_id === folder_id
-		)
-
-		if (!folderTransactions) return []
-
-		const now = new Date()
-
-		const getStartDate = (range: string) => {
-			const startDate = new Date(now)
-			switch (range) {
-				case 'today':
-					startDate.setHours(0, 0, 0, 0)
-					break
-				case '1_week':
-					startDate.setDate(now.getDate() - 7)
-					break
-				case '2_weeks':
-					startDate.setDate(now.getDate() - 14)
-					break
-				case '1_month':
-					startDate.setMonth(now.getMonth() - 1)
-					break
-				case 'all':
-				default:
-					return null
-			}
-			return startDate
-		}
-
-		const startDate = getStartDate(timeRange)
-
-		return folderTransactions.info
-			.filter(transaction => {
-				const includesField = transaction.changes.includes(field)
-
-				if (startDate) {
-					const transactionDate = new Date(transaction.date)
-					return includesField && transactionDate >= startDate
-				}
-
-				return includesField
-			})
-			.map(transaction => ({
-				date: transaction.date,
-				value: transaction.changed_item[field],
-			}))
-	}
+      console.log(changed_item.amount, prev_item.amount);
+      console.log(changed_item.price, prev_item.price);
+  
+      if (folderIndex !== -1) {
+        const updatedTransactions = [...prevTransactions];
+        const folder = updatedTransactions[folderIndex];
+  
+        const lastAmount =
+          folder.amount_changes.length > 0
+            ? folder.amount_changes[folder.amount_changes.length - 1].value
+            : 0;
+  
+        folder.amount_changes.push({
+          date: new Date().toISOString(),
+          value: lastAmount + amountChange,
+        });
+  
+        const lastPrice =
+          folder.price_changes.length > 0
+            ? folder.price_changes[folder.price_changes.length - 1].value
+            : 0;
+  
+        folder.price_changes.push({
+          date: new Date().toISOString(),
+          value: lastPrice + priceChange,
+        });
+  
+        folder.info.push(newTransaction);
+        return updatedTransactions;
+      } else {
+        return [
+          ...prevTransactions,
+          {
+            folder_id,
+            info: [newTransaction],
+            amount_changes: [
+              {
+                date: new Date().toISOString(),
+                value: changed_item.amount || 0,
+              },
+            ],
+            price_changes: [
+              {
+                date: new Date().toISOString(),
+                value: changed_item.price || 0,
+              },
+            ],
+          },
+        ];
+      }
+    });
+  };
+  const getChangesByField = (
+    folder_id: number,
+    field: 'price' | 'amount',
+    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all'
+  ) => {
+    const folderTransactions = transactions.find(
+      transaction => transaction.folder_id === folder_id
+    );
+  
+    if (!folderTransactions) return [];
+  
+    const now = new Date();
+  
+    const getStartDate = (range: string) => {
+      const startDate = new Date(now);
+      switch (range) {
+        case 'today':
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case '1_week':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case '2_weeks':
+          startDate.setDate(now.getDate() - 14);
+          break;
+        case '1_month':
+          startDate.setMonth(now.getMonth() - 1);
+          break;
+        case 'all':
+        default:
+          return null;
+      }
+      return startDate;
+    };
+  
+    const startDate = getStartDate(timeRange);
+  
+    const changes =
+      field === 'amount'
+        ? folderTransactions.amount_changes
+        : folderTransactions.price_changes;
+  
+    return changes.filter(change => {
+      if (startDate) {
+        const changeDate = new Date(change.date);
+        return changeDate >= startDate;
+      }
+      return true;
+    });
+  };
+  
 
 	const handleUpdateViewSettings = (data: {
 		sortBy: string
@@ -719,6 +758,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				{
 					folder_id: newFolder.id,
 					info: [],
+          amount_changes: [],
+          price_changes: [],
 				},
 			])
 
@@ -773,7 +814,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 
 			handleAddTransaction({
 				folder_id: data.folder_id,
-				prev_item: { ...newItem, amount: 0 },
+				prev_item: { ...newItem, amount: 0, price: 0 },
 				changed_item: newItem,
 				isCreated: true,
 			})

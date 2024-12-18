@@ -59,7 +59,7 @@ export default function HomeScreen() {
 					<Loading />
 				) : (
 					<FlatList
-						className='mx-3 mb-24'
+						className='mx-3 '
 						data={
 							search
 								? data.filter(folder =>

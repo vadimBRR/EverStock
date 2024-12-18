@@ -121,7 +121,7 @@ export default function FolderScreen() {
 			/>
 
 			<FlatList
-				className='mx-3 mb-24 '
+				className='mx-3 '
 				data={sortedItems}
 				keyExtractor={item => item.id.toString()}
 				extraData={items}

@@ -61,19 +61,27 @@ export type accountType = {
 export type transactionType = {
 	folder_id: number
 	info: infoTransactionType[]
+	amount_changes: {
+		date: string
+		value: number
+	}[]
+
+	price_changes: {
+		date: string
+		value: number
+	}[]
 }
 
 export type infoTransactionType = {
-  id:number
-		user_id: number
-		item_id: number
-		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
-		changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
-    changes: (keyof itemType)[]
-		date: string
-    isCreated?: boolean
-    isEdited?:boolean
-    isDeleted?:boolean
-    isReverted?:boolean
-
+	id: number
+	user_id: number
+	item_id: number
+	prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+	changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+	changes: (keyof itemType)[]
+	date: string
+	isCreated?: boolean
+	isEdited?: boolean
+	isDeleted?: boolean
+	isReverted?: boolean
 }
