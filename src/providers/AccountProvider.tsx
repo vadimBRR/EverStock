@@ -20,11 +20,12 @@ type AccountType = {
 		isAsc: boolean
 		membersId: number[]
 		itemsId: number[]
-    actions: {
-      isCreated: boolean
-      isEdited: boolean
-      isDeleted: boolean
-    }
+		actions: {
+			isCreated: boolean
+			isEdited: boolean
+			isDeleted: boolean
+			isReverted: boolean
+		}
 	}
 
 	handleSignUp: ({
@@ -121,6 +122,7 @@ type AccountType = {
 		typeAmount,
 		note,
 		tag,
+		isReverted,
 	}: {
 		id: number
 		name: string
@@ -130,6 +132,7 @@ type AccountType = {
 		quantity: number
 		note: string
 		tag: string
+		isReverted?: boolean
 	}) => void
 	handleDeleteItem: ({ id }: { id: number }) => void
 	handleCloneItem: ({ item_id }: { item_id: number }) => void
@@ -209,17 +212,18 @@ type AccountType = {
 		isAsc,
 		membersId,
 		itemsId,
-    actions
+		actions,
 	}: {
 		sortBy: string
 		isAsc: boolean
 		membersId: number[]
 		itemsId: number[]
-    actions: {
-      isCreated: boolean
-      isEdited: boolean
-      isDeleted: boolean
-    }
+		actions: {
+			isCreated: boolean
+			isEdited: boolean
+			isDeleted: boolean
+			isReverted: boolean
+		}
 	}) => void
 	handleFilterAddMemberId: (id: number) => void
 	deleteFilterMemberId: (id: number) => void
@@ -285,11 +289,12 @@ const AccountContext = createContext<AccountType>({
 		isAsc: true,
 		membersId: [],
 		itemsId: [],
-    actions: {
-      isCreated: true,
-      isEdited: true,
-      isDeleted: true
-    }
+		actions: {
+			isCreated: true,
+			isEdited: true,
+			isDeleted: true,
+			isReverted: true,
+		},
 	},
 	handleUpdateTransactionSettings: () => {},
 	handleFilterAddMemberId: () => {},
@@ -391,21 +396,23 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		isAsc: boolean
 		membersId: number[]
 		itemsId: number[]
-    actions: {
-      isCreated: boolean
-      isEdited: boolean
-      isDeleted: boolean
-    }
+		actions: {
+			isCreated: boolean
+			isEdited: boolean
+			isDeleted: boolean
+			isReverted: boolean
+		}
 	}>({
 		sortBy: 'last updated',
 		isAsc: false,
 		membersId: [],
 		itemsId: [],
-    actions: {
-      isCreated: true,
-      isEdited: true,
-      isDeleted: true
-    }
+		actions: {
+			isCreated: true,
+			isEdited: true,
+			isDeleted: true,
+			isReverted: true,
+		},
 	})
 
 	const [transactions, setTransactions] = useState<transactionType[]>([
@@ -476,6 +483,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		isCreated = false,
 		isEdited = false,
 		isDeleted = false,
+		isReverted = false,
 	}: {
 		folder_id: number
 		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
@@ -483,6 +491,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		isCreated?: boolean
 		isEdited?: boolean
 		isDeleted?: boolean
+		isReverted?: boolean
 	}) => {
 		const newTransaction = {
 			id: Date.now(),
@@ -495,6 +504,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			isCreated,
 			isEdited,
 			isDeleted,
+			isReverted,
 		}
 
 		setTransactions(prevTransactions => {
@@ -590,11 +600,12 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		isAsc: boolean
 		membersId: number[]
 		itemsId: number[]
-    actions: {
-      isCreated: boolean
-      isEdited: boolean
-      isDeleted: boolean
-    }
+		actions: {
+			isCreated: boolean
+			isEdited: boolean
+			isDeleted: boolean
+			isReverted: boolean
+		}
 	}) => {
 		setTransactionSettings(data)
 	}
@@ -632,10 +643,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		first_name?: string
 		last_name?: string
 	}) => {
-		console.log('handle login -2')
-
 		setAccount({ ...account, ...data })
-		console.log('handle login -3')
 	}
 	const switchIsAuthenticated = () => setIsAuthenticated(true)
 	const handleLogout = () => setIsAuthenticated(false)
@@ -663,13 +671,9 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 	}
 
 	const handleIsAuthenticated = () => {
-		console.log('прозьба прийшла')
 		return isAuthenticated
 	}
-	const handleTest = () => {
-		console.log('test')
-	}
-	console.log('AccountProvider is rendering')
+	const handleTest = () => {}
 
 	const handleCreateFolder = ({
 		name,
@@ -810,7 +814,6 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		images: string[]
 		item_id: number
 	}) => {
-		console.log('changed photos')
 		setItems(
 			items.map(item =>
 				item.id === item_id ? { ...item, image_url: images } : { ...item }
@@ -869,6 +872,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		typeAmount,
 		note,
 		tag,
+		isReverted = false,
 	}: {
 		id: number
 		name: string
@@ -878,6 +882,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		quantity: number
 		note: string
 		tag: string
+		isReverted?: boolean
 	}) => {
 		setItems(prevItems => {
 			const updatedItems = prevItems.map(item => {
@@ -893,12 +898,21 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 						tag,
 					}
 
-					handleAddTransaction({
-						folder_id: item.folder_id!,
-						prev_item: item,
-						changed_item: updatedItem,
-						isEdited: true,
-					})
+					if (isReverted) {
+						handleAddTransaction({
+							folder_id: item.folder_id!,
+							prev_item: updatedItem,
+							changed_item: item,
+							isReverted: true,
+						})
+					} else {
+						handleAddTransaction({
+							folder_id: item.folder_id!,
+							prev_item: item,
+							changed_item: updatedItem,
+							isEdited: true,
+						})
+					}
 
 					return updatedItem
 				}
@@ -1036,6 +1050,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		if (info.isCreated) return 'created item ' + info.changed_item.name
 		if (info.isEdited) return 'edited item ' + info.changed_item.name
 		if (info.isDeleted) return 'deleted item ' + info.prev_item.name
+		if (info.isReverted) return 'reverted item ' + info.prev_item.name
 
 		return ''
 	}

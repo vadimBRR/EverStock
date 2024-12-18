@@ -10,16 +10,15 @@ import AccountProvider, { useAccount } from '../providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
 
 const InitialLayout = () => {
-  console.log("initial layout");
 	const [fontsLoaded, setFontsLoaded] = useState(false)
 	const router = useRouter()
 	const { isAuthenticated } = useAccount()
 	const segments = useSegments()
-	console.log('isSignedIn before:', isAuthenticated)
-  SystemUI.setBackgroundColorAsync("#1C1A1A")
+
+	SystemUI.setBackgroundColorAsync('#1C1A1A')
 
 	useEffect(() => {
-		NavigationBar.setBackgroundColorAsync('#123456') 
+		NavigationBar.setBackgroundColorAsync('#123456')
 		NavigationBar.setButtonStyleAsync('dark')
 		NavigationBar.setVisibilityAsync('hidden')
 
@@ -44,13 +43,10 @@ const InitialLayout = () => {
 	useEffect(() => {
 		if (!fontsLoaded) return
 
-		console.log('isSignedIn:', isAuthenticated)
 		const inAuthGroup = segments[0] === '(authenticated)'
 		if (isAuthenticated && !inAuthGroup) {
-			console.log('here1')
 			router.replace('/(authenticated)/(tabs)/home/folder')
 		} else if (!isAuthenticated) {
-			console.log('here2')
 			router.replace('/')
 		}
 	}, [isAuthenticated, fontsLoaded])
@@ -59,11 +55,13 @@ const InitialLayout = () => {
 		return <Loading />
 	}
 
-	console.log('isSignedIn after:', isAuthenticated)
-	console.log(segments)
 	return (
-    
-		<Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#1C1A1A' } }}>
+		<Stack
+			screenOptions={{
+				headerShown: false,
+				contentStyle: { backgroundColor: '#1C1A1A' },
+			}}
+		>
 			<Stack.Screen name='index' />
 			<Stack.Screen name='(authorization)' />
 			<Stack.Screen name='(authenticated)' />
@@ -73,7 +71,6 @@ const InitialLayout = () => {
 }
 
 const RootLayoutNav = () => {
-  console.log("root layout");
 	return (
 		<QueryProvider>
 			{/* <ActionSheetProvider> */}

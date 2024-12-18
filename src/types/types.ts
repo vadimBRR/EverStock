@@ -74,5 +74,6 @@ export type infoTransactionType = {
     isCreated?: boolean
     isEdited?:boolean
     isDeleted?:boolean
+    isReverted?:boolean
 
 }

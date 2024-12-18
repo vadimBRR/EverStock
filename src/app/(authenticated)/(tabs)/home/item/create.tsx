@@ -37,8 +37,8 @@ export default function CreateItem() {
 	const [price, setPrice] = useState('')
 	const [note, setNote] = useState('')
 	const [tag, setTag] = useState<string>()
-  const [selectedType, setSelectedType] = useState('quantity')
-  const typesAmount = ['quantity', 'weight', 'volume']
+	const [selectedType, setSelectedType] = useState('quantity')
+	const typesAmount = ['quantity', 'weight', 'volume']
 
 	const [images, setImages] = useState<string[]>([])
 	// const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -81,11 +81,10 @@ export default function CreateItem() {
 	const { handleCreateItem: createItem } = useAccount()
 
 	const handleCreateItem = async () => {
-		console.log('create item')
 		if (price && !parseFloat(price)) return
-		console.log('bam1')
+
 		if (quantity && !parseInt(quantity)) return
-		console.log('bam2')
+
 		setIsLoading(true)
 		// const uploadedImagePaths = await uploadImages()
 		createItem({
@@ -96,7 +95,7 @@ export default function CreateItem() {
 			quantity: parseInt(quantity),
 			note,
 			tag,
-      typeAmount: selectedType
+			typeAmount: selectedType,
 		})
 
 		// await createItem({folder_id: folder_id, name: itemName, images: uploadedImagePaths, price:parseFloat(price), quantity:parseInt(quantity), note},{
@@ -107,7 +106,7 @@ export default function CreateItem() {
 		// } )
 
 		setIsLoading(false)
-    router.back()
+		router.back()
 	}
 
 	return (
@@ -136,14 +135,20 @@ export default function CreateItem() {
 							setName={setItemName}
 							containerStyle='mb-2'
 						/>
-            <View className='w-full flex flex-row justify-between mb-2 bg-black-600 border border-dark_gray rounded-2xl p-3'>
-              
-            {typesAmount.map((type, index) => (
-              <CustomRadioButton key={index} text={type.charAt(0).toUpperCase() + type.slice(1)} checked={type === selectedType} onPress={() => setSelectedType(type)} />
-            ))}
-            </View>
+						<View className='w-full flex flex-row justify-between mb-2 bg-black-600 border border-dark_gray rounded-2xl p-3'>
+							{typesAmount.map((type, index) => (
+								<CustomRadioButton
+									key={index}
+									text={type.charAt(0).toUpperCase() + type.slice(1)}
+									checked={type === selectedType}
+									onPress={() => setSelectedType(type)}
+								/>
+							))}
+						</View>
 						<CustomInput
-							label={selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}
+							label={
+								selectedType.charAt(0).toUpperCase() + selectedType.slice(1)
+							}
 							name={quantity}
 							setName={setQuantity}
 							containerStyle='mb-2'

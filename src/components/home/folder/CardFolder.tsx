@@ -71,7 +71,7 @@ export default function CardFolder({ data }: Props) {
 						{dayjs(data.lastUpdated).fromNow()}
 					</Text>
           <TouchableOpacity className='border border-gray p-1 rounded-md' onPress={() => {
-  console.log("Navigating to: ", '/(authenticated)/(tabs)/home/folder/edit/' + data.id);
+
   router.push('/(authenticated)/(tabs)/home/folder/edit/' + data.id);
 }}>
             <Ionicons name="pencil-outline" size={16} color="white" />

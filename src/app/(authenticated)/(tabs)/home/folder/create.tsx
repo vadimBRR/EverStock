@@ -25,14 +25,17 @@ export default function CreateFolder() {
 	const [isErrorInput, setIsErrorInput] = useState(false)
 
 	// const { mutate: createFolder } = useCreateFolder();
-  const {handleCreateFolder} = useAccount();
+	const { handleCreateFolder } = useAccount()
 	const createFolder = () => {
-    if(!folderName) return setIsErrorInput(true)
-    handleCreateFolder({name: folderName, currency: currency, type: folderType, options: folderOptions || []});
-    router.push('/(authenticated)/(tabs)/home/folder');
-  }
-
-
+		if (!folderName) return setIsErrorInput(true)
+		handleCreateFolder({
+			name: folderName,
+			currency: currency,
+			type: folderType,
+			options: folderOptions || [],
+		})
+		router.push('/(authenticated)/(tabs)/home/folder')
+	}
 
 	const handleChangeType = () => {
 		router.push('/(authenticated)/(tabs)/home/folder/choose_type')
@@ -41,7 +44,6 @@ export default function CreateFolder() {
 
 	useEffect(() => {
 		if (type) {
-			console.log('type', type)
 			const folderTypeFromParams: string =
 				typeof type === 'string' ? type : type[0]
 			if (folderTypeFromParams !== folderType) {
@@ -50,7 +52,6 @@ export default function CreateFolder() {
 		}
 
 		if (options) {
-			console.log('options', options)
 			const optionsFromParams: string[] | null = Array.isArray(options)
 				? options
 				: options
@@ -87,7 +88,9 @@ export default function CreateFolder() {
 						className='w-full rounded-2xl border-dark_gray border py-[12px] flex-row justify-between bg-black-600 px-4 mt-2 items-center'
 						onPress={handleChangeType}
 					>
-						<Text className='text-xl font-lexend_regular text-white'>Type: </Text>
+						<Text className='text-xl font-lexend_regular text-white'>
+							Type:{' '}
+						</Text>
 						<Text className='text-xl font-lexend_light text-white rounded-lg border border-dark_gray p-1 px-2 w-[120px] text-center'>
 							{folderType}
 						</Text>

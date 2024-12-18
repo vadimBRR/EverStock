@@ -64,9 +64,7 @@ const ItemImagesCarousel = ({
 
 	const deleteImage = () => {
 		if (activeIndex !== null) {
-			console.log(handleChangeImages)
 			if (isGallery && handleChangeImages) {
-				console.log('hereeee')
 				handleChangeImages(images.filter((_, index) => index !== activeIndex))
 			} else setImages(images.filter((_, index) => index !== activeIndex))
 			setActiveIndex(prev => (prev > 0 ? prev - 1 : 0))
@@ -86,18 +84,13 @@ const ItemImagesCarousel = ({
 	}
 
 	const setAsMain = () => {
-    console.log("start1");
 		if (selectedImage && activeIndex !== 0) {
-      console.log("start2");
 			const updatedImages = [...images]
 			const [imageToMove] = updatedImages.splice(activeIndex, 1)
 			updatedImages.unshift(imageToMove)
 			if (isGallery && handleChangeImages) {
-        console.log("hereeee change to main");
 				handleChangeImages(updatedImages)
 			} else {
-        console.log("hereeee change not to main");
-
 				setImages(updatedImages)
 			}
 			handleCloseImage()
@@ -106,8 +99,8 @@ const ItemImagesCarousel = ({
 
 	return (
 		<View className='mb-0'>
-			{(isGallery && images.length > 0) ? (
-				<SmallCarousel images={images} handleOpenImage={handleOpenImage}/>
+			{isGallery && images.length > 0 ? (
+				<SmallCarousel images={images} handleOpenImage={handleOpenImage} />
 			) : (
 				<View className='flex-row gap-8 mb-5'>
 					{images.map((image, index) => (

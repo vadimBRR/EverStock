@@ -9,11 +9,11 @@ import RectangleCheckBox from '@/src/components/RectangleCheckBox'
 import { useSearchParams } from 'expo-router/build/hooks'
 
 const CreateMemberScreen = () => {
-  const searchParams = useSearchParams(); 
-  const idString = searchParams.get("id");
-  const [isErrorInput, setIsErrorInput] = useState(false)
-  const router = useRouter();
-  
+	const searchParams = useSearchParams()
+	const idString = searchParams.get('id')
+	const [isErrorInput, setIsErrorInput] = useState(false)
+	const router = useRouter()
+
 	const folder_id = parseFloat(
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	)
@@ -33,16 +33,14 @@ const CreateMemberScreen = () => {
 		</View>
 	}
 
-  const {handleAddMember} = useAccount()
+	const { handleAddMember } = useAccount()
 
-  const handleCreateMember = () => {
-    console.log("heree first");
-    handleAddMember({folderId: folder_id,email, role: roles})
-    router.back()
+	const handleCreateMember = () => {
+		handleAddMember({ folderId: folder_id, email, role: roles })
+		router.back()
+	}
 
-  }
-
-return (
+	return (
 		<Container isPadding={false}>
 			<Stack.Screen
 				options={{
@@ -61,56 +59,60 @@ return (
 						name={email}
 						setName={setEmail}
 						isError={isErrorInput}
-            containerStyle='mb-4'
+						containerStyle='mb-4'
 					/>
-          <Text className='font-lexend_light text-white text-2xl mb-1'>Permissions:</Text>
-          <RectangleCheckBox
-            text="View"
-            isActive={roles.isView}
-            onClick={() => setRoles({...roles, isView: !roles.isView})}
-            isIcon={true}
-            icon={require('@/src/assets/icons/member/isView_white.png')}
-            styleContainer='items-start m-0 p-2 px-4 mb-2'
-            customBg='dark_gray'
-            />
-          <RectangleCheckBox
-            text="Edit"
-            isActive={roles.isEdit}
-            onClick={() => setRoles({...roles, isEdit: !roles.isEdit})}
-            isIcon={true}
-            icon={require('@/src/assets/icons/member/isEdit_white.png')}
-            styleContainer='items-start m-0 p-2 px-4 mb-2'
-            customBg='dark_gray'
-            />
-          <RectangleCheckBox
-            text="Delete"
-            isActive={roles.isDeleteItem}
-            onClick={() => setRoles({...roles, isDeleteItem: !roles.isDeleteItem})}
-            isIcon={true}
-            icon={require('@/src/assets/icons/member/isDeleteItem_white.png')}
-            styleContainer='items-start m-0 p-2 px-4 mb-2'
-            customBg='dark_gray'
-            />
-          <RectangleCheckBox
-            text="Create"
-            isActive={roles.isAddItem}
-            onClick={() => setRoles({...roles, isAddItem: !roles.isAddItem})}
-            isIcon={true}
-            icon={require('@/src/assets/icons/member/isAddItem_white.png')}
-            styleContainer='items-start m-0 p-2 px-4 mb-2'
-            customBg='dark_gray'
-            />
-          <RectangleCheckBox
-            text="Invite"
-            isActive={roles.isCanInvite}
-            onClick={() => setRoles({...roles, isCanInvite: !roles.isCanInvite})}
-            isIcon={true}
-            icon={require('@/src/assets/icons/member/isCanInvite_white.png')}
-            styleContainer='items-start m-0 p-2 px-4 mb-2'
-            customBg='dark_gray'
-            />
-
-					
+					<Text className='font-lexend_light text-white text-2xl mb-1'>
+						Permissions:
+					</Text>
+					<RectangleCheckBox
+						text='View'
+						isActive={roles.isView}
+						onClick={() => setRoles({ ...roles, isView: !roles.isView })}
+						isIcon={true}
+						icon={require('@/src/assets/icons/member/isView_white.png')}
+						styleContainer='items-start m-0 p-2 px-4 mb-2'
+						customBg='dark_gray'
+					/>
+					<RectangleCheckBox
+						text='Edit'
+						isActive={roles.isEdit}
+						onClick={() => setRoles({ ...roles, isEdit: !roles.isEdit })}
+						isIcon={true}
+						icon={require('@/src/assets/icons/member/isEdit_white.png')}
+						styleContainer='items-start m-0 p-2 px-4 mb-2'
+						customBg='dark_gray'
+					/>
+					<RectangleCheckBox
+						text='Delete'
+						isActive={roles.isDeleteItem}
+						onClick={() =>
+							setRoles({ ...roles, isDeleteItem: !roles.isDeleteItem })
+						}
+						isIcon={true}
+						icon={require('@/src/assets/icons/member/isDeleteItem_white.png')}
+						styleContainer='items-start m-0 p-2 px-4 mb-2'
+						customBg='dark_gray'
+					/>
+					<RectangleCheckBox
+						text='Create'
+						isActive={roles.isAddItem}
+						onClick={() => setRoles({ ...roles, isAddItem: !roles.isAddItem })}
+						isIcon={true}
+						icon={require('@/src/assets/icons/member/isAddItem_white.png')}
+						styleContainer='items-start m-0 p-2 px-4 mb-2'
+						customBg='dark_gray'
+					/>
+					<RectangleCheckBox
+						text='Invite'
+						isActive={roles.isCanInvite}
+						onClick={() =>
+							setRoles({ ...roles, isCanInvite: !roles.isCanInvite })
+						}
+						isIcon={true}
+						icon={require('@/src/assets/icons/member/isCanInvite_white.png')}
+						styleContainer='items-start m-0 p-2 px-4 mb-2'
+						customBg='dark_gray'
+					/>
 				</View>
 				<CustomButton
 					text='Add Member'

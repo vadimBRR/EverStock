@@ -1,5 +1,5 @@
 import { Image } from 'react-native'
-import React, { ComponentProps, useEffect,  useState } from 'react'
+import React, { ComponentProps, useEffect, useState } from 'react'
 // import { client } from '../utils/supabaseClient'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -9,7 +9,6 @@ type RemoteImageProps = {
 
 const RemoteImage = ({ path, ...imageProps }: RemoteImageProps) => {
 	const [imageUrl, setImageUrl] = useState('')
-  console.log('path', path);
 
 	// const getCachedImageUrl = async () => {
 	// 	if (!path) return
@@ -41,11 +40,13 @@ const RemoteImage = ({ path, ...imageProps }: RemoteImageProps) => {
 			{path ? (
 				<Image source={{ uri: path }} {...imageProps} />
 			) : (
-				<Image source={require('@/src/assets/no_image_dark.png')} {...imageProps} />
+				<Image
+					source={require('@/src/assets/no_image_dark.png')}
+					{...imageProps}
+				/>
 			)}
 		</>
 	)
-
 }
 
 export default RemoteImage

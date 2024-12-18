@@ -21,13 +21,13 @@ const ChooseItemScreen = ({}) => {
 	const router = useRouter()
 	const members =
 		useAccount().folders.find(folder => folder.id === id)?.members || []
-    const items= useAccount().items.filter(item => item.folder_id === id)
-  
+	const items = useAccount().items.filter(item => item.folder_id === id)
+
 	// const data = useAccount().folders.filter(folder => folder.id === id)[0].members
-	console.log(members)
+
 	const { transactionSettings, handleUpdateTransactionSettings } = useAccount()
 	const [choseMember, setChoseMember] = useState(transactionSettings.membersId)
-  const [choseItems, setChoseItems] = useState(transactionSettings.itemsId)
+	const [choseItems, setChoseItems] = useState(transactionSettings.itemsId)
 
 	const [search, setSearch] = useState('')
 	const handleSearch = (value: string) => {
@@ -35,19 +35,20 @@ const ChooseItemScreen = ({}) => {
 	}
 
 	const handleApply = () => {
-    handleUpdateTransactionSettings({ ...transactionSettings, itemsId: choseItems })
+		handleUpdateTransactionSettings({
+			...transactionSettings,
+			itemsId: choseItems,
+		})
 		router.back()
 	}
 
-  const toggleItems = (itemId: number) => {
-    if (choseItems.includes(itemId)) {
-      setChoseItems(choseItems.filter(id => id !== itemId))
-    } else {
-      setChoseItems([...choseItems, itemId])
-    }
-  }
-
-
+	const toggleItems = (itemId: number) => {
+		if (choseItems.includes(itemId)) {
+			setChoseItems(choseItems.filter(id => id !== itemId))
+		} else {
+			setChoseItems([...choseItems, itemId])
+		}
+	}
 
 	return (
 		<Container isPadding={false}>
@@ -75,19 +76,24 @@ const ChooseItemScreen = ({}) => {
 						className=' '
 						data={
 							search
-								? items.filter(
-										item =>
-											item.name
-												.toLowerCase()
-												.includes(search.toLowerCase()) 
-                        
+								? items.filter(item =>
+										item.name.toLowerCase().includes(search.toLowerCase())
 								  )
 								: items
 						}
 						keyExtractor={member => member.id.toString()}
 						renderItem={({ item }) => (
 							<TouchableOpacity onPress={() => toggleItems(item.id)}>
-                <CardItem item={item} currencyName={item.typeAmount} isPressable={false} containerStyle={`${choseItems.includes(item.id) ? 'border-1 border-white  bg-dark_gray' : ''} `}/>
+								<CardItem
+									item={item}
+									currencyName={item.typeAmount}
+									isPressable={false}
+									containerStyle={`${
+										choseItems.includes(item.id)
+											? 'border-1 border-white  bg-dark_gray'
+											: ''
+									} `}
+								/>
 								{/* <CardMember
 									data={item}
 									folderId={id}

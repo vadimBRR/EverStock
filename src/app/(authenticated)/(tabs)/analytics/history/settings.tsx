@@ -26,10 +26,11 @@ const ViewSettingsScreen = () => {
 	} = useAccount()
 	const [settings, setSettings] = useState(transactionSettings)
 	const sortOptions = ['item name', 'member name', 'last updated']
-	const actions: ['Created', 'Edited', 'Deleted'] = [
+	const actions: ['Created', 'Edited', 'Deleted', 'Reverted'] = [
 		'Created',
 		'Edited',
 		'Deleted',
+		'Reverted',
 	]
 	React.useEffect(() => {
 		setSettings(transactionSettings)
@@ -39,7 +40,9 @@ const ViewSettingsScreen = () => {
 		.folders.find(folder => folder.id === id)
 		?.members.filter(member => settings.membersId.includes(member.id))
 
-  const items = useAccount().items.filter(item => settings.itemsId.includes(item.id))
+	const items = useAccount().items.filter(item =>
+		settings.itemsId.includes(item.id)
+	)
 	// const [viewOptions, setViewOptions] = React.useState(settings.)
 	// const viewOptionsList: (keyof typeof settings.viewOptions)[] = ['name', 'image', 'quantity', 'price', 'totalPrice']
 	const applySettings = () => {
@@ -62,14 +65,22 @@ const ViewSettingsScreen = () => {
 		}
 	}
 
-	const handleToggleActions = (action: 'Created' | 'Edited' | 'Deleted') => {
-		const formattedAction: 'isCreated' | 'isEdited' | 'isDeleted' =
+	const handleToggleActions = (
+		action: 'Created' | 'Edited' | 'Deleted' | 'Reverted'
+	) => {
+		const formattedAction:
+			| 'isCreated'
+			| 'isEdited'
+			| 'isDeleted'
+			| 'isReverted' =
 			action === 'Created'
 				? 'isCreated'
 				: action === 'Edited'
 				? 'isEdited'
-				: 'isDeleted'
-		console.log(settings.actions[formattedAction])
+				: action === 'Deleted'
+				? 'isDeleted'
+				: 'isReverted'
+
 		setSettings({
 			...settings,
 			actions: {
@@ -79,23 +90,31 @@ const ViewSettingsScreen = () => {
 		})
 	}
 
-  const defaultSettings = {
-    sortBy: 'last updated',
-    isAsc: true,
-    membersId: [],
-    itemsId: [],
-    actions: {
-      isCreated: true,
-      isEdited: true,
-      isDeleted: true
-    }
-  }
+	const defaultSettings = {
+		sortBy: 'last updated',
+		isAsc: true,
+		membersId: [],
+		itemsId: [],
+		actions: {
+			isCreated: true,
+			isEdited: true,
+			isDeleted: true,
+			isReverted: true,
+		},
+	}
 
-  const handleReset = () => {
-    setSettings(defaultSettings)
-  }
+	const handleReset = () => {
+		setSettings(defaultSettings)
+	}
 
-  const isDefaultSettings = settings.actions.isCreated && settings.actions.isEdited && settings.actions.isDeleted && settings.sortBy === 'last updated' && settings.isAsc && settings.membersId.length === 0 && settings.itemsId.length === 0 
+	const isDefaultSettings =
+		settings.actions.isCreated &&
+		settings.actions.isEdited &&
+		settings.actions.isDeleted &&
+		settings.sortBy === 'last updated' &&
+		settings.isAsc &&
+		settings.membersId.length === 0 &&
+		settings.itemsId.length === 0
 
 	return (
 		<Container isPadding={false}>
@@ -107,25 +126,29 @@ const ViewSettingsScreen = () => {
 						backgroundColor: '#242121',
 					},
 					headerTintColor: '#fff',
-          headerRight: () => {
-            return (
-              <View className='flex-row gap-5'>
-                {JSON.stringify(settings) !== JSON.stringify(defaultSettings)  && (
-                  <TouchableOpacity onPress={handleReset} className=''>
-                    <Ionicons name='refresh' size={24} color='white' />
-                  </TouchableOpacity>
-                )}
+					headerRight: () => {
+						return (
+							<View className='flex-row gap-5'>
+								{JSON.stringify(settings) !==
+									JSON.stringify(defaultSettings) && (
+									<TouchableOpacity onPress={handleReset} className=''>
+										<Ionicons name='refresh' size={24} color='white' />
+									</TouchableOpacity>
+								)}
 
-              <TouchableOpacity onPress={applySettings} className=''>
-                <Ionicons name='checkmark' size={24} color='white' />
-              </TouchableOpacity>
-              </View>
-            )
-          }
+								<TouchableOpacity onPress={applySettings} className=''>
+									<Ionicons name='checkmark' size={24} color='white' />
+								</TouchableOpacity>
+							</View>
+						)
+					},
 				}}
 			/>
 			<View className='mx-4 mt-2 flex-1 justify-between'>
-				<ScrollView showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
+				<ScrollView
+					showsHorizontalScrollIndicator={false}
+					showsVerticalScrollIndicator={false}
+				>
 					<Text className='font-lexend_light text-white text-2xl mb-2'>
 						Sort By:
 					</Text>
@@ -187,10 +210,18 @@ const ViewSettingsScreen = () => {
 									Member
 								</Text>
 								<View className='flex-row gap-2'>
-									<TouchableOpacity className='bg-dark_gray p-1 px-3 rounded-lg' onPress={() => {setSettings({...settings, membersId: []})}}>
+									<TouchableOpacity
+										className='bg-dark_gray p-1 px-3 rounded-lg'
+										onPress={() => {
+											setSettings({ ...settings, membersId: [] })
+										}}
+									>
 										<Text className='text-white text-lg'>Reset</Text>
 									</TouchableOpacity>
-									<TouchableOpacity className='bg-dark_gray p-2 rounded-lg flex items-center justify-center' onPress={handleOpenChooseMember}>
+									<TouchableOpacity
+										className='bg-dark_gray p-2 rounded-lg flex items-center justify-center'
+										onPress={handleOpenChooseMember}
+									>
 										<Feather name='plus' size={20} color='white' />
 									</TouchableOpacity>
 								</View>
@@ -217,7 +248,6 @@ const ViewSettingsScreen = () => {
 						</View>
 					)}
 
-
 					{settings.itemsId.length === 0 ? (
 						<TouchableOpacity
 							onPress={handleOpenChooseItem}
@@ -237,14 +267,21 @@ const ViewSettingsScreen = () => {
 									<TouchableOpacity className='bg-dark_gray p-1 px-3 rounded-lg'>
 										<Text className='text-white text-lg'>Reset</Text>
 									</TouchableOpacity>
-									<TouchableOpacity className='bg-dark_gray p-2 rounded-lg flex items-center justify-center' onPress={handleOpenChooseItem}>
+									<TouchableOpacity
+										className='bg-dark_gray p-2 rounded-lg flex items-center justify-center'
+										onPress={handleOpenChooseItem}
+									>
 										<Feather name='plus' size={20} color='white' />
 									</TouchableOpacity>
 								</View>
 							</View>
 							{items?.map((item, index) => (
 								<View key={index} className='relative z-0'>
-                  <CardItem item={item} currencyName={item.typeAmount} isPressable={false}/>
+									<CardItem
+										item={item}
+										currencyName={item.typeAmount}
+										isPressable={false}
+									/>
 									{/* <CardMember
 										data={user}
 										folderId={id}
@@ -259,7 +296,6 @@ const ViewSettingsScreen = () => {
 											className=' '
 											onPress={() => deleteFilterItemId(item.id)}
 										/>
-
 									</TouchableOpacity>
 								</View>
 							))}

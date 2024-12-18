@@ -22,7 +22,7 @@ const ChooseMemberScreen = ({}) => {
 		useAccount().folders.find(folder => folder.id === id)?.members || []
 	const data = useAccount().folders.filter(folder => folder.id === id)[0]
 		.members
-	console.log(members)
+
 	const { transactionSettings, handleUpdateTransactionSettings } = useAccount()
 	const [choseMember, setChoseMember] = useState(transactionSettings.membersId)
 	const [search, setSearch] = useState('')
@@ -31,19 +31,20 @@ const ChooseMemberScreen = ({}) => {
 	}
 
 	const handleApply = () => {
-    handleUpdateTransactionSettings({ ...transactionSettings, membersId: choseMember })
+		handleUpdateTransactionSettings({
+			...transactionSettings,
+			membersId: choseMember,
+		})
 		router.back()
 	}
 
-  const toggleMember = (memberId: number) => {
-    if (choseMember.includes(memberId)) {
-      setChoseMember(choseMember.filter(id => id !== memberId))
-    } else {
-      setChoseMember([...choseMember, memberId])
-    }
-  }
-
-
+	const toggleMember = (memberId: number) => {
+		if (choseMember.includes(memberId)) {
+			setChoseMember(choseMember.filter(id => id !== memberId))
+		} else {
+			setChoseMember([...choseMember, memberId])
+		}
+	}
 
 	return (
 		<Container isPadding={false}>
@@ -87,9 +88,11 @@ const ChooseMemberScreen = ({}) => {
 									data={item}
 									folderId={id}
 									containerStyle={`${
-										choseMember.includes(item.id) ? 'border-1 border-white  bg-dark_gray' : ''
+										choseMember.includes(item.id)
+											? 'border-1 border-white  bg-dark_gray'
+											: ''
 									} `}
-                  isPressable={false}
+									isPressable={false}
 								/>
 							</TouchableOpacity>
 						)}

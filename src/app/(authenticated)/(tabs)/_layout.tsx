@@ -1,8 +1,4 @@
-import {
-	View,
-	Text,
-
-} from 'react-native'
+import { View, Text } from 'react-native'
 import React from 'react'
 import { Redirect, Tabs, useSegments } from 'expo-router'
 import Container from '../../../components/Container'
@@ -16,14 +12,23 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 export default function TabsLayout() {
 	// const { isSignedIn} = useAuth()
-  SystemUI.setBackgroundColorAsync("#1C1A1A")
+	SystemUI.setBackgroundColorAsync('#1C1A1A')
 
-  
 	// if(!isSignedIn) return <Redirect href="/(authorization)/sign-in" />
-  const segments = useSegments();
+	const segments = useSegments()
 
-  const hide = segments.includes("create") || segments.includes("account")  || segments.includes("choose_type") || segments.includes("edit") || segments.includes("[id]") && segments.includes("item") || segments.includes("settings") ||segments.includes("profile") && segments.includes("[id]") || segments.includes("choose_member") || segments.includes("choose_item") || segments.includes("history") ;
-  console.log(segments) 
+	const hide =
+		segments.includes('create') ||
+		segments.includes('account') ||
+		segments.includes('choose_type') ||
+		segments.includes('edit') ||
+		(segments.includes('[id]') && segments.includes('item')) ||
+		segments.includes('settings') ||
+		(segments.includes('profile') && segments.includes('[id]')) ||
+		segments.includes('choose_member') ||
+		segments.includes('choose_item') ||
+		segments.includes('history')
+
 	return (
 		<Container isPadding={false}>
 			<Tabs
@@ -31,12 +36,12 @@ export default function TabsLayout() {
 					headerShown: false,
 					tabBarShowLabel: false,
 					tabBarStyle: {
-            display: hide ? "none" : "flex",
-						// position: 'absolute',  
+						display: hide ? 'none' : 'flex',
+						// position: 'absolute',
 						backgroundColor: '#242121',
 						height: 65,
-            paddingTop: 10,
-            borderColor: '#272424',
+						paddingTop: 10,
+						borderColor: '#272424',
 					},
 				}}
 			>
@@ -47,10 +52,20 @@ export default function TabsLayout() {
 							<View className='items-center w-20'>
 								<Ionicons
 									name={focused ? 'home' : 'home-outline'}
-									color={focused ? Colors.light.tabIconSelected : Colors.light.tabIconDefault}
+									color={
+										focused
+											? Colors.light.tabIconSelected
+											: Colors.light.tabIconDefault
+									}
 									size={focused ? 30 : 30}
 								/>
-								<Text className= {`${focused ? ' text-main_light text-lg' : 'text-gray text-sm'}   font-lexend_extralight`}>Home</Text>
+								<Text
+									className={`${
+										focused ? ' text-main_light text-lg' : 'text-gray text-sm'
+									}   font-lexend_extralight`}
+								>
+									Home
+								</Text>
 							</View>
 						),
 					}}
@@ -61,11 +76,23 @@ export default function TabsLayout() {
 					options={{
 						tabBarIcon: ({ focused }) => (
 							<View className='items-center w-20'>
-								
-                <MaterialCommunityIcons name="google-analytics" color={focused ? Colors.light.tabIconSelected : Colors.light.tabIconDefault}
-									size={focused ? 30 : 30} />
+								<MaterialCommunityIcons
+									name='google-analytics'
+									color={
+										focused
+											? Colors.light.tabIconSelected
+											: Colors.light.tabIconDefault
+									}
+									size={focused ? 30 : 30}
+								/>
 
-								<Text className= {`${focused ? ' text-main_light text-lg' : 'text-gray text-sm'}   font-lexend_extralight`}>Analytics</Text>
+								<Text
+									className={`${
+										focused ? ' text-main_light text-lg' : 'text-gray text-sm'
+									}   font-lexend_extralight`}
+								>
+									Analytics
+								</Text>
 							</View>
 						),
 					}}
@@ -77,16 +104,26 @@ export default function TabsLayout() {
 							<View className='items-center w-20'>
 								<Ionicons
 									name={focused ? 'person' : 'person-outline'}
-									color={focused ? Colors.light.tabIconSelected : Colors.light.tabIconDefault}
+									color={
+										focused
+											? Colors.light.tabIconSelected
+											: Colors.light.tabIconDefault
+									}
 									size={focused ? 30 : 30}
 								/>
-								<Text className= {`${focused ? ' text-main_light text-lg' : 'text-gray text-sm'}   font-lexend_extralight`}>Profile</Text>
+								<Text
+									className={`${
+										focused ? ' text-main_light text-lg' : 'text-gray text-sm'
+									}   font-lexend_extralight`}
+								>
+									Profile
+								</Text>
 							</View>
 						),
 					}}
 				/>
 			</Tabs>
-			
+
 			{/* // <ModalCreateDebt />  */}
 		</Container>
 	)

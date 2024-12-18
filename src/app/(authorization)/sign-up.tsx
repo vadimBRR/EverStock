@@ -6,7 +6,7 @@ import CustomInput from '../../components/CustomInput'
 import { useRouter } from 'expo-router'
 import { useAccount } from '@/src/providers/AccountProvider'
 // import { supabase } from '../../lib/supabase'
-import * as SystemUI from 'expo-system-ui';
+import * as SystemUI from 'expo-system-ui'
 
 export default function SignUpScreen() {
 	const [password, setPassword] = useState('')
@@ -17,21 +17,17 @@ export default function SignUpScreen() {
 	const [pendingVerification, setPendingVerification] = useState(false)
 
 	// const { signUpWithEmail, verifyEmailCode, signInWithOAuth } = useAuthService();
-	const { handleSignUp: handleLogin , handleSignIn} = useAccount()
+	const { handleSignUp: handleLogin, handleSignIn } = useAccount()
 	const signUpWithEmail = async (
 		email: string,
 		password: string,
 		name: string
-	) => {
-		console.log(email, password, name)
-	}
+	) => {}
 	const verifyEmailCode = async (code: string) => {
-		console.log('handleLogin')
 		handleLogin({ email, first_name: name, last_name: name })
 	}
 	const signInWithOAuth = async (provider: string) => {
-    handleSignIn({email:'admin@gmail.com'})
-		console.log('provider', provider)
+		handleSignIn({ email: 'admin@gmail.com' })
 	}
 	const router = useRouter()
 
@@ -50,8 +46,6 @@ export default function SignUpScreen() {
 			const res = await signUpWithEmail(email, password, name)
 			setPendingVerification(true)
 		} catch (error) {
-			console.log('Error:')
-			console.log(error)
 			Alert.alert(
 				'Error',
 				typeof error === 'string'
@@ -78,9 +72,9 @@ export default function SignUpScreen() {
 			setIsLoading(false)
 		}
 	}
-  useEffect(() => {
-    SystemUI.setBackgroundColorAsync('#1C1A1A');
-  }, []);
+	useEffect(() => {
+		SystemUI.setBackgroundColorAsync('#1C1A1A')
+	}, [])
 
 	return (
 		<Container>
