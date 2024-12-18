@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import React, { useState } from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useAccount } from '@/src/providers/AccountProvider'
@@ -9,7 +9,6 @@ import {
 	ScrollView,
 	TouchableOpacity,
 } from 'react-native-gesture-handler'
-import CardMember from '@/src/components/home/member/CardMember'
 import CustomButton from '@/src/components/CustomButton'
 import CardItem from '@/src/components/home/item/CardItem'
 
@@ -23,10 +22,8 @@ const ChooseItemScreen = ({}) => {
 		useAccount().folders.find(folder => folder.id === id)?.members || []
 	const items = useAccount().items.filter(item => item.folder_id === id)
 
-	// const data = useAccount().folders.filter(folder => folder.id === id)[0].members
 
 	const { transactionSettings, handleUpdateTransactionSettings } = useAccount()
-	const [choseMember, setChoseMember] = useState(transactionSettings.membersId)
 	const [choseItems, setChoseItems] = useState(transactionSettings.itemsId)
 
 	const [search, setSearch] = useState('')
@@ -94,14 +91,7 @@ const ChooseItemScreen = ({}) => {
 											: ''
 									} `}
 								/>
-								{/* <CardMember
-									data={item}
-									folderId={id}
-									containerStyle={`${
-										choseMember.includes(item.id) ? 'border-1 border-white  bg-dark_gray' : ''
-									} `}
-                  isPressable={false}
-								/> */}
+							
 							</TouchableOpacity>
 						)}
 					/>

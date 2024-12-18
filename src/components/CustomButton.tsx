@@ -35,7 +35,9 @@ export default function CustomButton({
 		return (
 			<View
 				className={` rounded-xl items-center justify-center py-3 mx-7 px-4 relative border${
-					disabled || !isActive ? 'bg-black-600 border-white' : 'bg-main_light border-main_light'
+					disabled || !isActive
+						? 'bg-black-600 border-white'
+						: 'bg-main_light border-main_light'
 				} ${styleContainer}`}
 			>
 				<Text
@@ -49,7 +51,9 @@ export default function CustomButton({
 	return (
 		<TouchableOpacity
 			className={` rounded-xl items-center justify-center py-3 mx-7 px-4 relative border ${
-				disabled || !isActive ? 'bg-black-600  border-white' : 'bg-main_light border-main_light'
+				disabled || !isActive
+					? 'bg-black-600  border-white'
+					: 'bg-main_light border-main_light'
 			} ${styleContainer}`}
 			onPress={onClick}
 			disabled={disabled}
@@ -61,7 +65,10 @@ export default function CustomButton({
 			</Text>
 			{isIcon &&
 				(icon ? (
-					<Image source={icon} className={`absolute right-4 w-8 h-8 ${imageStyle} `} />
+					<Image
+						source={icon}
+						className={`absolute right-4 w-8 h-8 ${imageStyle} `}
+					/>
 				) : (
 					<Image
 						source={require('../assets/icons/arrow-right.png')}

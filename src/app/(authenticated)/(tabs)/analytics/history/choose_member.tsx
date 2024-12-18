@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import React, { useState } from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useAccount } from '@/src/providers/AccountProvider'
@@ -18,8 +18,7 @@ const ChooseMemberScreen = ({}) => {
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	)
 	const router = useRouter()
-	const members =
-		useAccount().folders.find(folder => folder.id === id)?.members || []
+
 	const data = useAccount().folders.filter(folder => folder.id === id)[0]
 		.members
 

@@ -95,24 +95,21 @@ const AnalyticsChart = ({ folder_id }: { folder_id: number }) => {
 						</TouchableOpacity>
 					)}
 				/>
-
-
 			</View>
-				<View className='flex-row justify-between mb-4 w-full items-center  '>
-					{['amount', 'price'].map(field => (
-						<Text
-							key={field}
-							className={` py-2 rounded-lg text-white text-center cursor-pointer flex-1 mx-4 ${
-								filter === field ? 'bg-main_light' : 'border border-white'
-							}`}
-							onPress={() => setFilter(field as 'amount' | 'price')}
-						>
-							{field}
-						</Text>
-					))}
-				</View>
-      <View>
-        
+			<View className='flex-row justify-between mb-4 w-full items-center  '>
+				{['amount', 'price'].map(field => (
+					<Text
+						key={field}
+						className={` py-2 rounded-lg text-white text-center cursor-pointer flex-1 mx-4 ${
+							filter === field ? 'bg-main_light' : 'border border-white'
+						}`}
+						onPress={() => setFilter(field as 'amount' | 'price')}
+					>
+						{field}
+					</Text>
+				))}
+			</View>
+			<View>
 				{!changes || changes.length === 0 ? (
 					<View className=' w-full mt-5'>
 						<View className='w-full justify-center items-center bg-black-700 h-24 rounded-xl flex flex-col '>
@@ -202,7 +199,7 @@ const AnalyticsChart = ({ folder_id }: { folder_id: number }) => {
 						</View>
 					</TouchableWithoutFeedback>
 				)}
-      </View>
+			</View>
 		</GestureHandlerRootView>
 	)
 }

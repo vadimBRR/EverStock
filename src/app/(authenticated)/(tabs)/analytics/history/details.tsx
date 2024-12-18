@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import React from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native-gesture-handler'

@@ -1,9 +1,6 @@
 import {
 	View,
 	Text,
-	SafeAreaView,
-	Platform,
-	StatusBar,
 	Image,
 } from 'react-native'
 import React, { useEffect } from 'react'
@@ -11,15 +8,11 @@ import Container from '../components/Container'
 import * as NavigationBar from 'expo-navigation-bar'
 import CustomButton from '../components/CustomButton'
 import { Redirect, useRouter } from 'expo-router'
-// import { useAuth } from '../providers/AuthProvider'
-import Loading from '../components/Loading'
-import { SignIn } from '@clerk/clerk-react'
 import { useAccount } from '../providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
 
 export default function RootScreen() {
 	const router = useRouter()
-	const isLoading = true
 	const { isAuthenticated, handleIsAuthenticated } = useAccount()
 
 	handleIsAuthenticated()

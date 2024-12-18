@@ -1,12 +1,11 @@
 import React, { useCallback, useMemo } from 'react'
-import { View, Text, Keyboard, TouchableOpacity } from 'react-native'
+import { View, Text, Keyboard } from 'react-native'
 import {
 	BottomSheetModal,
 	BottomSheetBackdrop,
 	TouchableWithoutFeedback,
 } from '@gorhom/bottom-sheet'
 import { useModal } from '@/src/providers/ModalProvider'
-import { EvilIcons } from '@expo/vector-icons'
 import OptionSettings from './OptionSettings'
 import { useAccount } from '@/src/providers/AccountProvider'
 import { useRouter } from 'expo-router'
@@ -66,7 +65,6 @@ export default function ItemSettings({ item_id }: Props) {
 						<View className=' flex-col px-2 '>
 							
               <OptionSettings onPress={() => {onDelete()}} icon='delete' text='Delete' />
-              {/* <OptionSettings onPress={() => {}} icon='image' text='Change images' /> */}
               <OptionSettings onPress={() => {}} icon='history' text='History' />
               <OptionSettings onPress={() => {}} icon='export' text='Export' />
               <OptionSettings onPress={() => {}} icon='move' text='Move' />

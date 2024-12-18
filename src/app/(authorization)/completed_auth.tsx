@@ -4,7 +4,6 @@ import Container from '../../components/Container'
 import CustomButton from '../../components/CustomButton'
 import { useRouter } from 'expo-router'
 import { useAccount } from '@/src/providers/AccountProvider'
-// import { supabase } from '../../lib/supabase'
 
 export default function CompletedAuthScreen() {
 	const router = useRouter()

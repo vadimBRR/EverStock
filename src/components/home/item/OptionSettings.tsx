@@ -1,6 +1,5 @@
 import { View, Text, TouchableOpacity, Image, ImageSourcePropType } from 'react-native'
 import React from 'react'
-import { EvilIcons, MaterialCommunityIcons } from '@expo/vector-icons'
 
 type Props = {
 	onPress: () => void
@@ -23,7 +22,7 @@ const OptionSettings = ({ onPress, icon, text }: Props) => {
 				onPress={onPress}
 			>
 				<View className='w-10 flex items-center'>
-					{/* {icon === 'history' ? <MaterialCommunityIcons name={icon} size={28} color='white' /> : <EvilIcons name={icon} size={34} color='white' />} */}
+
 					{iconMap[icon]&&
           <Image
           source={iconMap[icon]}

@@ -1,27 +1,17 @@
 import {
 	View,
 	Text,
-	Image,
-	Pressable,
-	Modal,
-	TouchableWithoutFeedback,
 	TextInput,
 	TouchableOpacity,
 } from 'react-native'
 import React, { useState } from 'react'
 import Container from '@/src/components/Container'
-import { Href, Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import CustomInput from '@/src/components/CustomInput'
 import CustomButton from '@/src/components/CustomButton'
-import * as ImagePicker from 'expo-image-picker'
 import { ScrollView } from 'react-native'
-import * as FileSystem from 'expo-file-system'
-// import { useCreateItem } from '@/src/api/item'
-import { randomUUID } from 'expo-crypto'
-import { decode } from 'base64-arraybuffer'
-// import { client } from '@/src/utils/supabaseClient'
 import ItemImagesCarusel from '@/src/components/home/item/ItemImagesCarusel'
-import { AntDesign, Ionicons, SimpleLineIcons } from '@expo/vector-icons'
+import { SimpleLineIcons } from '@expo/vector-icons'
 import EvilIcons from '@expo/vector-icons/EvilIcons'
 import { useAccount } from '@/src/providers/AccountProvider'
 import Counter from '@/src/components/home/item/Counter'
@@ -37,8 +27,7 @@ export default function ItemScreen() {
 
 	const item = useAccount().items.find(item => item.id === item_id)
 	if (!item) return <Text>Item not found</Text>
-  const {handleOpenAnother}=useModal()
-	// const [folderName, setFolderName] = useState('')
+	const { handleOpenAnother } = useModal()
 	const [itemName, setItemName] = useState(item.name || '')
 	const [amount, setAmount] = useState(item.amount + '' || '')
 	const [price, setPrice] = useState(item.price + '' || '')
@@ -46,20 +35,19 @@ export default function ItemScreen() {
 	const [tag, setTag] = useState<string>(item.tag || '')
 
 	const [images, setImages] = useState<string[]>(item.image_url || [])
-	// const [selectedImage, setSelectedImage] = useState<string | null>(null)
 	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
 	const { handleUpdateItem } = useAccount()
-	const [selectedType, setSelectedType] = useState(item.typeAmount || 'quantity')
+	const [selectedType, setSelectedType] = useState(
+		item.typeAmount || 'quantity'
+	)
 	const typesAmount = ['quantity', 'weight', 'volume']
 
 	const changeImages = ({ images }: { images: string[] }) => {
 		setImages(images)
-		// handleChangeImages({images, item_id})
 	}
 
 	const updateItem = () => {
-		// handleChangeImages({images, item_id})
 		handleUpdateItem({
 			id: item_id,
 			name: itemName,
@@ -133,7 +121,7 @@ export default function ItemScreen() {
 							))}
 						</View>
 						<Counter
-              type={selectedType}
+							type={selectedType}
 							quantity={amount}
 							item_id={item_id}
 							setQuantity={(quantity: number) => setAmount(quantity + '')}
@@ -156,8 +144,7 @@ export default function ItemScreen() {
 									onChangeText={setTag}
 								/>
 								<EvilIcons name='tag' size={34} color='white' />
-								{/* <AntDesign name='tag' size={24} color='white' /> */}
-								{/* <Text>Hello</Text> */}
+
 							</View>
 						</View>
 
@@ -202,7 +189,7 @@ export default function ItemScreen() {
 					isLoading={isLoading}
 				/>
 			</View>
-      <ItemSettings item_id={item_id}/>
+			<ItemSettings item_id={item_id} />
 		</Container>
 	)
 }

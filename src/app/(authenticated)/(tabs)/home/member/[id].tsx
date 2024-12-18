@@ -1,4 +1,4 @@
-import { View, Text, FlatList } from 'react-native'
+import { View, FlatList } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import * as SystemUI from 'expo-system-ui'
@@ -36,7 +36,6 @@ const MembersScreen = () => {
 
 	const onRefresh = useCallback(async () => {
 		setRefreshing(true)
-		// await refetch()
 
 		setRefreshing(false)
 	}, [])
@@ -64,7 +63,6 @@ const MembersScreen = () => {
 					/>
 					<AddButton handlePressAdd={openCreateFolder} />
 				</View>
-				{/* <CardsList/> */}
 				{isLoading ? (
 					<Loading />
 				) : (

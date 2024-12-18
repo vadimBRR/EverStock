@@ -1,26 +1,11 @@
-import {
-	View,
-	Text,
-	Image,
-	Pressable,
-	Modal,
-	TouchableWithoutFeedback,
-	TextInput,
-} from 'react-native'
+import { View, Text, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import Container from '@/src/components/Container'
-import { Href, Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import CustomInput from '@/src/components/CustomInput'
 import CustomButton from '@/src/components/CustomButton'
-import * as ImagePicker from 'expo-image-picker'
 import { ScrollView } from 'react-native'
-import * as FileSystem from 'expo-file-system'
-// import { useCreateItem } from '@/src/api/item'
-import { randomUUID } from 'expo-crypto'
-import { decode } from 'base64-arraybuffer'
-// import { client } from '@/src/utils/supabaseClient'
 import ItemImagesCarusel from '@/src/components/home/item/ItemImagesCarusel'
-import { AntDesign, Ionicons } from '@expo/vector-icons'
 import EvilIcons from '@expo/vector-icons/EvilIcons'
 import { useAccount } from '@/src/providers/AccountProvider'
 import CustomRadioButton from '@/src/components/CustomRadioButton'
@@ -31,7 +16,6 @@ export default function CreateItem() {
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	)
 
-	// const [folderName, setFolderName] = useState('')
 	const [itemName, setItemName] = useState('')
 	const [quantity, setQuantity] = useState('')
 	const [price, setPrice] = useState('')
@@ -41,7 +25,6 @@ export default function CreateItem() {
 	const typesAmount = ['quantity', 'weight', 'volume']
 
 	const [images, setImages] = useState<string[]>([])
-	// const [selectedImage, setSelectedImage] = useState<string | null>(null)
 	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
 
@@ -49,33 +32,6 @@ export default function CreateItem() {
 		;<View className='flex-1 justify-center items-center'>
 			<Text className='font-bold'>Failed to fetch</Text>
 		</View>
-	}
-
-	const uploadImages = async () => {
-		const uploadedImagePaths = await Promise.all(
-			images.map(async image => {
-				if (image.startsWith('file://')) {
-					const base64 = await FileSystem.readAsStringAsync(image, {
-						encoding: 'base64',
-					})
-					const filePath = `${randomUUID()}.png`
-					const contentType = 'image/png'
-
-					// const { data, error } = await client.storage
-					//   .from('item-images')
-					//   .upload(filePath, decode(base64), { contentType });
-
-					// if (error) {
-					//   console.error(`Failed to upload image: ${error.message}`);
-					//   return null;
-					// }
-					// return data.path;
-				}
-				return null
-			})
-		)
-
-		return uploadedImagePaths.filter(path => path !== null)
 	}
 
 	const { handleCreateItem: createItem } = useAccount()
@@ -86,7 +42,6 @@ export default function CreateItem() {
 		if (quantity && !parseInt(quantity)) return
 
 		setIsLoading(true)
-		// const uploadedImagePaths = await uploadImages()
 		createItem({
 			folder_id: folder_id,
 			name: itemName,
@@ -97,13 +52,6 @@ export default function CreateItem() {
 			tag,
 			typeAmount: selectedType,
 		})
-
-		// await createItem({folder_id: folder_id, name: itemName, images: uploadedImagePaths, price:parseFloat(price), quantity:parseInt(quantity), note},{
-		//   onSuccess: () => {
-		//     setIsLoading(false);
-		//     router.back()
-		//   },
-		// } )
 
 		setIsLoading(false)
 		router.back()
@@ -171,8 +119,6 @@ export default function CreateItem() {
 									onChangeText={setTag}
 								/>
 								<EvilIcons name='tag' size={34} color='white' />
-								{/* <AntDesign name='tag' size={24} color='white' /> */}
-								{/* <Text>Hello</Text> */}
 							</View>
 						</View>
 

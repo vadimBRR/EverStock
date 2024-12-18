@@ -6,16 +6,17 @@ import { useAccount } from '@/src/providers/AccountProvider'
 import HeaderAnalytics from '@/src/components/analytics/SliderFolders'
 import AnalyticsChart from '@/src/components/analytics/AnalyticsChart'
 import HistoryContainer from '@/src/components/analytics/HistoryContainer'
-import TransactionCard from '@/src/components/analytics/TransactionCard'
 import { ScrollView } from 'react-native-gesture-handler'
 
 const AnalyticsScreen = () => {
 	const { transactions, folders } = useAccount()
 	const folders_id = transactions.map(transaction => transaction.folder_id)
 	const [activeIndex, setActiveIndex] = React.useState(folders_id[0])
-  const [transaction, setTransaction] = React.useState(transactions.find(transaction => transaction.folder_id === activeIndex))
+	const [transaction, setTransaction] = React.useState(
+		transactions.find(transaction => transaction.folder_id === activeIndex)
+	)
 
-  if(!transaction) return <Text>Transaction not found</Text>
+	if (!transaction) return <Text>Transaction not found</Text>
 
 	return (
 		<Container isPadding={false} container_style='mx-'>
@@ -50,8 +51,10 @@ const AnalyticsScreen = () => {
 					<AnalyticsChart folder_id={activeIndex} />
 
 					<View className='w-full mt-2'>
-						<HistoryContainer transaction={transaction} activeIndex={activeIndex}/>
-            
+						<HistoryContainer
+							transaction={transaction}
+							activeIndex={activeIndex}
+						/>
 					</View>
 				</ScrollView>
 			) : (

@@ -144,7 +144,6 @@ const MemberProfileScreen = () => {
 						text='Delete'
 						onClick={deleteMember}
 						styleContainer={` mx-0 flex-1 mr-2`}
-						// disabled={!folderName}
 						isActive={!!email && !roles.isAdmin}
 						disabled={roles.isAdmin}
 					/>
@@ -152,7 +151,6 @@ const MemberProfileScreen = () => {
 						text='Apply'
 						onClick={updateMember}
 						styleContainer={` mx-0 flex-1 ml-2`}
-						// disabled={!folderName}
 						isActive={!!email}
 					/>
 				</View>

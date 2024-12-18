@@ -2,7 +2,6 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import Container from '@/src/components/Container'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
-import CustomButton from '@/src/components/CustomButton'
 import { useAccount } from '@/src/providers/AccountProvider'
 import RectangleCheckBox from '@/src/components/RectangleCheckBox'
 import CardMember from '@/src/components/home/member/CardMember'
@@ -19,8 +18,6 @@ const ViewSettingsScreen = () => {
 	const {
 		transactionSettings,
 		handleUpdateTransactionSettings,
-		addFilterItemId,
-		handleFilterAddMemberId,
 		deleteFilterMemberId,
 		deleteFilterItemId,
 	} = useAccount()
@@ -43,8 +40,7 @@ const ViewSettingsScreen = () => {
 	const items = useAccount().items.filter(item =>
 		settings.itemsId.includes(item.id)
 	)
-	// const [viewOptions, setViewOptions] = React.useState(settings.)
-	// const viewOptionsList: (keyof typeof settings.viewOptions)[] = ['name', 'image', 'quantity', 'price', 'totalPrice']
+
 	const applySettings = () => {
 		handleUpdateTransactionSettings(settings)
 		router.back()
@@ -106,15 +102,6 @@ const ViewSettingsScreen = () => {
 	const handleReset = () => {
 		setSettings(defaultSettings)
 	}
-
-	const isDefaultSettings =
-		settings.actions.isCreated &&
-		settings.actions.isEdited &&
-		settings.actions.isDeleted &&
-		settings.sortBy === 'last updated' &&
-		settings.isAsc &&
-		settings.membersId.length === 0 &&
-		settings.itemsId.length === 0
 
 	return (
 		<Container isPadding={false}>
@@ -282,12 +269,7 @@ const ViewSettingsScreen = () => {
 										currencyName={item.typeAmount}
 										isPressable={false}
 									/>
-									{/* <CardMember
-										data={user}
-										folderId={id}
-										isPressable={false}
-										isIcons={false}
-									/> */}
+
 									<TouchableOpacity className='absolute  top-[17px]  right-5 p-2 border border-white rounded-xl'>
 										<Ionicons
 											name='trash-outline'
@@ -303,12 +285,6 @@ const ViewSettingsScreen = () => {
 					)}
 				</ScrollView>
 
-				{/* <CustomButton
-					text='Apply'
-					onClick={applySettings}
-					styleContainer={`my-4 mx-0`}
-					// disabled={!folderName}
-				/> */}
 			</View>
 		</Container>
 	)

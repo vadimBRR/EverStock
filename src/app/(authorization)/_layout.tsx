@@ -1,14 +1,8 @@
-import { View, Text } from 'react-native'
 import React from 'react'
-import { Redirect, Stack } from 'expo-router'
-// import { useAuth } from '../../providers/AuthProvider'
-import Loading from '../../components/Loading'
+import { Stack } from 'expo-router'
 import * as SystemUI from 'expo-system-ui'
 
 export default function AuthLayout() {
-  // const { session, isLoading } = useAuth()
-  // if(isLoading) return <Loading/>
-  // if(session) return <Redirect href="/(tabs)/home" />
   SystemUI.setBackgroundColorAsync("#1C1A1A")
   return (
 

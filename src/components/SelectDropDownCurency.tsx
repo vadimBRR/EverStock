@@ -68,7 +68,6 @@ export default SelectDropDownCurency
 const styles = StyleSheet.create({
 	dropdownButtonStyle: {
 		width: '100%',
-		// backgroundColor: 'rgba(0, 0, 0, 0.05)',
 		borderRadius: 16,
 		justifyContent: 'space-between',
 		flexDirection: 'row',
@@ -99,7 +98,6 @@ const styles = StyleSheet.create({
 		borderBottomColor: '#B6B6B6',
 	},
 	dropdownItemStyle: {
-		// position:'absolute',
 		width: '100%',
 		flexDirection: 'row',
 		paddingHorizontal: 12,

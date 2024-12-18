@@ -5,7 +5,6 @@ import CustomButton from '../../components/CustomButton'
 import CustomInput from '../../components/CustomInput'
 import { useRouter } from 'expo-router'
 import { useAccount } from '@/src/providers/AccountProvider'
-// import { supabase } from '../../lib/supabase'
 import * as SystemUI from 'expo-system-ui'
 
 export default function SignUpScreen() {

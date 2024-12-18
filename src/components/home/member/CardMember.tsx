@@ -1,9 +1,6 @@
-import { View, Text, Image, TouchableOpacity, Touchable } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
-// import { Tables } from '@/src/types/types'
-import { currency } from '@/src/constants'
 import { Href, useRouter } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
 
 type Props = {
 	data: {
@@ -61,45 +58,46 @@ export default function CardMember({
 								{data.email}
 							</Text>
 						</View>
-            {isIcons &&<View className='flex-row items-center'>
-							{data.roles.isAdmin && (
-								<Image
-									source={require('@/src/assets/icons/member/isAdmin.png')}
-									className='w-5 h-5 aspect-square'
-								/>
-							)}
-							{data.roles.isView && !data.roles.isAdmin && (
-								<Image
-									source={require('@/src/assets/icons/member/isView.png')}
-									className='w-5 h-5 aspect-square'
-								/>
-							)}
-							{data.roles.isAddItem && !data.roles.isAdmin && (
-								<Image
-									source={require('@/src/assets/icons/member/isAddItem.png')}
-									className='w-5 h-5 aspect-square'
-								/>
-							)}
-							{data.roles.isDeleteItem && !data.roles.isAdmin && (
-								<Image
-									source={require('@/src/assets/icons/member/isDeleteItem.png')}
-									className='w-5 h-5 aspect-square'
-								/>
-							)}
-							{data.roles.isEdit && !data.roles.isAdmin && (
-								<Image
-									source={require('@/src/assets/icons/member/isEdit.png')}
-									className='w-5 h-5 aspect-square'
-								/>
-							)}
-							{data.roles.isCanInvite && !data.roles.isAdmin && (
-								<Image
-									source={require('@/src/assets/icons/member/isCanInvite.png')}
-									className='w-5 h-5 aspect-square'
-								/>
-							)}
-						</View> }
-						
+						{isIcons && (
+							<View className='flex-row items-center'>
+								{data.roles.isAdmin && (
+									<Image
+										source={require('@/src/assets/icons/member/isAdmin.png')}
+										className='w-5 h-5 aspect-square'
+									/>
+								)}
+								{data.roles.isView && !data.roles.isAdmin && (
+									<Image
+										source={require('@/src/assets/icons/member/isView.png')}
+										className='w-5 h-5 aspect-square'
+									/>
+								)}
+								{data.roles.isAddItem && !data.roles.isAdmin && (
+									<Image
+										source={require('@/src/assets/icons/member/isAddItem.png')}
+										className='w-5 h-5 aspect-square'
+									/>
+								)}
+								{data.roles.isDeleteItem && !data.roles.isAdmin && (
+									<Image
+										source={require('@/src/assets/icons/member/isDeleteItem.png')}
+										className='w-5 h-5 aspect-square'
+									/>
+								)}
+								{data.roles.isEdit && !data.roles.isAdmin && (
+									<Image
+										source={require('@/src/assets/icons/member/isEdit.png')}
+										className='w-5 h-5 aspect-square'
+									/>
+								)}
+								{data.roles.isCanInvite && !data.roles.isAdmin && (
+									<Image
+										source={require('@/src/assets/icons/member/isCanInvite.png')}
+										className='w-5 h-5 aspect-square'
+									/>
+								)}
+							</View>
+						)}
 					</View>
 				</TouchableOpacity>
 			</View>

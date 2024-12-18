@@ -1,24 +1,18 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import React, { useEffect } from 'react'
 import Container from '@/src/components/Container'
 import { Stack } from 'expo-router'
 import CustomInput from '@/src/components/CustomInput'
-import Loading from '@/src/components/Loading'
 import CustomButton from '@/src/components/CustomButton'
-import { useQueryClient } from '@tanstack/react-query'
 
 export default function AccountScreen() {
-	const [email, setEmail] = React.useState('')
-	// const { data, isLoading } = useGetUserById()
 	const [firstName, setFirstName] = React.useState('')
 	const [lastName, setLastName] = React.useState('')
 	const [user, setUser] = React.useState<{
 		firstName: string
 		lastName: string
 	}>({ firstName: '', lastName: '' })
-	const updateUserInfo = () => {}
-	// const {actor} = useAuth()
-	//
+
 	useEffect(() => {
 		if (user) {
 			setFirstName(user?.firstName || '')
@@ -28,17 +22,7 @@ export default function AccountScreen() {
 
 	const handleUpdateProfile = async () => {
 		if (firstName && firstName !== user?.firstName) {
-			// await updateUserInfo!({full_name: fullName}).then(() => {
-			//   const client = useQueryClient();
-			//   client.invalidateQueries({queryKey: ['user']});
-			// })
-			// try {
-			//   const res = await user?.update({firstName, lastName})
-			//
-			//
-			// } catch (error) {
-			//
-			// }
+		
 
 			setUser({ ...user, firstName })
 		}

@@ -5,17 +5,13 @@ import CustomButton from '../../components/CustomButton'
 import CustomInput from '../../components/CustomInput'
 import { router } from 'expo-router'
 import { useAccount } from '@/src/providers/AccountProvider'
-// import useWarmUpBrowser from '@/src/hooks/useWarmUpBrowser'
-// import { supabase } from '../../lib/supabase'
 
 export default function SignInScreen() {
-	// useWarmUpBrowser();
 	const [password, setPassword] = useState('')
 	const [email, setEmail] = useState('')
 	const [isLoading, setIsLoading] = useState(false)
 	const { handleSignIn } = useAccount()
 
-	// const { signInWithEmail, signInWithOAuth } = useAuthService();
 	const signInWithEmail = (email: string) => {
 		handleSignIn({ email })
 		router.replace('/')

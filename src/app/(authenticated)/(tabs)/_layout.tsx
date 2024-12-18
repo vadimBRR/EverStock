@@ -1,12 +1,9 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { Redirect, Tabs, useSegments } from 'expo-router'
+import { Tabs, useSegments } from 'expo-router'
 import Container from '../../../components/Container'
 import Ionicons from '@expo/vector-icons/Ionicons'
-// import { useAuth } from '../../providers/AuthProvider'
-import { useModal } from '../../../providers/ModalProvider'
 import { Colors } from '@/src/constants/Colors'
-// import ModalCreateDebt from '@/src/components/debts/ModalCreateDebt'
 import * as SystemUI from 'expo-system-ui'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 

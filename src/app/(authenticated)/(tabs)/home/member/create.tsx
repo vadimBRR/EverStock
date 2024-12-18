@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native'
 import React, { useState } from 'react'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import { useAccount } from '@/src/providers/AccountProvider'
 import Container from '@/src/components/Container'
 import CustomInput from '@/src/components/CustomInput'

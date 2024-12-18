@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { infoTransactionType, transactionType } from '@/src/types/types'
+import { transactionType } from '@/src/types/types'
 import TransactionCard from './TransactionCard'
 import { useAccount } from '@/src/providers/AccountProvider'
 import { FlatList } from 'react-native-gesture-handler'
@@ -16,26 +16,8 @@ const HistoryContainer = ({
   const router = useRouter();
 	const { folders, getUserFullName, getAction } = useAccount()
 
-	// const getUserFullName = ({ user_id }: { user_id: number }) => {
-	// 	const fullName =
-	// 		folders
-	// 			.find(folder => folder.id === activeIndex)
-	// 			?.members.find(member => member.id === user_id)?.fullName || ''
-
-	// 	return fullName
-	// }
-
-	// const getAction = (info: infoTransactionType) => {
-	// 	if (info.isCreated) return 'created item ' + info.changed_item.name
-	// 	if (info.isEdited) return 'edited item ' + info.changed_item.name
-	// 	if (info.isDeleted) return 'deleted item ' + info.prev_item.name
-
-	// 	return ''
-	// }
-
   const handleOpenDetailedView = () => {
 		router.push(`/(authenticated)/(tabs)/analytics/history?activeIndex=${activeIndex}`)
-		// router.setParams({activeIndex: activeIndex})
 	}
 	return (
 		<View className=' bg-black-600 rounded-[17px] py-3 mb-2 border border-black/10 mx-2 mt-4'>

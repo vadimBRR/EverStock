@@ -13,7 +13,6 @@ import * as ImagePicker from 'expo-image-picker'
 import { Colors } from '@/src/constants/Colors'
 import { Ionicons } from '@expo/vector-icons'
 import SmallCarousel from './SmallCarousel'
-import { useAccount } from '@/src/providers/AccountProvider'
 
 interface ImageUploaderProps {
 	images: string[]

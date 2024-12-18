@@ -1,8 +1,7 @@
 import { View, Text, Image } from 'react-native'
 import React, { useState } from 'react'
 import Container from '@/src/components/Container'
-import { useSignIn } from '@clerk/clerk-expo'
-import { Stack, useRouter } from 'expo-router'
+import {  useRouter } from 'expo-router'
 import CustomInput from '@/src/components/CustomInput'
 import CustomButton from '@/src/components/CustomButton'
 import { Ionicons } from '@expo/vector-icons'
@@ -12,41 +11,41 @@ export default function ResetPassword() {
 	const [password, setPassword] = useState('')
 	const [code, setCode] = useState('')
 	const [successfulCreation, setSuccessfulCreation] = useState(false)
-	const { signIn, setActive } = useSignIn()
+	// const { signIn, setActive } = useSignIn()
 	const router = useRouter()
 
-	const onRequestReset = async () => {
-		try {
-			await signIn!.create({
-				strategy: 'reset_password_email_code',
-				identifier: emailAddress,
-			})
-			setSuccessfulCreation(true)
-		} catch (err: any) {
-			const messages = err.errors
-				.map((error: any) => error.longMessage)
-				.join(', ')
-			alert(messages)
-		}
-	}
+	// const onRequestReset = async () => {
+	// 	try {
+	// 		await signIn!.create({
+	// 			strategy: 'reset_password_email_code',
+	// 			identifier: emailAddress,
+	// 		})
+	// 		setSuccessfulCreation(true)
+	// 	} catch (err: any) {
+	// 		const messages = err.errors
+	// 			.map((error: any) => error.longMessage)
+	// 			.join(', ')
+	// 		alert(messages)
+	// 	}
+	// }
 
-	// Reset the password with the code and the new password
-	const onReset = async () => {
-		try {
-			const result = await signIn!.attemptFirstFactor({
-				strategy: 'reset_password_email_code',
-				code,
-				password,
-			})
+	// // Reset the password with the code and the new password
+	// const onReset = async () => {
+	// 	try {
+	// 		const result = await signIn!.attemptFirstFactor({
+	// 			strategy: 'reset_password_email_code',
+	// 			code,
+	// 			password,
+	// 		})
 
-			alert('Password reset successfully')
+	// 		alert('Password reset successfully')
 
-			// Set the user session active, which will log in the user automatically
-			await setActive!({ session: result.createdSessionId })
-		} catch (err: any) {
-			alert(err.errors[0].message)
-		}
-	}
+	// 		// Set the user session active, which will log in the user automatically
+	// 		await setActive!({ session: result.createdSessionId })
+	// 	} catch (err: any) {
+	// 		alert(err.errors[0].message)
+	// 	}
+	// }
 
 	return (
 		<Container>
@@ -82,7 +81,7 @@ export default function ResetPassword() {
 						<View className='w-full my-[30px]'>
 							<CustomButton
 								text='Send Reset Email'
-								onClick={onRequestReset}
+								onClick={() => {}}
 								styleContainer='m-0'
 							/>
 						</View>
@@ -113,7 +112,7 @@ export default function ResetPassword() {
 
 							<CustomButton
 								text='Set New Password'
-								onClick={onReset}
+								onClick={() => {}}
 								styleContainer='my-[30px] mx-0'
 							/>
 						</View>

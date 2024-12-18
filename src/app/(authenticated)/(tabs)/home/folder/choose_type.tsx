@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import Container from '@/src/components/Container'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import CustomButton from '@/src/components/CustomButton'
@@ -45,7 +45,6 @@ export default function ChooseTypeScreen() {
 	}
 
 	const handleApply = () => {
-		//  );
 		router.back()
 		router.setParams({
 			type: folderType,
@@ -53,7 +52,6 @@ export default function ChooseTypeScreen() {
 				.filter(checkbox => checkbox.checked)
 				.map(checkbox => checkbox.text),
 		})
-		// router.setParams({ folderType: folderType, options: JSON.stringify(checkboxes)})
 	}
 
 	useEffect(() => {

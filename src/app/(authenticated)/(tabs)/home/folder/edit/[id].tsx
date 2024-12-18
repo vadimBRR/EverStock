@@ -37,7 +37,7 @@ export default function EditFolder() {
 	const [isErrorInput, setIsErrorInput] = useState(false)
 
 	if (!id) {
-		;<View className='flex-1 justify-center items-center'>
+		<View className='flex-1 justify-center items-center'>
 			<Text className='font-bold'>Failed to fetch</Text>
 		</View>
 	}
@@ -126,7 +126,6 @@ export default function EditFolder() {
 					text='Apply'
 					onClick={updateFolder}
 					styleContainer={`my-4 mx-0`}
-					// disabled={!folderName}
 					isActive={!!folderName}
 				/>
 			</View>

@@ -24,7 +24,6 @@ export default function CreateFolder() {
 	const [folderOptions, setFolderOptions] = useState<string[]>([])
 	const [isErrorInput, setIsErrorInput] = useState(false)
 
-	// const { mutate: createFolder } = useCreateFolder();
 	const { handleCreateFolder } = useAccount()
 	const createFolder = () => {
 		if (!folderName) return setIsErrorInput(true)

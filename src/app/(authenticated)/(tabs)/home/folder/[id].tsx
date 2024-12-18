@@ -7,8 +7,6 @@ import {
 } from 'react-native'
 import React, { useCallback, useMemo, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
-// import { useGetFoldersWithItems } from '@/src/api/folder'
-import Loading from '@/src/components/Loading'
 import Container from '@/src/components/Container'
 import SearchBar from '@/src/components/SearchBar'
 import AddButton from '@/src/components/AddButton'
@@ -16,7 +14,7 @@ import { useModal } from '@/src/providers/ModalProvider'
 import TotalInfo from '@/src/components/home/item/TotalInfo'
 import ModalCreate from '@/src/components/ModalCreate'
 import CardItem from '@/src/components/home/item/CardItem'
-import { folderType, itemType } from '@/src/types/types'
+import {  itemType } from '@/src/types/types'
 import { useAccount } from '@/src/providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
 import { Ionicons } from '@expo/vector-icons'
@@ -37,7 +35,7 @@ export default function FolderScreen() {
 	const { handleOpenCreate } = useModal()
 
 	if (!id) {
-		;<View className='flex-1 justify-center items-center'>
+		<View className='flex-1 justify-center items-center'>
 			<Text className='font-bold'>Failed to fetch</Text>
 		</View>
 	}
@@ -54,18 +52,8 @@ export default function FolderScreen() {
 
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/home/item/settings')
-		// router.setParams({ id })
 	}
-	type ViewSettings = {
-		sortBy: keyof itemType
-		isAsc: boolean
-		viewOptions: {
-			name: boolean
-			image: boolean
-			quantity: boolean
-			price: boolean
-		}
-	}
+	
 
 	const sortedItems = useMemo(() => {
 		const sortBy = viewSettings.sortBy

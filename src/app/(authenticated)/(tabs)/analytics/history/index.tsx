@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React, { useMemo, useState } from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Container from '@/src/components/Container'
@@ -118,7 +117,6 @@ const HistoryScreen = () => {
 
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/analytics/history/settings?id=' + id)
-		// router.setParams({ id })
 	}
 	return (
 		<Container isPadding={false} container_style='mx-2 pt-2'>
@@ -141,15 +139,6 @@ const HistoryScreen = () => {
 					),
 				}}
 			/>
-			{/* <View className='flex-1 justify-center items-center px-2'>
-            <Text className='font-lexend_semibold text-[24px] text-white text-center'>
-              No transactions found
-            </Text>
-            <Text className='font-lexend_light text-[16px] text-white text-center'>
-              In the "Home" tab, you can create a folder and add items
-            </Text>
-          </View>
-           */}
 			<ScrollView
 				showsHorizontalScrollIndicator={false}
 				contentContainerStyle={{ gap: 10 }}
