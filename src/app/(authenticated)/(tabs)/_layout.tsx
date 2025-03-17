@@ -26,9 +26,11 @@ export default function TabsLayout() {
 		(segments.includes('profile') && segments.includes('[id]')) ||
 		segments.includes('choose_member') ||
 		segments.includes('choose_item') ||
-		segments.includes('history')
+		segments.includes('history') || 
+    segments.includes('fast_edit')
 
   console.log(hide);
+  console.log(segments);
 	return (
 		<Container isPadding={false}>
       

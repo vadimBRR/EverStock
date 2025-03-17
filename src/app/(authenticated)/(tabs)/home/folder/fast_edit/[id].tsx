@@ -17,9 +17,10 @@ import CardItem from '@/src/components/home/item/CardItem'
 import { itemType } from '@/src/types/types'
 import { useAccount } from '@/src/providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
-import { Ionicons } from '@expo/vector-icons'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+import CardItemFastEdit from '@/src/components/home/item/CardItemFastEdit'
 
-export default function FolderScreen() {
+export default function FastEditScreen() {
 	const { id: idString } = useLocalSearchParams()
 	const id = parseFloat(
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
@@ -28,6 +29,8 @@ export default function FolderScreen() {
 
 	const [search, setSearch] = useState('')
 	const [refreshing, setRefreshing] = useState(false)
+  const [activeItemId, setActiveItemId] = useState<number | null>(null);
+
 
 	const handleSearch = (value: string) => {
 		setSearch(value)
@@ -50,13 +53,10 @@ export default function FolderScreen() {
 		setRefreshing(false)
 	}, [])
 
-	const handleOpenViewSettings = () => {
-		router.push('/(authenticated)/(tabs)/home/item/settings')
+	const handleBack = () => {
+		// router.push('/(authenticated)/(tabs)/home/folder/' + folder.id)
+		router.back()
 	}
-
-  const handleOpenFastEdit = () => {
-    router.push('/(authenticated)/(tabs)/home/folder/fast_edit/' + id)
-  }
 
 	const sortedItems = useMemo(() => {
 		const sortBy = viewSettings.sortBy
@@ -87,6 +87,8 @@ export default function FolderScreen() {
 			})
 	}, [items, search, viewSettings])
 
+	console.log('here')
+
 	return (
 		<Container isPadding={false}>
 			<Stack.Screen
@@ -102,34 +104,28 @@ export default function FolderScreen() {
 						<View className='flex flex-row'>
 							<TouchableOpacity
 								className='flex-row items-center p-2'
-								onPress={() => handleOpenFastEdit()}
+								onPress={() => handleBack()}
 							>
-								<Ionicons name='hammer-outline' size={24} color='white' />
-							</TouchableOpacity>
-							<TouchableOpacity
-								className='flex-row items-center p-2'
-								onPress={() => handleOpenViewSettings()}
-							>
-								<Ionicons name='options-outline' size={24} color='white' />
+								<MaterialIcons name='done-outline' size={24} color='white' />
 							</TouchableOpacity>
 						</View>
 					),
 				}}
 			/>
-			<View className='flex-row w-full justify-center my-2'>
+			<View className='w-full items-center  my-2 relative'>
 				<SearchBar
-					containerStyle='mr-2'
+					containerStyle='w-[95%]'
 					search={search}
 					handleSearch={handleSearch}
 				/>
-				<AddButton handlePressAdd={handleOpenCreate} />
+				{/* <AddButton handlePressAdd={handleOpenCreate} /> */}
 			</View>
-			<TotalInfo
-				totalMembers={folder.totalMembers}
-				totalPrice={folder.totalPrice}
-				totalQuantity={folder.totalQuantity}
-				currencyFolder={folder.currency.name}
-			/>
+			{/* <TotalInfo
+        totalMembers={folder.totalMembers}
+        totalPrice={folder.totalPrice}
+        totalQuantity={folder.totalQuantity}
+        currencyFolder={folder.currency.name}
+      /> */}
 			{sortedItems.length === 0 ? (
 				<View className='flex-1 justify-center items-center px-2'>
 					<Text className='font-lexend_semibold text-[24px] text-white text-center'>
@@ -146,10 +142,12 @@ export default function FolderScreen() {
 					keyExtractor={item => item.id.toString()}
 					extraData={items}
 					renderItem={({ item }) => (
-						<CardItem
+						<CardItemFastEdit
 							item={item}
 							currencyName={folder.currency.name || 'USD'}
 							key={item.id}
+              activeItemId={activeItemId}
+	            setActiveItemId={setActiveItemId}
 						/>
 					)}
 					refreshControl={

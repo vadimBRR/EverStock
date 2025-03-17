@@ -198,7 +198,9 @@ type AccountType = {
 	getChangesByField: (
 		folder_id: number,
 		field: 'price' | 'amount',
-		timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all'
+    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' | 'custom',
+    startDate: Date | null,
+    endDate: Date | null
 	) => { date: string; value: number }[]
 	getUserFullName: ({
 		user_id,
@@ -568,55 +570,61 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		})
 	}
 	const getChangesByField = (
-		folder_id: number,
-		field: 'price' | 'amount',
-		timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all'
-	) => {
-		const folderTransactions = transactions.find(
-			transaction => transaction.folder_id === folder_id
-		)
+    folder_id: number,
+    field: 'price' | 'amount',
+    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' | 'custom',
+    startDate: Date | null,
+    endDate: Date | null
+  ) => {
+    const folderTransactions = transactions.find(
+      transaction => transaction.folder_id === folder_id
+    )
+  
+    if (!folderTransactions) return []
+  
+    const now = new Date()
+  
+    const getStartDate = (range: string) => {
+      const startDate = new Date(now)
+      switch (range) {
+        case 'today':
+          startDate.setHours(0, 0, 0, 0)
+          break
+        case '1_week':
+          startDate.setDate(now.getDate() - 7)
+          break
+        case '2_weeks':
+          startDate.setDate(now.getDate() - 14)
+          break
+        case '1_month':
+          startDate.setMonth(now.getMonth() - 1)
+          break
+        case 'all':
+        default:
+          return null
+      }
+      return startDate
+    }
+  
+    // Визначаємо, які дати використовувати
+    let finalStartDate = timeRange === 'custom' ? startDate : getStartDate(timeRange)
+    let finalEndDate = timeRange === 'custom' ? endDate ?? now : now
+  
+    const changes =
+      field === 'amount'
+        ? folderTransactions.amount_changes
+        : folderTransactions.price_changes
+  
+    return changes.filter(change => {
+      const changeDate = new Date(change.date)
+      if (finalStartDate && finalEndDate) {
+        return changeDate >= finalStartDate && changeDate <= finalEndDate
+      }
+      return true
+    })
+  }
+  
 
-		if (!folderTransactions) return []
-
-		const now = new Date()
-
-		const getStartDate = (range: string) => {
-			const startDate = new Date(now)
-			switch (range) {
-				case 'today':
-					startDate.setHours(0, 0, 0, 0)
-					break
-				case '1_week':
-					startDate.setDate(now.getDate() - 7)
-					break
-				case '2_weeks':
-					startDate.setDate(now.getDate() - 14)
-					break
-				case '1_month':
-					startDate.setMonth(now.getMonth() - 1)
-					break
-				case 'all':
-				default:
-					return null
-			}
-			return startDate
-		}
-
-		const startDate = getStartDate(timeRange)
-
-		const changes =
-			field === 'amount'
-				? folderTransactions.amount_changes
-				: folderTransactions.price_changes
-
-		return changes.filter(change => {
-			if (startDate) {
-				const changeDate = new Date(change.date)
-				return changeDate >= startDate
-			}
-			return true
-		})
-	}
 
 	const handleUpdateViewSettings = (data: {
 		sortBy: string
@@ -846,6 +854,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		item_id: number
 	}) => {
 		if (quantity < 0) return
+    console.log("change quantity" + quantity, item_id);
 		setItems(
 			items.map(item =>
 				item.id === item_id ? { ...item, quantity } : { ...item }

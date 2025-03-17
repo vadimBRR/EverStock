@@ -24,9 +24,10 @@ export default function CardItem({
 	containerStyle,
 }: Props) {
 	const router = useRouter()
-	const currencySymbol = currency.find(c => c.name === currencyName)?.value
+  const currencySymbol = currency.find(c => c.name === currencyName)?.value || '₴'; 
 
 	const view = useAccount().viewSettings.viewOptions
+  console.log(typeof view.price, view.price);
 
 	return (
 		<TouchableOpacity
@@ -62,25 +63,25 @@ export default function CardItem({
 					)}
 
 					<View className='flex-row'>
-						{view.quantity && item.amount ? (
+						{view.quantity && item.amount !=null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>
 								{item.amount} units{' '}
 							</Text>
 						) : null}
 
-						{view.price && view.quantity && item.price && item.amount && (
+						{view.price && view.quantity && item.price !=null && item.amount !=null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>- </Text>
-						)}
+						) : null}
 
-						{view.price && item.price ? (
+						{view.price && item.price !=null ? (
 							<View className='flex-row'>
 								<Text className='text-gray font-poppins_regular text-sm'>
 									{currencySymbol}
-									{item.price.toFixed(2)}&nbsp;
+									{item.price.toFixed(2)}&nbsp; 
 								</Text>
 							</View>
 						) : null}
-						{item.amount && view.totalPrice ? (
+						{item.amount !=null && view.totalPrice && item.price !=null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>
 								({currencySymbol}
 								{(item.price * item.amount).toFixed(2)})

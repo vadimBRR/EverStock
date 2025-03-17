@@ -33,7 +33,15 @@ export default function AccountScreen() {
 	return (
 		<Container isPadding={false}>
 			<Stack.Screen
-				options={{ title: 'Account', headerTitleAlign: 'center' }}
+				options={{
+					headerShown: true,
+					title: 'Account',
+					headerStyle: {
+						backgroundColor: '#242121',
+					},
+					headerTintColor: '#fff',
+					headerTitleAlign: 'center',
+				}}
 			/>
 			<View className='flex-col justify-between flex-1 mb-6'>
 				<View>
