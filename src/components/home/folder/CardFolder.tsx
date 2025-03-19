@@ -63,7 +63,8 @@ export default function CardFolder({ data }: Props) {
 
 				<View className='flex flex-row justify-between items-center'>
 					<Text className='font-lexend_extralight text-gray text-md'>
-						{dayjs(data.lastUpdated).fromNow()}
+						{/* {dayjs(data.lastUpdated).fromNow()} */}
+						{dayjs(data.lastUpdated).format('YYYY-MM-DD HH:mm:ss')}
 					</Text>
 					<TouchableOpacity
 						className='border border-gray p-1 rounded-md'
