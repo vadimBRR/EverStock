@@ -389,9 +389,9 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		viewOptions: {
 			name: true,
 			image: true,
-			quantity: false,
-			price: false,
-			totalPrice: false,
+			quantity: true,
+			price: true,
+			totalPrice: true,
 		},
 	})
 

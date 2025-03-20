@@ -26,6 +26,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.vadimbr.EverStock_UI"/>
+        <data android:scheme="your-app-scheme"/>
       </intent-filter>
     </activity>
   </application>
