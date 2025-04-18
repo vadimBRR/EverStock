@@ -59,7 +59,9 @@ export type Database = {
           name: string
           note: string | null
           price: number | null
-          quantity: number
+          quantity: number | null
+          tag: string | null
+          typeAmount: string | null
           updated_at: string | null
           user_id: string
         }
@@ -71,7 +73,9 @@ export type Database = {
           name: string
           note?: string | null
           price?: number | null
-          quantity: number
+          quantity?: number | null
+          tag?: string | null
+          typeAmount?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -83,7 +87,9 @@ export type Database = {
           name?: string
           note?: string | null
           price?: number | null
-          quantity?: number
+          quantity?: number | null
+          tag?: string | null
+          typeAmount?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -107,25 +113,43 @@ export type Database = {
       transactions: {
         Row: {
           action: string
+          amountchange: number | null
+          changed_item: Json | null
+          changes: string[] | null
           folder_id: number | null
           id: number
+          isedited: boolean | null
           item_id: number | null
+          prev_item: Json | null
+          pricechange: number | null
           timestamp: string | null
           user_id: string
         }
         Insert: {
           action: string
+          amountchange?: number | null
+          changed_item?: Json | null
+          changes?: string[] | null
           folder_id?: number | null
           id?: number
+          isedited?: boolean | null
           item_id?: number | null
+          prev_item?: Json | null
+          pricechange?: number | null
           timestamp?: string | null
           user_id: string
         }
         Update: {
           action?: string
+          amountchange?: number | null
+          changed_item?: Json | null
+          changes?: string[] | null
           folder_id?: number | null
           id?: number
+          isedited?: boolean | null
           item_id?: number | null
+          prev_item?: Json | null
+          pricechange?: number | null
           timestamp?: string | null
           user_id?: string
         }
@@ -183,6 +207,7 @@ export type Database = {
           folder_id: number | null
           id: number
           permissions: string[]
+          roles: Json | null
           user_id: string
         }
         Insert: {
@@ -190,6 +215,7 @@ export type Database = {
           folder_id?: number | null
           id?: number
           permissions: string[]
+          roles?: Json | null
           user_id: string
         }
         Update: {
@@ -197,6 +223,7 @@ export type Database = {
           folder_id?: number | null
           id?: number
           permissions?: string[]
+          roles?: Json | null
           user_id?: string
         }
         Relationships: [

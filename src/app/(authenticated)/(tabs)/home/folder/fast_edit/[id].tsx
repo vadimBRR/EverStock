@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import {
 	View,
 	Text,
@@ -9,11 +9,12 @@ import {
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import Container from '@/src/components/Container'
 import SearchBar from '@/src/components/SearchBar'
-import { useModal } from '@/src/providers/ModalProvider'
-import { useAccount } from '@/src/providers/AccountProvider'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import CardItemFastEdit from '@/src/components/home/item/CardItemFastEdit'
-import { itemType } from '@/src/types/types'
+import Loading from '@/src/components/Loading'
+import { itemType, Tables } from '@/src/types/types'
+import { useGetFoldersWithItems } from '@/src/api/folder' 
+import { useUpdateItem } from '@/src/api/item' 
 
 export default function FastEditScreen() {
 	const { id: idString } = useLocalSearchParams()
@@ -21,8 +22,8 @@ export default function FastEditScreen() {
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	)
 
-	const { handleUpdateItem, items, viewSettings, folders } = useAccount()
-	const { handleOpenCreate } = useModal()
+	const { data: folders = [], isLoading, refetch } = useGetFoldersWithItems()
+	const updateItem = useUpdateItem()
 
 	const [search, setSearch] = useState('')
 	const [refreshing, setRefreshing] = useState(false)
@@ -30,52 +31,62 @@ export default function FastEditScreen() {
 	const [prevActiveItemId, setPrevActiveItemId] = useState<number | null>(null)
 	const [editedQuantities, setEditedQuantities] = useState<Record<number, number>>({})
 
+	const folder = useMemo(() => folders!.find(f => f.id === id), [folders, id])
+	const folderItems = useMemo(() => {
+		if (!folder) return []
+		const items = folder.items || []
+		return search
+			? items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
+			: items
+	}, [folder, search])
+
+	const onRefresh = useCallback(async () => {
+		setRefreshing(true)
+		await refetch()
+		setRefreshing(false)
+	}, [refetch])
+
 	const handleSearch = (value: string) => {
 		setSearch(value)
 	}
 
-	const folder = folders.find(folder => folder.id === id)
-	if (!folder) return <Text>Folder not found</Text>
-
-	const folderItems = items.filter(item => item.folder_id === id)
-
-	const onRefresh = useCallback(async () => {
-		setRefreshing(true)
-		setRefreshing(false)
-	}, [])
-
 	const handleBack = () => {
-
-    Object.entries(editedQuantities).forEach(([id, quantity]) => {
-      const item = items.find(item => item.id === parseInt(id))
-      if (item) {
-        handleSaveItem({ item, quantity })
-      }
-    })
-    
+		Object.entries(editedQuantities).forEach(([itemIdStr, quantity]) => {
+			const item = folderItems.find(i => i.id === parseInt(itemIdStr))
+			if (item) {
+				handleSaveItem({ item, quantity })
+			}
+		})
 		router.back()
 	}
-
-	// Автозбереження кількості при зміні активної картки
-	useEffect(() => {
-		if (prevActiveItemId !== null && prevActiveItemId !== activeItemId) {
-			if (editedQuantities[prevActiveItemId] !== undefined) {
-				handleSaveItem({
-					item: items.find(item => item.id === prevActiveItemId)!,
-					quantity: editedQuantities[prevActiveItemId],
-				})
-			}
-		}
-		setPrevActiveItemId(activeItemId)
-	}, [activeItemId])
 
 	const handleQuantityChange = (id: number, quantity: number) => {
 		setEditedQuantities(prev => ({ ...prev, [id]: quantity }))
 	}
 
-	const handleSaveItem = ({ item, quantity }: { item: itemType; quantity: number }) => {
-		handleUpdateItem({ ...item, quantity })
+	const handleSaveItem = ({ item, quantity }: { item: Tables<'items'>; quantity: number }) => {
+		if (!item || quantity < 0) return
+		updateItem.mutate({
+			updatedItem: { ...item, quantity },
+			previousItem: item,
+		})
 	}
+
+	useEffect(() => {
+		if (prevActiveItemId !== null && prevActiveItemId !== activeItemId) {
+			const quantity = editedQuantities[prevActiveItemId]
+			if (quantity !== undefined) {
+				const item = folderItems.find(i => i.id === prevActiveItemId)
+				if (item) {
+					handleSaveItem({ item, quantity })
+				}
+			}
+		}
+		setPrevActiveItemId(activeItemId)
+	}, [activeItemId])
+
+	if (isLoading) return <Loading />
+	if (!folder) return <Text className='text-white text-center mt-10'>Folder not found</Text>
 
 	return (
 		<Container isPadding={false}>
@@ -107,7 +118,7 @@ export default function FastEditScreen() {
 				renderItem={({ item }) => (
 					<CardItemFastEdit
 						item={item}
-						currencyName={folder.currency.name || 'USD'}
+						currencyName={folder.currency || 'USD'}
 						activeItemId={activeItemId}
 						setActiveItemId={setActiveItemId}
 						handleQuantityChange={handleQuantityChange}

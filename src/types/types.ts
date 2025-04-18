@@ -11,6 +11,25 @@ export type Tables<T extends keyof Database['public']['Tables']> =
 export type Enums<T extends keyof Database['public']['Enums']> =
   Database['public']['Enums'][T];
   
+
+export interface WarehouseUserType {
+  id: string 
+  fullName: string
+  email: string
+  roles: {
+    isView: boolean
+    isAddItem: boolean
+    isDeleteItem: boolean
+    isEdit: boolean
+    isCanInvite: boolean
+    isAdmin: boolean,
+    isManager: false,
+  } 
+  permissions: string[]
+  added_at: string | null
+  folder_id: number | null
+}
+  
 export type currencyType = {
 	name: string
 	value: string
@@ -34,7 +53,8 @@ export type folderType = {
 			isAddItem: boolean
 			isDeleteItem: boolean
 			isEdit: boolean
-			isCanInvite: boolean
+			isCanInvite: boolean,
+      isManager: boolean,
 			isAdmin: boolean
 		}
 	}[]
@@ -53,6 +73,7 @@ export type itemType = {
 	price: number
 	typeAmount: string
 	amount: number
+	quantity: number
 	user_id: string
 	tag: string
 }
@@ -67,11 +88,27 @@ export type accountType = {
 		isAddItem: boolean
 		isDeleteItem: boolean
 		isEdit: boolean
-		isCanInvite: boolean
+		isCanInvite: boolean,
+    isManager: boolean,
 		isAdmin: boolean
 	}
 }
 
+export type warehouseUserRoles = {
+    isView: boolean
+    isAddItem: boolean
+    isDeleteItem: boolean
+    isEdit: boolean
+    isCanInvite: boolean
+    isAdmin: boolean,
+    isManager: boolean,
+}
+export type FolderWithUsers = Tables<'folders'> & {
+  warehouse_users: {
+    user_id: string
+    roles: Record<string, warehouseUserRoles>
+  }[]
+}
 export type transactionType = {
 	folder_id: number
 	info: infoTransactionType[]

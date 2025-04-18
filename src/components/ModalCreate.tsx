@@ -8,6 +8,8 @@ import {
 } from '@gorhom/bottom-sheet'
 import CustomButton from './CustomButton'
 import { Href, useRouter } from 'expo-router'
+import { useRolesStore } from '../store/useUserRoles'
+import Toast from 'react-native-toast-message'
 
 type Props = {
 	folderId: number
@@ -16,6 +18,7 @@ export default function ModalCreate({ folderId }: Props) {
 	const router = useRouter()
 
 	const { handleCloseCreate, modalCreateRef } = useModal()
+	const roles = useRolesStore(state => state.roles)
 
 	const snapPoints = useMemo(() => ['30%', '50%'], [])
 	const renderBackdrop = useCallback(
@@ -34,8 +37,17 @@ export default function ModalCreate({ folderId }: Props) {
 		router.push('/(authenticated)/home/member/' + folderId)
 	}
 	const onCreateItem = () => {
-		handleCloseCreate()
-		router.push(('/(authenticated)/home/item/create?id=' + folderId) as Href)
+		if (roles?.isAddItem) {
+      handleCloseCreate()
+      router.push(('/(authenticated)/home/item/create?id=' + folderId) as Href)
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Permission Denied',
+        text2: 'You do not have rights to add items.',
+        position: 'top',
+      })
+    }
 	}
 	return (
 		<BottomSheetModal

@@ -3,11 +3,12 @@ import React from 'react'
 
 type Props = {
   handlePressAdd: () => void
+  disabled?: boolean
 }
-export default function AddButton({handlePressAdd}: Props) {
+export default function AddButton({handlePressAdd, disabled = false}: Props) {
   return (
-    <Pressable className='aspect-square h-[45px] bg-black-800 border-gray rounded-[14px] items-center justify-center border border-black/10' onPress={handlePressAdd}>
-      <Image source={require('@/src/assets/icons/plus_dark.png')} className='w-[25px] h-[25px]'/>
+    <Pressable className='aspect-square h-[45px] bg-black-800 border-gray rounded-[14px] items-center justify-center border border-black/10' onPress={handlePressAdd} >
+      <Image source={require('@/src/assets/icons/plus_dark.png')} className='w-[25px] h-[25px]' />
     </Pressable>
   )
 }

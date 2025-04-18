@@ -1,21 +1,10 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Href, useRouter } from 'expo-router'
+import { WarehouseUserType } from '@/src/types/types'
 
 type Props = {
-	data: {
-		id: number
-		fullName: string
-		email: string
-		roles: {
-			isView: boolean
-			isAddItem: boolean
-			isDeleteItem: boolean
-			isEdit: boolean
-			isCanInvite: boolean
-			isAdmin: boolean
-		}
-	}
+	data: WarehouseUserType
 	folderId: number
 	containerStyle?: string
 	isPressable?: boolean
@@ -93,6 +82,12 @@ export default function CardMember({
 								{data.roles.isCanInvite && !data.roles.isAdmin && (
 									<Image
 										source={require('@/src/assets/icons/member/isCanInvite.png')}
+										className='w-5 h-5 aspect-square'
+									/>
+								)}
+								{data.roles.isManager && !data.roles.isAdmin && (
+									<Image
+										source={require('@/src/assets/icons/member/isManager.png')}
 										className='w-5 h-5 aspect-square'
 									/>
 								)}

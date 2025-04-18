@@ -5,13 +5,13 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Href, useRouter } from 'expo-router'
 import RemoteImage from '../../RemoteImage'
-import { itemType } from '@/src/types/types'
+import { itemType, Tables } from '@/src/types/types'
 import { useAccount } from '@/src/providers/AccountProvider'
 
 dayjs.extend(relativeTime)
 
 type Props = {
-	item: itemType
+	item: Tables<'items'>
 	currencyName: string
 	isPressable?: boolean
 	containerStyle?: string
@@ -27,7 +27,6 @@ export default function CardItem({
   const currencySymbol = currency.find(c => c.name === currencyName)?.value || '₴'; 
 
 	const view = useAccount().viewSettings.viewOptions
-  console.log(typeof view.price, view.price);
 
 	return (
 		<TouchableOpacity
@@ -63,13 +62,13 @@ export default function CardItem({
 					)}
 
 					<View className='flex-row'>
-						{view.quantity && item.amount !=null ? (
+						{view.quantity && item.quantity !=null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>
-								{item.amount} units{' '}
+								{item.quantity} units{' '}
 							</Text>
 						) : null}
 
-						{view.price && view.quantity && item.price !=null && item.amount !=null ? (
+						{view.price && view.quantity && item.price !=null && item.quantity !=null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>- </Text>
 						) : null}
 
@@ -81,10 +80,10 @@ export default function CardItem({
 								</Text>
 							</View>
 						) : null}
-						{item.amount !=null && view.totalPrice && item.price !=null ? (
+						{item.quantity !=null && view.totalPrice && item.price !=null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>
 								({currencySymbol}
-								{(item.price * item.amount).toFixed(2)})
+								{(item.price * item.quantity).toFixed(2)})
 							</Text>
 						) : null}
 					</View>

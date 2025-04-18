@@ -105,6 +105,8 @@ import ModalProvider from '../providers/ModalProvider'
 import QueryProvider from '../providers/QueryProvider'
 import AccountProvider from '../providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
+import Toast from 'react-native-toast-message'
+import { toastConfig } from '../utils/toastConfig'
 
 const tokenCache = {
   async getToken(key: string) {
@@ -212,6 +214,7 @@ const RootLayoutNav = () => {
           <ModalProvider>
             <PaperProvider>
               <InitialLayout />
+              <Toast config={toastConfig}/>
             </PaperProvider>
           </ModalProvider>
         </QueryProvider>

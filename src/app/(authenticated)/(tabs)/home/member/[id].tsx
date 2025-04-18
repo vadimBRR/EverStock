@@ -6,9 +6,9 @@ import Loading from '@/src/components/Loading'
 import Container from '@/src/components/Container'
 import SearchBar from '@/src/components/SearchBar'
 import AddButton from '@/src/components/AddButton'
-import { useAccount } from '@/src/providers/AccountProvider'
 import { RefreshControl } from 'react-native-gesture-handler'
 import CardMember from '@/src/components/home/member/CardMember'
+import { useGetWarehouseUsers } from '@/src/api/users'
 
 const MembersScreen = () => {
 	const { id: idString } = useLocalSearchParams()
@@ -16,31 +16,40 @@ const MembersScreen = () => {
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	)
 
-	const [search, setSearch] = useState('')
 	const router = useRouter()
-	const [refreshing, setRefreshing] = useState(false)
-	const [isLoading, setIsLoading] = useState(false)
+	const [search, setSearch] = useState('')
+
+	const {
+		data = [],
+		isLoading,
+		refetch,
+		isRefetching,
+	} = useGetWarehouseUsers(folder_id)
 
 	SystemUI.setBackgroundColorAsync('#1C1A1A')
-
-	// const {folders:data} = useAccount()
-	const data = useAccount().folders.filter(folder => folder.id === folder_id)[0]
-		.members
 
 	const openCreateFolder = () => {
 		router.push('/(authenticated)/home/member/create?id=' + folder_id)
 	}
+
 	const handleSearch = (value: string) => {
 		setSearch(value)
 	}
 
 	const onRefresh = useCallback(async () => {
-		setRefreshing(true)
-
-		setRefreshing(false)
+		await refetch()
 	}, [])
 
+	const filteredMembers = search
+		? data.filter(
+				member =>
+					member.fullName.toLowerCase().includes(search.toLowerCase()) ||
+					member.email.toLowerCase().includes(search.toLowerCase())
+		  )
+		: data
+
 	if (isLoading) return <Loading />
+
 	return (
 		<Container isPadding={false}>
 			<Stack.Screen
@@ -55,7 +64,7 @@ const MembersScreen = () => {
 				}}
 			/>
 			<View className='flex-1'>
-				<View className='flex-row w-full justify-center my-2 '>
+				<View className='flex-row w-full justify-center my-2'>
 					<SearchBar
 						containerStyle='mr-2'
 						search={search}
@@ -63,31 +72,18 @@ const MembersScreen = () => {
 					/>
 					<AddButton handlePressAdd={openCreateFolder} />
 				</View>
-				{isLoading ? (
-					<Loading />
-				) : (
-					<FlatList
-						className='mx-3 mb-24'
-						data={
-							search
-								? data.filter(
-										member =>
-											member.fullName
-												.toLowerCase()
-												.includes(search.toLowerCase()) ||
-											member.email.toLowerCase().includes(search.toLowerCase())
-								  )
-								: data
-						}
-						keyExtractor={member => member.id.toString()}
-						renderItem={({ item }) => (
-							<CardMember key={item.id} data={item} folderId={folder_id} />
-						)}
-						refreshControl={
-							<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-						}
-					/>
-				)}
+
+				<FlatList
+					className='mx-3 mb-24'
+					data={filteredMembers}
+					keyExtractor={member => member.id.toString()}
+					renderItem={({ item }) => (
+						<CardMember key={item.id} data={item} folderId={folder_id} />
+					)}
+					refreshControl={
+						<RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
+					}
+				/>
 			</View>
 		</Container>
 	)

@@ -15,6 +15,9 @@ type Props = {
   keyboardType?: 'default' | 'numeric' | 'email-address';
   secureTextEntry?: boolean;
   isError?: boolean;
+  disabled?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 };
 
 export default function CustomInput({
@@ -28,6 +31,9 @@ export default function CustomInput({
   keyboardType = 'default',
   secureTextEntry = false,
   isError = false,
+  disabled = false,
+  onFocus = () => {},
+  onBlur = () => {},
 }: Props) {
   const [borderColor, setBorderColor] = React.useState(
     isError && name.length === 0 ? 'border-red-500' : 'border-dark_gray'
@@ -72,26 +78,34 @@ export default function CustomInput({
         }}
         keyboardType={keyboardType}
         onFocus={() => {
-          setBorderColor('border-main_light');
+          if (!disabled) {
+            setBorderColor('border-main_light');
+            onFocus();
+          }
         }}
         onBlur={() => {
-          setBorderColor(
-            isError && name.length === 0 ? 'border-red-500' : 'border-dark_gray'
-          );
+          if (!disabled) {
+            setBorderColor(
+              isError && name.length === 0 ? 'border-red-500' : 'border-dark_gray'
+            );
+            onBlur();
+          }
         }}
-        secureTextEntry={isPasswordVisible} 
+        secureTextEntry={isPasswordVisible}
         numberOfLines={isMultiline ? 8 : 1}
+        disabled={disabled}
       />
-      {secureTextEntry && (
+      {secureTextEntry && !disabled && (
         <View className="absolute right-[12px] top-0 h-[54px] w-[20px] flex items-center justify-center">
           <Ionicons
-            name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'} 
+            name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
             size={20}
             color="white"
-            onPress={() => setIsPasswordVisible(!isPasswordVisible)} 
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
           />
         </View>
       )}
     </View>
   );
+
 }

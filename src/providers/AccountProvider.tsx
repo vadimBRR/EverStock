@@ -232,6 +232,8 @@ type AccountType = {
 	deleteFilterMemberId: (id: number) => void
 	addFilterItemId: (id: number) => void
 	deleteFilterItemId: (id: number) => void
+  setFolders: (folders: folderType[]) => void
+  setTransactions: (transactions: transactionType[]) => void
 }
 
 const AccountContext = createContext<AccountType>({
@@ -304,6 +306,8 @@ const AccountContext = createContext<AccountType>({
 	deleteFilterMemberId: () => {},
 	addFilterItemId: () => {},
 	deleteFilterItemId: () => {},
+  setFolders: () => {},
+  setTransactions: () => {},
 })
 
 export default function AccountProvider({ children }: PropsWithChildren) {
@@ -1119,12 +1123,16 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 	}
 
 	const getAction = (info: infoTransactionType) => {
+
+    console.log(info);
 		if (info.isCreated) return 'created item ' + info.changed_item.name
+		// if (!info.isCreated) return 'edited item ' + info.changed_item.name
+
 		if (info.isEdited) return 'edited item ' + info.changed_item.name
 		if (info.isDeleted) return 'deleted item ' + info.prev_item.name
 		if (info.isReverted) return 'reverted item ' + info.prev_item.name
 
-		return ''
+		return 'smth went wrong'
 	}
 
 	console.log('rerender')
@@ -1167,6 +1175,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				deleteFilterMemberId,
 				addFilterItemId,
 				deleteFilterItemId,
+        setFolders,
+        setTransactions
 			}}
 		>
 			{children}

@@ -3,16 +3,16 @@ import React, { useState } from 'react'
 import { currency } from '@/src/constants'
 import { useRouter } from 'expo-router'
 import { Entypo } from '@expo/vector-icons'
-import { itemType } from '@/src/types/types'
+import { itemType, Tables } from '@/src/types/types'
 import RemoteImage from '../../RemoteImage'
 
 type Props = {
-	item: itemType
+	item: Tables<'items'>
 	currencyName: string
 	activeItemId: number | null
 	setActiveItemId: (id: number | null) => void
 	handleQuantityChange: (id: number, quantity: number) => void
-	handleSaveItem: ({ item, quantity }: { item: itemType; quantity: number }) => void
+	handleSaveItem: ({ item, quantity }: { item: Tables<'items'>; quantity: number }) => void
 }
 
 export default function CardItemFastEdit({
@@ -27,7 +27,7 @@ export default function CardItemFastEdit({
 	const currencySymbol = currency.find(c => c.name === currencyName)?.value || '₴'
 
 	const isActive = activeItemId === item.id
-	const [quantity, setQuantity] = useState(item.amount ?? 0)
+	const [quantity, setQuantity] = useState(item.quantity ?? 0)
 	const [isEditing, setIsEditing] = useState(false)
 
 	const handleChangeLocalQuantity = (newQuantity: number) => {
@@ -71,7 +71,7 @@ export default function CardItemFastEdit({
 
 					<View>
 						<Text className='font-lexend_regular text-xl text-white'>{item.name}</Text>
-						{!isActive && <Text className='text-gray font-poppins_regular text-sm'>{item.amount} units</Text>}
+						{!isActive && <Text className='text-gray font-poppins_regular text-sm'>{item.quantity} units</Text>}
 					</View>
 				</View>
 

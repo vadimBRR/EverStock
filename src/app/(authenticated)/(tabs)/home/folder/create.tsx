@@ -6,7 +6,8 @@ import CustomInput from '@/src/components/CustomInput'
 import SelectDropDownCurency from '@/src/components/SelectDropDownCurency'
 import { currencyType } from '@/src/types/types'
 import CustomButton from '@/src/components/CustomButton'
-import { useAccount } from '@/src/providers/AccountProvider'
+import { useCreateFolder } from '@/src/api/folder'
+import { showSuccess, showError } from '@/src/utils/toast'
 
 export default function CreateFolder() {
 	const router = useRouter()
@@ -24,17 +25,34 @@ export default function CreateFolder() {
 	const [folderOptions, setFolderOptions] = useState<string[]>([])
 	const [isErrorInput, setIsErrorInput] = useState(false)
 
-	const { handleCreateFolder } = useAccount()
-	const createFolder = () => {
-		if (!folderName) return setIsErrorInput(true)
-		handleCreateFolder({
-			name: folderName,
-			currency: currency,
-			type: folderType,
-			options: folderOptions || [],
-		})
-		router.push('/(authenticated)/(tabs)/home/folder')
-	}
+	const { mutate: createFolder } = useCreateFolder()
+
+	const handleCreateFolder = async () => {
+    if (!folderName || !currency || !folderType) {
+      setIsErrorInput(true)
+      showError('Folder name is required')
+      return
+    }
+  
+    await createFolder(
+      {
+        name: folderName,
+        currency: currency.name,
+        folderType,
+        options: folderOptions || [],
+      },
+      {
+        onSuccess: () => {
+          showSuccess('Folder created successfully')
+          router.push('/(authenticated)/(tabs)/home/folder')
+        },
+        onError: (error: any) => {
+          showError('Creation failed', error.message)
+        },
+      }
+    )
+  }
+  
 
 	const handleChangeType = () => {
 		router.push('/(authenticated)/(tabs)/home/folder/choose_type')
@@ -104,9 +122,8 @@ export default function CreateFolder() {
 				</View>
 				<CustomButton
 					text='Create Folder'
-					onClick={createFolder}
+					onClick={handleCreateFolder}
 					styleContainer={`my-4 mx-0`}
-					// disabled={!folderName}
 					isActive={!!folderName}
 				/>
 			</View>

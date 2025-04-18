@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import {
 	View,
+	Image,
 	Pressable,
 	Modal,
 	Text,
@@ -11,8 +12,7 @@ import {
 import * as ImagePicker from 'expo-image-picker'
 import { Colors } from '@/src/constants/Colors'
 import { Ionicons } from '@expo/vector-icons'
-import SmallCarousel from './SmallCarousel'
-import RemoteImage from '../../RemoteImage'
+import SmallCarousel from './SmallCarouselCreate'
 
 interface ImageUploaderProps {
 	images: string[]
@@ -107,17 +107,18 @@ const ItemImagesCarousel = ({
 							onPress={() => handleOpenImage(image, index)}
 							key={index}
 						>
-							<RemoteImage
-								path={image}
+							<Image
+								source={{ uri: image }}
 								className='w-[100px] self-center aspect-square rounded-2xl'
 							/>
 						</Pressable>
 					))}
 					{images.length < 3 && (
 						<Pressable onPress={pickImage}>
-							<RemoteImage
-								path={null}
+							<Image
+								source={require('@/src/assets/upload_image_dark.png')}
 								className='w-[100px] h-[100px] self-center aspect-square'
+								resizeMode='contain'
 							/>
 						</Pressable>
 					)}
@@ -149,8 +150,8 @@ const ItemImagesCarousel = ({
 							removeClippedSubviews={false}
 							style={{ height: width }}
 							renderItem={({ item }) => (
-								<RemoteImage
-									path={item}
+								<Image
+									source={{ uri: item }}
 									style={{ width: width, height: width, resizeMode: 'contain' }}
 								/>
 							)}

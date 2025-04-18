@@ -1,9 +1,11 @@
 import { useSupabase } from '@/src/providers/SupabaseProvider'
+import { client } from '@/src/utils/supabaseClient'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export const useCreateFolder = () => {
 	const queryClient = useQueryClient()
-	const { createFolder } = useSupabase()
+	const { createFolder, userId } = useSupabase()
+
 	return useMutation({
 		mutationKey: ['folder'],
 
@@ -19,9 +21,35 @@ export const useCreateFolder = () => {
 			options: string[] | []
 		}) {
 			const type = folderType
-			const data = await createFolder!(name, type, currency, options)
-			return data
+			const folderData = await createFolder!(name, type, currency, options)
+
+			const folder = folderData?.[0]
+			if (!folder) throw new Error('Failed to create folder.')
+
+			// ✅ Додаємо власника в warehouse_users
+			const { error } = await client.from('warehouse_users').insert({
+				folder_id: folder.id,
+				user_id: userId,
+				roles: {
+					isView: true,
+					isAddItem: true,
+					isDeleteItem: true,
+					isEdit: true,
+					isCanInvite: true,
+					isAdmin: true,
+          isManager: false,
+				},
+				permissions: [],
+				added_at: new Date().toISOString(),
+			})
+
+			if (error) {
+				console.error('Failed to add owner to warehouse_users:', error)
+			}
+
+			return folderData
 		},
+
 		async onSuccess() {
 			queryClient.invalidateQueries({
 				queryKey: ['folders'],
@@ -29,6 +57,7 @@ export const useCreateFolder = () => {
 		},
 	})
 }
+
 
 // export const useGetFolders = () => {
 //   const {getFolders} = useSupabase();
@@ -51,6 +80,6 @@ export const useGetFoldersWithItems = () => {
       console.log("get folders");
 			const data = await getFoldersWithStatistic!()
 			return data
-		},
+		},  
 	})
 }

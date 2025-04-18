@@ -2,9 +2,11 @@ import { View, Text, Image, Pressable } from 'react-native'
 import React from 'react'
 import Container from '@/src/components/Container'
 import { Stack, useRouter } from 'expo-router'
+import { useAuth } from '@clerk/clerk-expo'
 
 export default function ProfileScreen() {
   const router = useRouter()
+  const { signOut } = useAuth()
   const buttons = [
     {img: require('@/src/assets/icons/profile/account_dark.png'), title: 'Account', href: '/(authenticated)/(tabs)/profile/account'},
     {img: require('@/src/assets/icons/profile/theme_dark.png'), title: 'Theme', href: '/(authenticated)/(tabs)/profile/theme'},
@@ -16,7 +18,8 @@ export default function ProfileScreen() {
 
   const handlePress = async (href: string) => {
     if(href === 'logout') {
-      router.push('/(authorization)/sign-in')
+      await signOut()
+      router.replace('/(authorization)/sign-in')
     } else {
       router.push(href)
     }

@@ -5,8 +5,14 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Href, useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 
 dayjs.extend(relativeTime)
+dayjs.extend(utc)
+
+dayjs.extend(timezone)
+
 
 type Props = {
 
@@ -64,8 +70,9 @@ export default function CardFolder({ data }: Props) {
 				<View className='flex flex-row justify-between items-center'>
 					<Text className='font-lexend_extralight text-gray text-md'>
 						{/* {dayjs(data.lastUpdated).fromNow()} */}
-						{dayjs(data.lastUpdated).format('YYYY-MM-DD HH:mm:ss')}
-					</Text>
+            {dayjs.utc(data.lastUpdated).local().format('YYYY-MM-DD HH:mm:ss')}
+
+            </Text>
 					<TouchableOpacity
 						className='border border-gray p-1 rounded-md'
 						onPress={() => {

@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Container from '@/src/components/Container'
-import { useAccount } from '@/src/providers/AccountProvider'
 import {
 	FlatList,
 	ScrollView,
@@ -10,40 +9,39 @@ import {
 import TransactionCard from '@/src/components/analytics/TransactionCard'
 import { Ionicons } from '@expo/vector-icons'
 import SearchBar from '@/src/components/SearchBar'
+import { useAccount } from '@/src/providers/AccountProvider'
+import { useGetTransaction } from '@/src/api/transaction'
+import { useGetFoldersWithItems } from '@/src/api/folder'
 
 const HistoryScreen = () => {
 	const { activeIndex: idString } = useLocalSearchParams()
 	const router = useRouter()
-	const id = parseFloat(
-		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
-	)
 
-	const { getUserFullName, getAction, transactionSettings, folders } =
-		useAccount()
+	const id = parseFloat(typeof idString === 'string' ? idString : idString?.[0])
+
+	const { getUserFullName, getAction, transactionSettings } = useAccount()
+	const { data: folders = [] } = useGetFoldersWithItems()
+	const { data: transaction } = useGetTransaction(id)
+
 	const folder = folders.find(folder => folder.id === id)
-	const transaction = useAccount().transactions.find(
-		transaction => transaction.folder_id === id
-	)
+	const info = transaction?.info || []
+
 	const [search, setSearch] = useState('')
+
 	const handleSearch = (value: string) => {
 		setSearch(value)
 	}
+
 	const filteredTransactions = useMemo(() => {
 		const { sortBy, isAsc, membersId, itemsId, actions } = transactionSettings
-
-		let new_transaction
-		const transactions = [...(transaction?.info || [])]
+		let result = [...info]
 
 		if (sortBy === 'member name') {
-			new_transaction = transactions.sort((a, b) => {
-				const memberA = folder?.members.find(member => member.id === a.user_id)
-				const memberB = folder?.members.find(member => member.id === b.user_id)
-
-				if (!memberA || !memberB) return 0
-
-				const fullNameA = memberA.fullName ?? ''
-				const fullNameB = memberB.fullName ?? ''
-
+			result.sort((a, b) => {
+				const memberA = folder?.members.find(m => m.id === a.user_id)
+				const memberB = folder?.members.find(m => m.id === b.user_id)
+				const fullNameA = memberA?.fullName ?? ''
+				const fullNameB = memberB?.fullName ?? ''
 				return isAsc
 					? fullNameA.localeCompare(fullNameB)
 					: fullNameB.localeCompare(fullNameA)
@@ -51,69 +49,51 @@ const HistoryScreen = () => {
 		}
 
 		if (sortBy === 'item name') {
-			new_transaction = transactions.sort((a, b) => {
-				const itemA = a.prev_item
-				const itemB = b.prev_item
-
-				if (!itemA || !itemB) return 0
-
-				const nameA = itemA.name ?? ''
-				const nameB = itemB.name ?? ''
-
+			result.sort((a, b) => {
+				const nameA = a.prev_item?.name ?? ''
+				const nameB = b.prev_item?.name ?? ''
 				return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
 			})
 		}
 
 		if (sortBy === 'last updated') {
-			new_transaction = transactions.sort((a, b) => {
-				return isAsc
-					? a.date.localeCompare(b.date)
-					: b.date.localeCompare(a.date)
-			})
+			result.sort((a, b) =>
+				isAsc ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)
+			)
 		}
 
-		let filtered = new_transaction
-			? new_transaction
-					.filter(item =>
-						membersId?.length ? membersId.includes(item.user_id) : true
-					)
-					.filter(item =>
-						itemsId?.length ? itemsId.includes(item.item_id) : true
-					)
-					.filter(item => {
-						if (actions.isCreated && item.isCreated) return true
-						if (actions.isEdited && item.isEdited) return true
-						if (actions.isDeleted && item.isDeleted) return true
-						if (actions.isReverted && item.isReverted) return true
-
-						return (
-							!actions.isCreated &&
-							!actions.isEdited &&
-							!actions.isDeleted &&
-							!actions.isReverted
-						)
-					})
-			: []
+		result = result
+			.filter(t => (membersId?.length ? membersId.includes(t.user_id) : true))
+			.filter(t => (itemsId?.length ? itemsId.includes(t.item_id) : true))
+			.filter(t => {
+				if (actions.isCreated && t.isCreated) return true
+				if (actions.isEdited && t.isEdited) return true
+				if (actions.isDeleted && t.isDeleted) return true
+				if (actions.isReverted && t.isReverted) return true
+				return (
+					!actions.isCreated &&
+					!actions.isEdited &&
+					!actions.isDeleted &&
+					!actions.isReverted
+				)
+			})
 
 		if (search) {
 			const searchLower = search.toLowerCase()
-			filtered = filtered.filter(item => {
-				const member = folder?.members.find(
-					member => member.id === item.user_id
-				)
-				const itemName = item.prev_item?.name ?? ''
+			result = result.filter(t => {
+				const member = folder?.members.find(m => m.id === t.user_id)
 				const fullName = member?.fullName ?? ''
-
+				const itemName = t.prev_item?.name ?? ''
 				return (
 					fullName.toLowerCase().includes(searchLower) ||
 					itemName.toLowerCase().includes(searchLower) ||
-					item.date.toLowerCase().includes(searchLower)
+					t.date.toLowerCase().includes(searchLower)
 				)
 			})
 		}
 
-		return filtered
-	}, [transaction, transactionSettings, folder, search])
+		return result
+	}, [info, transactionSettings, folder, search])
 
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/analytics/history/settings?id=' + id)
@@ -133,7 +113,7 @@ const HistoryScreen = () => {
 					headerRight: () => (
 						<TouchableOpacity
 							className='flex-row items-center p-2'
-							onPress={() => handleOpenViewSettings()}
+							onPress={handleOpenViewSettings}
 						>
 							<Ionicons name='options-outline' size={24} color='white' />
 						</TouchableOpacity>
@@ -155,11 +135,11 @@ const HistoryScreen = () => {
 					contentContainerStyle={{ gap: 10 }}
 					renderItem={({ item, index }) => (
 						<TouchableOpacity
-							onPress={() => {
+							onPress={() =>
 								router.push(
 									`/(authenticated)/(tabs)/analytics/history/details?id=${item.id}&folder_id=${id}`
 								)
-							}}
+							}
 						>
 							<TransactionCard
 								key={index}

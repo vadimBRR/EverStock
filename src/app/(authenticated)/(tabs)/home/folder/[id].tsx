@@ -14,78 +14,69 @@ import { useModal } from '@/src/providers/ModalProvider'
 import TotalInfo from '@/src/components/home/item/TotalInfo'
 import ModalCreate from '@/src/components/ModalCreate'
 import CardItem from '@/src/components/home/item/CardItem'
-import { itemType } from '@/src/types/types'
-import { useAccount } from '@/src/providers/AccountProvider'
-import * as SystemUI from 'expo-system-ui'
 import { Ionicons } from '@expo/vector-icons'
+import { useGetFoldersWithItems } from '@/src/api/folder'
+import Loading from '@/src/components/Loading'
+import { Tables } from '@/src/types/types'
+import { useSyncUserRoles } from '@/src/hooks/useSyncUserRoles'
+import { useRolesStore } from '@/src/store/useUserRoles'
 
 export default function FolderScreen() {
 	const { id: idString } = useLocalSearchParams()
 	const id = parseFloat(
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	)
-	SystemUI.setBackgroundColorAsync('#1C1A1A')
-
 	const [search, setSearch] = useState('')
 	const [refreshing, setRefreshing] = useState(false)
-
-	const handleSearch = (value: string) => {
-		setSearch(value)
-	}
 	const { handleOpenCreate } = useModal()
 
-	if (!id) {
-		;<View className='flex-1 justify-center items-center'>
-			<Text className='font-bold'>Failed to fetch</Text>
-		</View>
-	}
-	const { viewSettings } = useAccount()
-	const folder = useAccount().folders.find(folder => folder.id === id)
-	if (!folder) return <Text>Folder not found</Text>
-	const items = useAccount().items.filter(item => item.folder_id === id)
+	const { data, isLoading, isError, refetch } = useGetFoldersWithItems()
 
-	const onRefresh = useCallback(async () => {
-		setRefreshing(true)
-		// await refetch()
-		setRefreshing(false)
-	}, [])
+	const folder = useMemo(
+		() => data?.find((folder: Tables<'folders'>) => folder.id === id),
+		[data, id]
+	)
 
+	useSyncUserRoles(folder as any)
+
+	const roles = useRolesStore(state => state.roles)
+	console.log(roles)
+	const canAdd = roles?.isAddItem === true
+
+	const items = (folder?.items || []) as Tables<'items'>[]
+
+	const handleSearch = (value: string) => setSearch(value)
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/home/item/settings')
 	}
+	const handleOpenFastEdit = () => {
+		router.push('/(authenticated)/(tabs)/home/folder/fast_edit/' + id)
+	}
 
-  const handleOpenFastEdit = () => {
-    router.push('/(authenticated)/(tabs)/home/folder/fast_edit/' + id)
-  }
+	const onRefresh = useCallback(async () => {
+		setRefreshing(true)
+		await refetch()
+		setRefreshing(false)
+	}, [refetch])
 
 	const sortedItems = useMemo(() => {
-		const sortBy = viewSettings.sortBy
-		const sortByCorrect =
-			sortBy === 'name'
-				? 'name'
-				: sortBy === 'quantity'
-				? 'amount'
-				: sortBy === 'price'
-				? 'price'
-				: sortBy === 'total price'
-				? 'totalPrice'
-				: sortBy === 'last updated'
-				? 'created_at'
-				: ''
-
 		return items
 			.filter(
-				(item: itemType) =>
+				(item: Tables<'items'>) =>
 					!search || item.name.toLowerCase().includes(search.toLowerCase())
 			)
-			.sort((a: itemType, b: itemType) => {
-				const field = sortByCorrect as keyof itemType
-				const ascMultiplier = viewSettings.isAsc ? 1 : -1
-				if (a[field] < b[field]) return -1 * ascMultiplier
-				if (a[field] > b[field]) return 1 * ascMultiplier
-				return 0
-			})
-	}, [items, search, viewSettings])
+			.sort((a: Tables<'items'>, b: Tables<'items'>) =>
+				a.name < b.name ? -1 : 1
+			)
+	}, [items, search])
+
+	if (isLoading) return <Loading />
+	if (isError)
+		return (
+			<Text className='text-white text-center mt-4'>Failed to load data</Text>
+		)
+	if (!folder)
+		return <Text className='text-white text-center mt-4'>Folder not found</Text>
 
 	return (
 		<Container isPadding={false}>
@@ -94,21 +85,21 @@ export default function FolderScreen() {
 					headerShown: true,
 					title: folder.name,
 					headerTitleAlign: 'center',
-					headerStyle: {
-						backgroundColor: '#242121',
-					},
+					headerStyle: { backgroundColor: '#242121' },
 					headerTintColor: '#fff',
 					headerRight: () => (
 						<View className='flex flex-row'>
+							{canAdd && (
+								<TouchableOpacity
+									className='flex-row items-center p-2'
+									onPress={handleOpenFastEdit}
+								>
+									<Ionicons name='hammer-outline' size={24} color='white' />
+								</TouchableOpacity>
+							)}
 							<TouchableOpacity
 								className='flex-row items-center p-2'
-								onPress={() => handleOpenFastEdit()}
-							>
-								<Ionicons name='hammer-outline' size={24} color='white' />
-							</TouchableOpacity>
-							<TouchableOpacity
-								className='flex-row items-center p-2'
-								onPress={() => handleOpenViewSettings()}
+								onPress={handleOpenViewSettings}
 							>
 								<Ionicons name='options-outline' size={24} color='white' />
 							</TouchableOpacity>
@@ -122,13 +113,13 @@ export default function FolderScreen() {
 					search={search}
 					handleSearch={handleSearch}
 				/>
-				<AddButton handlePressAdd={handleOpenCreate} />
+				<AddButton handlePressAdd={handleOpenCreate} disabled={canAdd} />
 			</View>
 			<TotalInfo
 				totalMembers={folder.totalMembers}
 				totalPrice={folder.totalPrice}
 				totalQuantity={folder.totalQuantity}
-				currencyFolder={folder.currency.name}
+				currencyFolder={folder.currency || 'USD'}
 			/>
 			{sortedItems.length === 0 ? (
 				<View className='flex-1 justify-center items-center px-2'>
@@ -148,7 +139,7 @@ export default function FolderScreen() {
 					renderItem={({ item }) => (
 						<CardItem
 							item={item}
-							currencyName={folder.currency.name || 'USD'}
+							currencyName={folder.currency || 'USD'}
 							key={item.id}
 						/>
 					)}
@@ -157,7 +148,6 @@ export default function FolderScreen() {
 					}
 				/>
 			)}
-
 			<ModalCreate folderId={folder.id} />
 		</Container>
 	)
