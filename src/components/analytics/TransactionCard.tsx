@@ -17,7 +17,7 @@ const TransactionCard = ({
 		<View className={`bg-black-700 px-3 py-1 ${containerStyle}`}>
       <View className='flex flex-row justify-between'>
 			  <Text className='text-gray font-poppins_light text-sm'>{fullName}</Text>
-			  <Text className='text-gray font-poppins_light text-sm'>{dayjs(date).format('YYYY-MM-DD')}</Text>
+			  <Text className='text-gray font-poppins_light text-sm'>{dayjs.utc(date).local().format('YYYY-MM-DD')}</Text>
 
       </View>
 			<View className='flex-row justify-between items-center'>
@@ -25,7 +25,7 @@ const TransactionCard = ({
 					{action}
 				</Text>
 				<Text className='text-white font-poppins_light text-sm text-right w-[120px]'>
-					{dayjs(date).format('HH:mm:ss')}
+        {dayjs.utc(date).local().format('HH:mm:ss')}
 				</Text>
 			</View>
 		</View>

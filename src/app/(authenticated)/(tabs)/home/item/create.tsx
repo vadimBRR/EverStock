@@ -93,10 +93,20 @@ export default function CreateItem() {
         {
           onSuccess: async (createdItem) => {
             if (createdItem && createdItem[0]) {
-              await createTransaction?.(createdItem[0].id!, folder_id, 'created')
-              showSuccess('Item created successfully')
-              router.back()
+              const item = createdItem[0]
+              await createTransaction?.(
+                item.id!,
+                folder_id,
+                'created',
+                {
+                  changed_item: item,
+                  prev_item: null,
+                  changes: Object.keys(item),
+                }
+              )
             }
+            setIsLoading(false)
+            router.back()
           },
           onError: (err: any) => {
             showError('Failed to create item', err.message)

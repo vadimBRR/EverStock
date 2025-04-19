@@ -55,12 +55,18 @@ type ProviderProps = {
 	createTransaction: (
 		itemId: number,
 		folderId: number,
-		action: string
+		action: string,
+    extras?: {
+      prev_item?: any
+      changed_item?: any,
+      changes?: any[]
+    }
 	) => Promise<any>
 	getTransactions: (folderId: number) => Promise<Tables<'transactions'>[]>
 	getWarehouseUsers: (folderId: number) => Promise<WarehouseUserType[]>
 	getUserInfo: () => Promise<any>
 	updateUserInfo: (updates: any) => Promise<any>
+  revertItemToPreviousState: (transactionId: number, folderId: number) => Promise<any>
 	getRealtimeItemsSubscription: (
 		handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
 	) => any
@@ -183,7 +189,6 @@ export const SupabaseProvider = ({ children }: any) => {
 			console.error('Error updating item:', error)
 		}
 
-		// Визначаємо, які поля змінилися
 		const changes = Object.keys(rest).filter(
 			key =>
 				rest[key as keyof typeof rest] !==
@@ -194,7 +199,6 @@ export const SupabaseProvider = ({ children }: any) => {
 			(updatedItem.quantity || 0) - (previousItem.quantity || 0)
 		const priceChange = (updatedItem.price || 0) - (previousItem.price || 0)
 
-		// Записуємо зміни в транзакції
 		let action = 'edited'
 		// if (changes.includes("quantity") && changes.includes("price")) {
 		//   action = "updated quantity & price";
@@ -204,7 +208,6 @@ export const SupabaseProvider = ({ children }: any) => {
 		//   action = "updated price";
 		// }
 
-		// Вставка в transactions
 		const { error: transactionError } = await client
 			.from(TRANSACTIONS_TABLE)
 			.insert({
@@ -217,7 +220,7 @@ export const SupabaseProvider = ({ children }: any) => {
 				isedited: true,
 				amountchange: amountChange,
 				pricechange: priceChange,
-				action, // ✅ Додали action
+				action, 
 				timestamp: new Date(),
 			})
 
@@ -236,7 +239,6 @@ export const SupabaseProvider = ({ children }: any) => {
 		return data || []
 	}
   const getFoldersWithStatistic = async () => {
-    // 1. Папки, де користувач є власником
     const { data: ownerFolders, error: ownerError } = await client
       .from(FOLDERS_TABLE)
       .select('*, items(*), warehouse_users(*)')
@@ -246,7 +248,6 @@ export const SupabaseProvider = ({ children }: any) => {
       console.error('Error getting owned folders:', ownerError)
     }
   
-    // 2. Отримуємо записи з warehouse_users, де user_id = поточний користувач
     const { data: warehouseMemberships, error: memberError } = await client
       .from('warehouse_users')
       .select('folder_id')
@@ -257,7 +258,6 @@ export const SupabaseProvider = ({ children }: any) => {
       return []
     }
   
-    // 3. Дістаємо відповідні папки по folder_id
     const folderIds = warehouseMemberships.map(m => m.folder_id)
   
     let memberFolders: any[] = []
@@ -274,13 +274,11 @@ export const SupabaseProvider = ({ children }: any) => {
       }
     }
   
-    // 4. Об'єднуємо власні та членські, уникаючи дублікатів
     const allFoldersRaw = [...(ownerFolders || []), ...memberFolders]
     const allFolders = Array.from(
       new Map(allFoldersRaw.map(folder => [folder.id, folder])).values()
     )
   
-    // 5. Обрахунок статистики
     const foldersWithStatistic = allFolders.map(folder => {
       const warehouseUsers = Array.isArray(folder.warehouse_users)
         ? folder.warehouse_users
@@ -368,28 +366,37 @@ export const SupabaseProvider = ({ children }: any) => {
 	}
 
 	const createTransaction = async (
-		itemId: number,
-		folderId: number,
-		action: string
-	) => {
-		const { data, error } = await client
-			.from(TRANSACTIONS_TABLE)
-			.insert({
-				item_id: itemId,
-				folder_id: folderId,
-				action,
-				user_id: userId,
-				timestamp: new Date(),
-			})
-			.select()
-
-		if (error) {
-			console.error('Error creating transaction:', error)
-		}
-
-		return data
-	}
-
+    itemId: number,
+    folderId: number,
+    action: string,
+    extras?: {
+      prev_item?: any
+      changed_item?: any
+      changes?: string[]
+    }
+  ) => {
+    const { data, error } = await client
+      .from(TRANSACTIONS_TABLE)
+      .insert({
+        item_id: itemId,
+        folder_id: folderId,
+        action,
+        user_id: userId,
+        timestamp: new Date(),
+        isedited: action === 'edited',
+        prev_item: extras?.prev_item || null,
+        changed_item: extras?.changed_item || null,
+        changes: extras?.changes || [],
+      })
+      .select()
+  
+    if (error) {
+      console.error('Error creating transaction:', error)
+    }
+  
+    return data
+  }
+  
 	const getTransactions = async (folderId: number) => {
 		const { data } = await client
 			.from(TRANSACTIONS_TABLE)
@@ -504,6 +511,61 @@ export const SupabaseProvider = ({ children }: any) => {
 		return data
 	}
 
+  const revertItemToPreviousState = async (
+    transactionId: number,
+    folderId: number
+  ) => {
+    const { data: transaction, error: fetchError } = await client
+      .from(TRANSACTIONS_TABLE)
+      .select('*')
+      .eq('id', transactionId)
+      .single()
+  
+    if (fetchError) {
+      console.error('Error fetching transaction:', fetchError)
+      return null
+    }
+  
+    const prevItem = transaction.prev_item
+    const itemId = transaction.item_id
+  
+    if (!prevItem || !itemId) {
+      console.warn('No previous item found for transaction.')
+      return null
+    }
+  
+    const { error: updateError } = await client
+      .from(ITEMS_TABLE)
+      .update({
+        ...prevItem,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', itemId)
+  
+    if (updateError) {
+      console.error('Error reverting item:', updateError)
+      return null
+    }
+  
+    const { error: logError } = await client.from(TRANSACTIONS_TABLE).insert({
+      action: 'reverted',
+      folder_id: folderId,
+      item_id: itemId,
+      user_id: userId,
+      prev_item: transaction.changed_item,
+      changed_item: prevItem,
+      changes: transaction.changes,
+      isreverted: true,
+      timestamp: new Date().toISOString(),
+    })
+  
+    if (logError) {
+      console.error('Error logging revert transaction:', logError)
+    }
+  
+    return true
+  }
+  
 	const getRealtimeItemsSubscription = (
 		handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
 	) => {
@@ -533,6 +595,7 @@ export const SupabaseProvider = ({ children }: any) => {
 		updateFolder,
 		getWarehouseUsers,
 		addMemberToWarehouse,
+    revertItemToPreviousState
 	}
 
 	return (
