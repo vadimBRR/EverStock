@@ -26,15 +26,15 @@ const HistoryDetailed = () => {
 		typeof folderIdString === 'string' ? folderIdString : folderIdString?.[0]
 	)
 
-	const { data: transactionData, isLoading: isTransactionsLoading } = useGetTransaction(folder_id)
+	const { data: transactionData, isLoading: isTransactionsLoading } =
+		useGetTransaction(folder_id)
 	const transaction = transactionData?.info.find(t => t.id === id)
 
 	const { data: folders = [] } = useGetFoldersWithItems()
-	const folder = folders.find(f => f.id === folder_id)
 	// const member = folder?.members.find(m => m.id === transaction?.user_id)
-  const { data: warehouseUsers = [], isLoading:isUserLoading } = useGetWarehouseUsers(folder_id)
-  const member = warehouseUsers.find(m => m.id === transaction?.user_id)
-  
+	const { data: warehouseUsers = [], isLoading: isUserLoading } =
+		useGetWarehouseUsers(folder_id)
+	const member = warehouseUsers.find(m => m.id === transaction?.user_id)
 
 	const findDifferences = (
 		prev_item: Partial<itemType[]>,
@@ -55,22 +55,18 @@ const HistoryDetailed = () => {
 		? findDifferences(transaction.prev_item, transaction.changed_item)
 		: {}
 
-
 	const { revertItemToPreviousState } = useSupabase()
 
-const handleRevertChanges = async () => {
-  if (!transaction?.id || !folder_id) return
+	const handleRevertChanges = async () => {
+		if (!transaction?.id || !folder_id) return
 
-  const success = await revertItemToPreviousState!(transaction.id, folder_id)
-  if (success) router.back()
-}
-
-	if (isTransactionsLoading || isUserLoading) {
-		return (
-      <Loading/>
-		)
+		const success = await revertItemToPreviousState!(transaction.id, folder_id)
+		if (success) router.back()
 	}
 
+	if (isTransactionsLoading || isUserLoading) {
+		return <Loading />
+	}
 
 	return (
 		<Container isPadding={false} container_style='mx-2 pt-2'>

@@ -24,9 +24,8 @@ const HistoryScreen = () => {
 	const { data: folders = [] } = useGetFoldersWithItems()
 	const { data: transaction } = useGetTransaction(id)
 
-	const folder = folders.find(folder => folder.id === id)
 	const info = transaction?.info || []
-  const { data: membersMap } = useFolderMembersMap(id)
+	const { data: membersMap } = useFolderMembersMap(id)
 	const [search, setSearch] = useState('')
 
 	const handleSearch = (value: string) => {
@@ -34,65 +33,62 @@ const HistoryScreen = () => {
 	}
 
 	const filteredTransactions = useMemo(() => {
-    const { sortBy, isAsc, membersId, itemsId, actions } = transactionSettings
-    let result = [...info]
-  
-    if (sortBy === 'member name') {
-      result.sort((a, b) => {
-        const nameA = getUserFullName({ user_id: a.user_id, activeIndex: id }) ?? ''
-        const nameB = getUserFullName({ user_id: b.user_id, activeIndex: id }) ?? ''
-        return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
-      })
-    }
-    const getItemName = (t: any) =>
-      (t.prev_item?.name || t.changed_item?.name || '').toLowerCase()
-    
-    if (sortBy === 'item name') {
-      result.sort((a, b) => {
-        const nameA = getItemName(a)
-        const nameB = getItemName(b)
-        return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
-      })
-    }
-    
-    
-    if (sortBy === 'last updated') {
-      result.sort((a, b) =>
-        isAsc ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)
-      )
-    }
-  
-    result = result
-      .filter(t => (membersId?.length ? membersId.includes(t.user_id) : true))
-      .filter(t => (itemsId?.length ? itemsId.includes(t.item_id) : true))
-      .filter(t => {
-        if (actions.isCreated && t.isCreated) return true
-        if (actions.isEdited && t.isEdited) return true
-        if (actions.isDeleted && t.isDeleted) return true
-        if (actions.isReverted && t.isReverted) return true
-        return (
-          !actions.isCreated &&
-          !actions.isEdited &&
-          !actions.isDeleted &&
-          !actions.isReverted
-        )
-      })
-  
-    if (search) {
-      const searchLower = search.toLowerCase()
-      result = result.filter(t => {
-        const itemName = t.prev_item?.name?.toLowerCase() || ''
-        const fullName = membersMap?.get(t.user_id)?.toLowerCase() || ''
-        return (
-          itemName.includes(searchLower) ||
-          fullName.includes(searchLower)
-        )
-      })
-    }
-  
-    return result
-  }, [info, transactionSettings, id, search])
-  
+		const { sortBy, isAsc, membersId, itemsId, actions } = transactionSettings
+		let result = [...info]
+
+		if (sortBy === 'member name') {
+			result.sort((a, b) => {
+				const nameA =
+					getUserFullName({ user_id: a.user_id, activeIndex: id }) ?? ''
+				const nameB =
+					getUserFullName({ user_id: b.user_id, activeIndex: id }) ?? ''
+				return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
+			})
+		}
+		const getItemName = (t: any) =>
+			(t.prev_item?.name || t.changed_item?.name || '').toLowerCase()
+
+		if (sortBy === 'item name') {
+			result.sort((a, b) => {
+				const nameA = getItemName(a)
+				const nameB = getItemName(b)
+				return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
+			})
+		}
+
+		if (sortBy === 'last updated') {
+			result.sort((a, b) =>
+				isAsc ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)
+			)
+		}
+
+		result = result
+			.filter(t => (membersId?.length ? membersId.includes(t.user_id) : true))
+			.filter(t => (itemsId?.length ? itemsId.includes(t.item_id) : true))
+			.filter(t => {
+				if (actions.isCreated && t.isCreated) return true
+				if (actions.isEdited && t.isEdited) return true
+				if (actions.isDeleted && t.isDeleted) return true
+				if (actions.isReverted && t.isReverted) return true
+				return (
+					!actions.isCreated &&
+					!actions.isEdited &&
+					!actions.isDeleted &&
+					!actions.isReverted
+				)
+			})
+
+		if (search) {
+			const searchLower = search.toLowerCase()
+			result = result.filter(t => {
+				const itemName = t.prev_item?.name?.toLowerCase() || ''
+				const fullName = membersMap?.get(t.user_id)?.toLowerCase() || ''
+				return itemName.includes(searchLower) || fullName.includes(searchLower)
+			})
+		}
+
+		return result
+	}, [info, transactionSettings, id, search])
 
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/analytics/history/settings?id=' + id)
