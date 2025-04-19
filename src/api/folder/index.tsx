@@ -77,8 +77,9 @@ export const useGetFoldersWithItems = () => {
 		queryKey: ['folders'],
 
 		queryFn: async () => {
-      console.log("get folders");
+      console.log("get folders!!!!!!!!!!!");
 			const data = await getFoldersWithStatistic!()
+      console.log(data);
 			return data
 		},  
 	})

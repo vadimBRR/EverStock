@@ -128,3 +128,20 @@ export const useDeleteWarehouseMember = () => {
     },
 	})
 }
+
+export const useFolderMembersMap = (folderId: number) => {
+  const { getWarehouseUsers } = useSupabase()
+
+  return useQuery({
+    queryKey: ['folder-members-map', folderId],
+    enabled: !!folderId,
+    queryFn: async () => {
+      const users = await getWarehouseUsers!(folderId)
+      const map = new Map<string, string>()
+      users.forEach(user => {
+        map.set(user.id, user.fullName)
+      })
+      return map
+    },
+  })
+}

@@ -1,9 +1,9 @@
 import {
 	View,
 	Text,
-	ScrollView,
-	TouchableWithoutFeedback,
+	FlatList,
 	Keyboard,
+	TouchableWithoutFeedback,
 } from 'react-native'
 import React, { useState } from 'react'
 import { Stack, useRouter } from 'expo-router'
@@ -14,6 +14,7 @@ import RectangleCheckBox from '@/src/components/RectangleCheckBox'
 import { useSearchParams } from 'expo-router/build/hooks'
 import { useAddWarehouseMember, useGetAllUsers } from '@/src/api/users'
 import { showSuccess, showError } from '@/src/utils/toast'
+import { ScrollView } from 'react-native-gesture-handler'
 
 const CreateMemberScreen = () => {
 	const searchParams = useSearchParams()
@@ -49,34 +50,33 @@ const CreateMemberScreen = () => {
 	)
 
 	const handleCreateMember = async () => {
-    setErrorMessage(null)
-  
-    if (!email) {
-      setIsErrorInput(true)
-      setErrorMessage('Email is required.')
-      showError('Email is required.')
-      return
-    }
-  
-    try {
-      await mutateAsync({
-        folderId: folder_id,
-        email,
-        roles,
-        permissions: [],
-      })
-  
-      showSuccess('Member added successfully 🎉')
-      router.back()
-    } catch (error: any) {
-      console.error('Error adding member:', error.message)
-      setIsErrorInput(true)
-      const message = error.message || 'Something went wrong.'
-      setErrorMessage(message)
-      showError('Failed to add member', message)
-    }
-  }
-  
+		setErrorMessage(null)
+
+		if (!email) {
+			setIsErrorInput(true)
+			setErrorMessage('Email is required.')
+			showError('Email is required.')
+			return
+		}
+
+		try {
+			await mutateAsync({
+				folderId: folder_id,
+				email,
+				roles,
+				permissions: [],
+			})
+
+			showSuccess('Member added successfully 🎉')
+			router.back()
+		} catch (error: any) {
+			console.error('Error adding member:', error.message)
+			setIsErrorInput(true)
+			const message = error.message || 'Something went wrong.'
+			setErrorMessage(message)
+			showError('Failed to add member', message)
+		}
+	}
 
 	if (!folder_id) {
 		return (
@@ -111,45 +111,48 @@ const CreateMemberScreen = () => {
 							onBlur={() => setTimeout(() => setIsFocused(false), 150)}
 						/>
 
-						{/* 🔍 Autocomplete список */}
+						{/* 🔍 Autocomplete список з FlatList */}
 						{isFocused && filteredSuggestions.length > 0 && (
-							<View
-								className='absolute w-full bg-dark_gray rounded-lg px-3 py-2 shadow-lg z-50'
-								style={{
-									top: 65,
-									maxHeight: 150,
-									overflow: 'scroll',
-									elevation: 10,
-								}}
-							>
-								{filteredSuggestions.slice(0, 20).map((user, index) => (
-									<View key={index}>
-										<Text
-											className='text-white py-2'
-											onPress={() => {
-												setEmail(user.email)
-												setIsErrorInput(false)
-												setIsFocused(false)
-												Keyboard.dismiss()
-											}}
-										>
-											{user.email} {user.full_name ? `- ${user.full_name}` : ''}
-										</Text>
-										{index !== filteredSuggestions.length - 1 && (
-											<View className='h-px bg-neutral-600 opacity-40' />
-										)}
-									</View>
-								))}
-							</View>
-						)}
+  <View
+    className='absolute w-full bg-dark_gray rounded-lg shadow-lg z-50'
+    style={{
+      top: 65,
+      maxHeight: 200, // важливо
+      elevation: 10,
+    }}
+  >
+    <ScrollView
+      keyboardShouldPersistTaps='handled'
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+      {filteredSuggestions.slice(0, 20).map((user, index) => (
+        <View key={index}>
+          <Text
+            className='text-white py-2 px-3'
+            onPress={() => {
+              setEmail(user.email)
+              setIsErrorInput(false)
+              setIsFocused(false)
+              Keyboard.dismiss()
+            }}
+          >
+            {user.email} {user.full_name ? `- ${user.full_name}` : ''}
+          </Text>
+          {index !== filteredSuggestions.length - 1 && (
+            <View className='h-px bg-neutral-600 opacity-40' />
+          )}
+        </View>
+      ))}
+    </ScrollView>
+  </View>
+)}
+
 					</View>
 
-					{/* 🔴 Error */}
 					{errorMessage && (
 						<Text className='text-red-500 mb-4 mt-2'>{errorMessage}</Text>
 					)}
 
-					{/* 🔘 Content */}
 					<ScrollView keyboardShouldPersistTaps='handled'>
 						<Text className='font-lexend_light text-white text-2xl mb-1'>
 							Permissions:
@@ -158,7 +161,7 @@ const CreateMemberScreen = () => {
 						<RectangleCheckBox
 							text='View'
 							isActive={roles.isView}
-							isIcon={true}
+							isIcon
 							icon={require('@/src/assets/icons/member/isView_white.png')}
 							styleContainer='items-start m-0 p-2 px-4 mb-2'
 							customBg='dark_gray'
@@ -167,7 +170,7 @@ const CreateMemberScreen = () => {
 							text='Edit'
 							isActive={roles.isEdit}
 							onClick={() => setRoles({ ...roles, isEdit: !roles.isEdit })}
-							isIcon={true}
+							isIcon
 							icon={require('@/src/assets/icons/member/isEdit_white.png')}
 							styleContainer='items-start m-0 p-2 px-4 mb-2'
 							customBg='dark_gray'
@@ -178,7 +181,7 @@ const CreateMemberScreen = () => {
 							onClick={() =>
 								setRoles({ ...roles, isDeleteItem: !roles.isDeleteItem })
 							}
-							isIcon={true}
+							isIcon
 							icon={require('@/src/assets/icons/member/isDeleteItem_white.png')}
 							styleContainer='items-start m-0 p-2 px-4 mb-2'
 							customBg='dark_gray'
@@ -189,7 +192,7 @@ const CreateMemberScreen = () => {
 							onClick={() =>
 								setRoles({ ...roles, isAddItem: !roles.isAddItem })
 							}
-							isIcon={true}
+							isIcon
 							icon={require('@/src/assets/icons/member/isAddItem_white.png')}
 							styleContainer='items-start m-0 p-2 px-4 mb-2'
 							customBg='dark_gray'
@@ -200,20 +203,20 @@ const CreateMemberScreen = () => {
 							onClick={() =>
 								setRoles({ ...roles, isCanInvite: !roles.isCanInvite })
 							}
-							isIcon={true}
+							isIcon
 							icon={require('@/src/assets/icons/member/isCanInvite_white.png')}
 							styleContainer='items-start m-0 p-2 px-4 mb-2'
 							customBg='dark_gray'
 						/>
-
 						<RectangleCheckBox
 							text='Manager'
 							isActive={roles.isManager}
 							onClick={() => {
-								if (!roles.isAdmin)
+								if (!roles.isAdmin) {
 									setRoles({ ...roles, isManager: !roles.isManager })
+								}
 							}}
-							isIcon={true}
+							isIcon
 							icon={require('@/src/assets/icons/member/isManager_white.png')}
 							styleContainer='items-start m-0 p-2 px-4 mb-2'
 							customBg='dark_gray'

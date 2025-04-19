@@ -12,6 +12,7 @@ import SearchBar from '@/src/components/SearchBar'
 import { useAccount } from '@/src/providers/AccountProvider'
 import { useGetTransaction } from '@/src/api/transaction'
 import { useGetFoldersWithItems } from '@/src/api/folder'
+import { useFolderMembersMap } from '@/src/api/users'
 
 const HistoryScreen = () => {
 	const { activeIndex: idString } = useLocalSearchParams()
@@ -25,7 +26,7 @@ const HistoryScreen = () => {
 
 	const folder = folders.find(folder => folder.id === id)
 	const info = transaction?.info || []
-
+  const { data: membersMap } = useFolderMembersMap(id)
 	const [search, setSearch] = useState('')
 
 	const handleSearch = (value: string) => {
@@ -36,7 +37,6 @@ const HistoryScreen = () => {
     const { sortBy, isAsc, membersId, itemsId, actions } = transactionSettings
     let result = [...info]
   
-    // Сортування
     if (sortBy === 'member name') {
       result.sort((a, b) => {
         const nameA = getUserFullName({ user_id: a.user_id, activeIndex: id }) ?? ''
@@ -44,20 +44,24 @@ const HistoryScreen = () => {
         return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
       })
     }
+    const getItemName = (t: any) =>
+      (t.prev_item?.name || t.changed_item?.name || '').toLowerCase()
+    
     if (sortBy === 'item name') {
       result.sort((a, b) => {
-        const nameA = a.prev_item?.name ?? ''
-        const nameB = b.prev_item?.name ?? ''
+        const nameA = getItemName(a)
+        const nameB = getItemName(b)
         return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
       })
     }
+    
+    
     if (sortBy === 'last updated') {
       result.sort((a, b) =>
         isAsc ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)
       )
     }
   
-    // 🔍 ФІЛЬТРАЦІЯ по вибраних member'ах та item'ах
     result = result
       .filter(t => (membersId?.length ? membersId.includes(t.user_id) : true))
       .filter(t => (itemsId?.length ? itemsId.includes(t.item_id) : true))
@@ -74,15 +78,14 @@ const HistoryScreen = () => {
         )
       })
   
-    // 🔍 ПОШУК тільки по item.name і user_id
     if (search) {
       const searchLower = search.toLowerCase()
       result = result.filter(t => {
         const itemName = t.prev_item?.name?.toLowerCase() || ''
-        const userId = t.user_id.toLowerCase()
+        const fullName = membersMap?.get(t.user_id)?.toLowerCase() || ''
         return (
           itemName.includes(searchLower) ||
-          userId.includes(searchLower)
+          fullName.includes(searchLower)
         )
       })
     }
@@ -139,10 +142,7 @@ const HistoryScreen = () => {
 						>
 							<TransactionCard
 								key={index}
-								fullName={getUserFullName({
-									user_id: item.user_id,
-									activeIndex: id,
-								})}
+								fullName={membersMap?.get(item.user_id) || item.user_id}
 								action={getAction(item)}
 								date={item.date}
 								containerStyle='rounded-xl'
