@@ -33,67 +33,63 @@ const HistoryScreen = () => {
 	}
 
 	const filteredTransactions = useMemo(() => {
-		const { sortBy, isAsc, membersId, itemsId, actions } = transactionSettings
-		let result = [...info]
-
-		if (sortBy === 'member name') {
-			result.sort((a, b) => {
-				const memberA = folder?.members.find(m => m.id === a.user_id)
-				const memberB = folder?.members.find(m => m.id === b.user_id)
-				const fullNameA = memberA?.fullName ?? ''
-				const fullNameB = memberB?.fullName ?? ''
-				return isAsc
-					? fullNameA.localeCompare(fullNameB)
-					: fullNameB.localeCompare(fullNameA)
-			})
-		}
-
-		if (sortBy === 'item name') {
-			result.sort((a, b) => {
-				const nameA = a.prev_item?.name ?? ''
-				const nameB = b.prev_item?.name ?? ''
-				return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
-			})
-		}
-
-		if (sortBy === 'last updated') {
-			result.sort((a, b) =>
-				isAsc ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)
-			)
-		}
-
-		result = result
-			.filter(t => (membersId?.length ? membersId.includes(t.user_id) : true))
-			.filter(t => (itemsId?.length ? itemsId.includes(t.item_id) : true))
-			.filter(t => {
-				if (actions.isCreated && t.isCreated) return true
-				if (actions.isEdited && t.isEdited) return true
-				if (actions.isDeleted && t.isDeleted) return true
-				if (actions.isReverted && t.isReverted) return true
-				return (
-					!actions.isCreated &&
-					!actions.isEdited &&
-					!actions.isDeleted &&
-					!actions.isReverted
-				)
-			})
-
-		if (search) {
-			const searchLower = search.toLowerCase()
-			result = result.filter(t => {
-				const member = folder?.members.find(m => m.id === t.user_id)
-				const fullName = member?.fullName ?? ''
-				const itemName = t.prev_item?.name ?? ''
-				return (
-					fullName.toLowerCase().includes(searchLower) ||
-					itemName.toLowerCase().includes(searchLower) ||
-					t.date.toLowerCase().includes(searchLower)
-				)
-			})
-		}
-
-		return result
-	}, [info, transactionSettings, folder, search])
+    const { sortBy, isAsc, membersId, itemsId, actions } = transactionSettings
+    let result = [...info]
+  
+    // Сортування
+    if (sortBy === 'member name') {
+      result.sort((a, b) => {
+        const nameA = getUserFullName({ user_id: a.user_id, activeIndex: id }) ?? ''
+        const nameB = getUserFullName({ user_id: b.user_id, activeIndex: id }) ?? ''
+        return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
+      })
+    }
+    if (sortBy === 'item name') {
+      result.sort((a, b) => {
+        const nameA = a.prev_item?.name ?? ''
+        const nameB = b.prev_item?.name ?? ''
+        return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
+      })
+    }
+    if (sortBy === 'last updated') {
+      result.sort((a, b) =>
+        isAsc ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)
+      )
+    }
+  
+    // 🔍 ФІЛЬТРАЦІЯ по вибраних member'ах та item'ах
+    result = result
+      .filter(t => (membersId?.length ? membersId.includes(t.user_id) : true))
+      .filter(t => (itemsId?.length ? itemsId.includes(t.item_id) : true))
+      .filter(t => {
+        if (actions.isCreated && t.isCreated) return true
+        if (actions.isEdited && t.isEdited) return true
+        if (actions.isDeleted && t.isDeleted) return true
+        if (actions.isReverted && t.isReverted) return true
+        return (
+          !actions.isCreated &&
+          !actions.isEdited &&
+          !actions.isDeleted &&
+          !actions.isReverted
+        )
+      })
+  
+    // 🔍 ПОШУК тільки по item.name і user_id
+    if (search) {
+      const searchLower = search.toLowerCase()
+      result = result.filter(t => {
+        const itemName = t.prev_item?.name?.toLowerCase() || ''
+        const userId = t.user_id.toLowerCase()
+        return (
+          itemName.includes(searchLower) ||
+          userId.includes(searchLower)
+        )
+      })
+    }
+  
+    return result
+  }, [info, transactionSettings, id, search])
+  
 
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/analytics/history/settings?id=' + id)

@@ -9,6 +9,7 @@ import { Feather, Ionicons } from '@expo/vector-icons'
 import CardItem from '@/src/components/home/item/CardItem'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useGetFoldersWithItems } from '@/src/api/folder'
+import { useGetWarehouseUsers } from '@/src/api/users'
 
 const ViewSettingsScreen = () => {
   const { id: idString } = useLocalSearchParams()
@@ -29,9 +30,11 @@ const ViewSettingsScreen = () => {
   const allMembers = folder?.members || []
   const allItems = folder?.items || []
 
+  const { data: warehouseUsers = [] } = useGetWarehouseUsers(id)
+
   const selectedMembers = useMemo(() => {
-    return allMembers.filter(m => settings.membersId.includes(m.id))
-  }, [allMembers, settings.membersId])
+    return warehouseUsers.filter(m => settings.membersId.includes(m.id))
+  }, [warehouseUsers, settings.membersId])
 
   const selectedItems = useMemo(() => {
     return allItems.filter(i => settings.itemsId.includes(i.id))
