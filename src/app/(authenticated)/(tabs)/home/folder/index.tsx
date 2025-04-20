@@ -42,7 +42,6 @@ export default function HomeScreen() {
 		fetchFolders()
 	}, [])
 
-	// Функція оновлення списку папок
 	const onRefresh = useCallback(async () => {
 		setRefreshing(true)
 		await fetchFolders()

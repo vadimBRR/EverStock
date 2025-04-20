@@ -18,6 +18,7 @@ type Props = {
   disabled?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
+  editable?: boolean;
 };
 
 export default function CustomInput({
@@ -34,6 +35,7 @@ export default function CustomInput({
   disabled = false,
   onFocus = () => {},
   onBlur = () => {},
+  editable = true,
 }: Props) {
   const [borderColor, setBorderColor] = React.useState(
     isError && name.length === 0 ? 'border-red-500' : 'border-dark_gray'
@@ -94,6 +96,7 @@ export default function CustomInput({
         secureTextEntry={isPasswordVisible}
         numberOfLines={isMultiline ? 8 : 1}
         disabled={disabled}
+        editable={!editable}
       />
       {secureTextEntry && !disabled && (
         <View className="absolute right-[12px] top-0 h-[54px] w-[20px] flex items-center justify-center">

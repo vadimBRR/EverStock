@@ -34,7 +34,7 @@ const MemberProfileScreen = () => {
 			isEdit: false,
 			isCanInvite: false,
 			isAdmin: false,
-      isManager: false,
+			isManager: false,
 		}
 	)
 	const [isErrorInput, setIsErrorInput] = useState(false)
@@ -50,38 +50,37 @@ const MemberProfileScreen = () => {
 	const { mutate: deleteMember } = useDeleteWarehouseMember()
 
 	const update = () => {
-    updateMember(
-      {
-        folderId: folder_id,
-        userId: user_id,
-        roles,
-      },
-      {
-        onSuccess: () => {
-          showSuccess('Roles updated successfully')
-          router.back()
-        },
-        onError: () => showError('Failed to update roles'),
-      }
-    )
-  }
-  
-  const remove = () => {
-    deleteMember(
-      {
-        folderId: folder_id,
-        userId: user_id,
-      },
-      {
-        onSuccess: () => {
-          showSuccess('Member deleted')
-          router.back()
-        },
-        onError: () => showError('Failed to delete member'),
-      }
-    )
-  }
-  
+		updateMember(
+			{
+				folderId: folder_id,
+				userId: user_id,
+				roles,
+			},
+			{
+				onSuccess: () => {
+					showSuccess('Roles updated successfully')
+					router.back()
+				},
+				onError: () => showError('Failed to update roles'),
+			}
+		)
+	}
+
+	const remove = () => {
+		deleteMember(
+			{
+				folderId: folder_id,
+				userId: user_id,
+			},
+			{
+				onSuccess: () => {
+					showSuccess('Member deleted')
+					router.back()
+				},
+				onError: () => showError('Failed to delete member'),
+			}
+		)
+	}
 
 	if (!member) {
 		return (
@@ -109,7 +108,7 @@ const MemberProfileScreen = () => {
 						setName={() => {}}
 						isError={isErrorInput}
 						containerStyle='mb-4'
-						disabled
+            editable={true}
 					/>
 					<Text className='font-lexend_light text-white text-2xl mb-1'>
 						Permissions:
@@ -126,8 +125,8 @@ const MemberProfileScreen = () => {
 						text='Edit'
 						isActive={roles.isEdit}
 						onClick={() => {
-              if (!roles.isAdmin) setRoles({ ...roles, isEdit: !roles.isEdit })
-            }}
+							if (roles.isAdmin || roles.isManager) setRoles({ ...roles, isEdit: !roles.isEdit })
+						}}
 						isIcon={true}
 						icon={require('@/src/assets/icons/member/isEdit_white.png')}
 						styleContainer='items-start m-0 p-2 px-4 mb-2'
@@ -136,11 +135,10 @@ const MemberProfileScreen = () => {
 					<RectangleCheckBox
 						text='Delete'
 						isActive={roles.isDeleteItem}
-						onClick={() =>{
-              if (!roles.isAdmin)
-							setRoles({ ...roles, isDeleteItem: !roles.isDeleteItem })
-            }
-						}
+						onClick={() => {
+							if (roles.isAdmin || roles.isManager)
+								setRoles({ ...roles, isDeleteItem: !roles.isDeleteItem })
+						}}
 						isIcon={true}
 						icon={require('@/src/assets/icons/member/isDeleteItem_white.png')}
 						styleContainer='items-start m-0 p-2 px-4 mb-2'
@@ -150,7 +148,9 @@ const MemberProfileScreen = () => {
 						text='Create'
 						isActive={roles.isAddItem}
 						onClick={() => {
-              if (!roles.isAdmin)setRoles({ ...roles, isAddItem: !roles.isAddItem })}}
+							if (roles.isAdmin || roles.isManager)
+								setRoles({ ...roles, isAddItem: !roles.isAddItem })
+						}}
 						isIcon={true}
 						icon={require('@/src/assets/icons/member/isAddItem_white.png')}
 						styleContainer='items-start m-0 p-2 px-4 mb-2'
@@ -159,10 +159,10 @@ const MemberProfileScreen = () => {
 					<RectangleCheckBox
 						text='Invite'
 						isActive={roles.isCanInvite}
-						onClick={() =>{
-              if (!roles.isAdmin)
-							setRoles({ ...roles, isCanInvite: !roles.isCanInvite })}
-						}
+						onClick={() => {
+							if (roles.isAdmin || roles.isManager)
+								setRoles({ ...roles, isCanInvite: !roles.isCanInvite })
+						}}
 						isIcon={true}
 						icon={require('@/src/assets/icons/member/isCanInvite_white.png')}
 						styleContainer='items-start m-0 p-2 px-4 mb-2'
@@ -171,34 +171,32 @@ const MemberProfileScreen = () => {
 					<RectangleCheckBox
 						text='Manager'
 						isActive={roles.isManager}
-						onClick={() =>{
-              if (!roles.isAdmin)
-							setRoles({ ...roles, isManager: !roles.isManager })}
-						}
+						onClick={() => {
+							if (roles.isAdmin || roles.isManager)
+								setRoles({ ...roles, isManager: !roles.isManager })
+						}}
 						isIcon={true}
 						icon={require('@/src/assets/icons/member/isManager_white.png')}
 						styleContainer='items-start m-0 p-2 px-4 mb-2'
 						customBg='dark_gray'
 					/>
 				</View>
-        {!roles.isAdmin &&
-        <View className='flex flex-row my-4'>
-        <CustomButton
-          text='Delete'
-          onClick={remove}
-          styleContainer='mx-0 flex-1 mr-2'
-          isActive={!!email && !roles.isAdmin}
-          disabled={roles.isAdmin}
-        />
-        <CustomButton
-          text='Apply'
-          onClick={update}
-          styleContainer='mx-0 flex-1 ml-2'
-          isActive={!!email}
-        />
-      </View>}
-
-				
+				{roles.isAdmin || roles.isManager && (
+					<View className='flex flex-row my-4'>
+						<CustomButton
+							text='Delete'
+							onClick={remove}
+							styleContainer='mx-0 flex-1 mr-2'
+							isActive={!!email }
+						/>
+						<CustomButton
+							text='Apply'
+							onClick={update}
+							styleContainer='mx-0 flex-1 ml-2'
+							isActive={!!email}
+						/>
+					</View>
+				)}
 			</View>
 		</Container>
 	)

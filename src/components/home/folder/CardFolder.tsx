@@ -7,6 +7,7 @@ import { Href, useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import { useSupabase } from '@/src/providers/SupabaseProvider'
 
 dayjs.extend(relativeTime)
 dayjs.extend(utc)
@@ -21,7 +22,9 @@ type Props = {
 
 export default function CardFolder({ data }: Props) {
 	const router = useRouter()
+	const { userId } = useSupabase()
 
+	const isOwner = data.user_id === userId
 	return (
 		<View className='w-full bg-black-700 rounded-[17px] py-3 px-4 mb-2 border border-black/10'>
 			<View></View>
@@ -73,6 +76,8 @@ export default function CardFolder({ data }: Props) {
             {dayjs.utc(data.lastUpdated).local().format('YYYY-MM-DD HH:mm:ss')}
 
             </Text>
+            {isOwner ? (
+
 					<TouchableOpacity
 						className='border border-gray p-1 rounded-md'
 						onPress={() => {
@@ -81,6 +86,15 @@ export default function CardFolder({ data }: Props) {
 					>
 						<Ionicons name='pencil-outline' size={16} color='white' />
 					</TouchableOpacity>
+            ) : ((
+
+              <View
+                className='border border-[#323232] p-1 rounded-md'
+                
+              >
+                {/* <Ionicons name='pencil-outline' size={16} color='#323232' /> */}
+              </View>
+                ))}
 				</View>
 			</View>
 		</View>

@@ -111,42 +111,41 @@ const CreateMemberScreen = () => {
 							onBlur={() => setTimeout(() => setIsFocused(false), 150)}
 						/>
 
-						{/* 🔍 Autocomplete список з FlatList */}
 						{isFocused && filteredSuggestions.length > 0 && (
-  <View
-    className='absolute w-full bg-dark_gray rounded-lg shadow-lg z-50'
-    style={{
-      top: 65,
-      maxHeight: 200, // важливо
-      elevation: 10,
-    }}
-  >
-    <ScrollView
-      keyboardShouldPersistTaps='handled'
-      contentContainerStyle={{ flexGrow: 1 }}
-    >
-      {filteredSuggestions.slice(0, 20).map((user, index) => (
-        <View key={index}>
-          <Text
-            className='text-white py-2 px-3'
-            onPress={() => {
-              setEmail(user.email)
-              setIsErrorInput(false)
-              setIsFocused(false)
-              Keyboard.dismiss()
-            }}
-          >
-            {user.email} {user.full_name ? `- ${user.full_name}` : ''}
-          </Text>
-          {index !== filteredSuggestions.length - 1 && (
-            <View className='h-px bg-neutral-600 opacity-40' />
-          )}
-        </View>
-      ))}
-    </ScrollView>
-  </View>
-)}
-
+							<View
+								className='absolute w-full bg-dark_gray rounded-lg shadow-lg z-50'
+								style={{
+									top: 65,
+									maxHeight: 200,
+									elevation: 10,
+								}}
+							>
+								<ScrollView
+									keyboardShouldPersistTaps='handled'
+									contentContainerStyle={{ flexGrow: 1 }}
+								>
+									{filteredSuggestions.slice(0, 20).map((user, index) => (
+										<View key={index}>
+											<Text
+												className='text-white py-2 px-3'
+												onPress={() => {
+													setEmail(user.email)
+													setIsErrorInput(false)
+													setIsFocused(false)
+													Keyboard.dismiss()
+												}}
+											>
+												{user.email}{' '}
+												{user.full_name ? `- ${user.full_name}` : ''}
+											</Text>
+											{index !== filteredSuggestions.length - 1 && (
+												<View className='h-px bg-neutral-600 opacity-40' />
+											)}
+										</View>
+									))}
+								</ScrollView>
+							</View>
+						)}
 					</View>
 
 					{errorMessage && (

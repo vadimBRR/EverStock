@@ -17,10 +17,11 @@ import Counter from '@/src/components/home/item/Counter'
 import CustomRadioButton from '@/src/components/CustomRadioButton'
 import { useModal } from '@/src/providers/ModalProvider'
 import ItemSettings from '@/src/components/home/item/ItemSettings'
-import {useGetFoldersWithItems} from '@/src/api/folder'
+import { useGetFoldersWithItems } from '@/src/api/folder'
 import Loading from '@/src/components/Loading'
 import { useUpdateItem } from '@/src/api/item'
 import { showSuccess, showError } from '@/src/utils/toast'
+import { useRolesStore } from '@/src/store/useUserRoles'
 
 export default function ItemScreen() {
 	const { id: idString } = useLocalSearchParams()
@@ -41,51 +42,55 @@ export default function ItemScreen() {
 	const [note, setNote] = useState(item.note || '')
 	const [tag, setTag] = useState<string>(item.tag || '')
 	const [images, setImages] = useState<string[]>(item.image_url || [])
-	const [selectedType, setSelectedType] = useState(item.typeAmount || 'quantity')
+	const [selectedType, setSelectedType] = useState(
+		item.typeAmount || 'quantity'
+	)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const router = useRouter()
 	const typesAmount = ['quantity', 'weight', 'volume']
 	const { mutate: updateItemMutation } = useUpdateItem()
+	const roles = useRolesStore(state => state.roles)
+	const canEdit = roles?.isEdit || roles?.isAdmin
+	console.log('canEdit: ', canEdit)
 
 	const changeImages = ({ images }: { images: string[] }) => {
 		setImages(images)
 	}
 
 	const updateItem = () => {
-    if (!itemName || (amount && isNaN(+amount)) || (price && isNaN(+price))) {
-      showError('Please fill all required fields correctly')
-      return
-    }
-  
-    setIsSubmitting(true)
-    updateItemMutation(
-      {
-        updatedItem: {
-          ...item,
-          name: itemName,
-          quantity: parseInt(amount),
-          price: parseFloat(price),
-          note,
-          tag,
-          typeAmount: selectedType,
-          image_url: images,
-        },
-        previousItem: item,
-      },
-      {
-        onSuccess: () => {
-          showSuccess('Item updated successfully')
-          setIsSubmitting(false)
-          router.back()
-        },
-        onError: (err: any) => {
-          showError('Failed to update item', err.message)
-          setIsSubmitting(false)
-        },
-      }
-    )
-  }
-  
+		if (!itemName || (amount && isNaN(+amount)) || (price && isNaN(+price))) {
+			showError('Please fill all required fields correctly')
+			return
+		}
+
+		setIsSubmitting(true)
+		updateItemMutation(
+			{
+				updatedItem: {
+					...item,
+					name: itemName,
+					quantity: parseInt(amount),
+					price: parseFloat(price),
+					note,
+					tag,
+					typeAmount: selectedType,
+					image_url: images,
+				},
+				previousItem: item,
+			},
+			{
+				onSuccess: () => {
+					showSuccess('Item updated successfully')
+					setIsSubmitting(false)
+					router.back()
+				},
+				onError: (err: any) => {
+					showError('Failed to update item', err.message)
+					setIsSubmitting(false)
+				},
+			}
+		)
+	}
 
 	return (
 		<Container isPadding={false}>
@@ -100,7 +105,11 @@ export default function ItemScreen() {
 					headerTitleAlign: 'center',
 					headerRight: () => (
 						<TouchableOpacity onPress={handleOpenAnother} className='p-2'>
-							<SimpleLineIcons name='options-vertical' size={16} color='white' />
+							<SimpleLineIcons
+								name='options-vertical'
+								size={16}
+								color='white'
+							/>
 						</TouchableOpacity>
 					),
 				}}
@@ -117,14 +126,18 @@ export default function ItemScreen() {
 						setImages={setImages}
 						isGallery={true}
 						handleChangeImages={(images: string[]) => changeImages({ images })}
+            editable={canEdit}
+
 					/>
 					<CustomInput
 						label={'Item name *'}
 						name={itemName}
 						setName={setItemName}
 						containerStyle='mb-4'
+						editable={!canEdit}
 					/>
-					<View className='w-full flex flex-row justify-between mb-4 bg-black-600 border border-dark_gray rounded-2xl p-3'>
+					{/* <View className='w-full flex flex-row justify-between mb-4 bg-black-600 border border-dark_gray rounded-2xl p-3'>
+
 						{typesAmount.map((type, index) => (
 							<CustomRadioButton
 								key={index}
@@ -133,18 +146,32 @@ export default function ItemScreen() {
 								onPress={() => setSelectedType(type)}
 							/>
 						))}
-					</View>
-					<Counter
-						type={selectedType}
-						quantity={amount}
-						item_id={item_id}
-						setQuantity={(quantity: number) => setAmount(quantity + '')}
+					</View> */}
+          {
+            canEdit ? (<Counter
+              type={selectedType}
+              quantity={amount}
+              item_id={item_id}
+              setQuantity={(quantity: number) => setAmount(quantity + '')}
+            />) : (
+              <CustomInput
+						label={'Quantity'}
+						name={amount}
+						setName={setAmount}
+						containerStyle='mb-1 mt-2'
+            
+						editable={!canEdit}
+						keyboardType='numeric'
 					/>
+            )
+          }
+					
 					<CustomInput
 						label={'Price'}
 						name={price}
 						setName={setPrice}
 						containerStyle='mb-3 mt-2'
+						editable={!canEdit}
 						keyboardType='numeric'
 					/>
 					<View className='mb-3 bg-black-600 border border-dark_gray rounded-2xl w-full px-2 flex items-center'>
@@ -179,26 +206,29 @@ export default function ItemScreen() {
 								fontSize: 16,
 								textAlignVertical: 'top',
 							}}
-							editable
+							editable={canEdit}
 							multiline
 							numberOfLines={6}
 						/>
 					</View>
 				</View>
 			</ScrollView>
-			<View className='mx-4'>
-				<CustomButton
-					text='Apply'
-					onClick={updateItem}
-					styleContainer='my-4 mx-0'
-					disabled={
-						!itemName ||
-						(amount ? isNaN(parseFloat(amount)) : false) ||
-						(price ? isNaN(parseFloat(price)) : false)
-					}
-					isLoading={isSubmitting}
-				/>
-			</View>
+			{canEdit && (
+				<View className='mx-4'>
+					<CustomButton
+						text='Apply'
+						onClick={updateItem}
+						styleContainer='my-4 mx-0'
+						disabled={
+							!itemName ||
+							(amount ? isNaN(parseFloat(amount)) : false) ||
+							(price ? isNaN(parseFloat(price)) : false)
+						}
+						isLoading={isSubmitting}
+					/>
+				</View>
+			)}
+
 			<ItemSettings item_id={item_id} />
 		</Container>
 	)
