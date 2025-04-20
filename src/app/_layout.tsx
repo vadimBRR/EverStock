@@ -6,13 +6,11 @@
 // import ModalProvider from '../providers/ModalProvider'
 // import QueryProvider from '../providers/QueryProvider'
 // import Loading from '../components/Loading'
-// import AccountProvider, { useAccount } from '../providers/AccountProvider'
 // import * as SystemUI from 'expo-system-ui'
 
 // const InitialLayout = () => {
 // 	const [fontsLoaded, setFontsLoaded] = useState(false)
 // 	const router = useRouter()
-// 	const { isAuthenticated } = useAccount()
 // 	const segments = useSegments()
 
 // 	SystemUI.setBackgroundColorAsync('#1C1A1A')

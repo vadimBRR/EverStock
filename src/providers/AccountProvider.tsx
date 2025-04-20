@@ -202,13 +202,13 @@ type AccountType = {
     startDate: Date | null,
     endDate: Date | null
 	) => { date: string; value: number }[]
-	getUserFullName: ({
-		user_id,
-		activeIndex,
-	}: {
-		user_id: number
-		activeIndex: number
-	}) => string
+	// getUserFullName: ({
+	// 	user_id,
+	// 	activeIndex,
+	// }: {
+	// 	user_id: number
+	// 	activeIndex: number
+	// }) => string
 	getAction: (info: infoTransactionType) => string
 	handleUpdateTransactionSettings: ({
 		sortBy,
@@ -287,7 +287,7 @@ const AccountContext = createContext<AccountType>({
 	handleUpdateViewSettings: () => {},
 	handleAddTransaction: () => {},
 	getChangesByField: () => [],
-	getUserFullName: () => '',
+	// getUserFullName: () => '',
 	getAction: () => '',
 	transactionSettings: {
 		sortBy: 'last updated',
@@ -1107,20 +1107,20 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		})
 	}
 
-	const getUserFullName = ({
-		user_id,
-		activeIndex,
-	}: {
-		user_id: number
-		activeIndex: number
-	}) => {
-		const fullName =
-			folders
-				.find(folder => folder.id === activeIndex)
-				?.members.find(member => member.id === user_id)?.fullName || ''
+	// const getUserFullName = ({
+	// 	user_id,
+	// 	activeIndex,
+	// }: {
+	// 	user_id: number
+	// 	activeIndex: number
+	// }) => {
+	// 	const fullName =
+	// 		folders
+	// 			.find(folder => folder.id === activeIndex)
+	// 			?.members.find(member => member.id === user_id)?.fullName || ''
 
-		return fullName
-	}
+	// 	return fullName
+	// }
 
 	const getAction = (info: infoTransactionType) => {
 
@@ -1167,7 +1167,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				transactions,
 				handleAddTransaction,
 				getChangesByField,
-				getUserFullName,
+				// getUserFullName,
 				getAction,
 				transactionSettings,
 				handleUpdateTransactionSettings,

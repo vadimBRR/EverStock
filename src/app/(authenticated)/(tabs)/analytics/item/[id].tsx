@@ -108,21 +108,44 @@ export default function AnalyticsItemScreen() {
           {/* Chart */}
           <AnalyticsChart transaction={filteredTransactions} />
            {/* Mini Dashboard */}
-           <View className='bg-black-600 mx-3 p-4 rounded-xl my-2 mt-4'>
-            <Text className='text-white font-lexend_medium text-lg mb-1'>Mini Dashboard</Text>
-            <Text className='text-white'>Total Quantity Change: {totalChanges.quantityChange}</Text>
-            <Text className='text-white'>Total Price Change: {totalChanges.priceChange.toFixed(2)}</Text>
-          </View>
-
-          {/* User stats */}
-          <View className='bg-black-600 mx-3 p-4 rounded-xl '>
-            <Text className='text-white font-lexend_medium text-lg mb-1'>Changes by Users</Text>
-            {Object.entries(totalChanges.userStats).map(([userId, count]) => (
-              <Text key={userId} className='text-white'>
-                {membersMap?.get(userId) || userId}: {count} change(s)
-              </Text>
-            ))}
-          </View>
+                    <View className='bg-black-600 mx-3 p-4 rounded-xl my-2 mt-4'>
+                      <Text className='text-white font-lexend_semibold text-lg mb-3'>
+                        Mini Dashboard
+                      </Text>
+                      <View className='flex-row justify-between mb-2'>
+                        <Text className='text-gray font-lexend_medium'>
+                          Total Quantity Change:
+                        </Text>
+                        <Text className='text-white font-lexend_medium'>
+                          {totalChanges.quantityChange}
+                        </Text>
+                      </View>
+                      <View className='flex-row justify-between'>
+                        <Text className='text-gray font-lexend_medium'>
+                          Total Price Change:
+                        </Text>
+                        <Text className='text-white font-lexend_medium'>
+                          {totalChanges.priceChange.toFixed(2)}
+                        </Text>
+                      </View>
+                    </View>
+           
+                    {/* User stats */}
+                    <View className='bg-black-600 mx-3 p-4 rounded-xl mt-3'>
+                      <Text className='text-white font-lexend_semibold text-lg mb-3'>
+                        Changes by Users
+                      </Text>
+                      {Object.entries(totalChanges.userStats)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([userId, count]) => (
+                          <View key={userId} className='flex-row justify-between mb-1'>
+                            <Text className='text-white'>
+                              {membersMap?.get(userId) || userId}
+                            </Text>
+                            <Text className='text-gray'>{count} change(s)</Text>
+                          </View>
+                        ))}
+                    </View>
           <View className='w-full mt-1'>
             <HistoryContainer
               transaction={filteredTransactions}

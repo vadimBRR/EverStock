@@ -11,7 +11,6 @@ import { Ionicons } from '@expo/vector-icons'
 import SearchBar from '@/src/components/SearchBar'
 import { useAccount } from '@/src/providers/AccountProvider'
 import { useGetTransaction } from '@/src/api/transaction'
-import { useGetFoldersWithItems } from '@/src/api/folder'
 import { useFolderMembersMap } from '@/src/api/users'
 
 const HistoryScreen = () => {
@@ -20,8 +19,7 @@ const HistoryScreen = () => {
 
 	const id = parseFloat(typeof idString === 'string' ? idString : idString?.[0])
 
-	const { getUserFullName, getAction, transactionSettings } = useAccount()
-	const { data: folders = [] } = useGetFoldersWithItems()
+	const {  getAction, transactionSettings } = useAccount()
 	const { data: transaction } = useGetTransaction(id)
 
 	const info = transaction?.info || []
@@ -37,14 +35,13 @@ const HistoryScreen = () => {
 		let result = [...info]
 
 		if (sortBy === 'member name') {
-			result.sort((a, b) => {
-				const nameA =
-					getUserFullName({ user_id: a.user_id, activeIndex: id }) ?? ''
-				const nameB =
-					getUserFullName({ user_id: b.user_id, activeIndex: id }) ?? ''
-				return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
-			})
-		}
+      result.sort((a, b) => {
+        const nameA = membersMap?.get(a.user_id) ?? ''
+        const nameB = membersMap?.get(b.user_id) ?? ''
+        return isAsc ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA)
+      })
+    }
+    
 		const getItemName = (t: any) =>
 			(t.prev_item?.name || t.changed_item?.name || '').toLowerCase()
 

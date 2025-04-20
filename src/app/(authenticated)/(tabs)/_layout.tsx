@@ -27,7 +27,10 @@ export default function TabsLayout() {
 		segments.includes('choose_member') ||
 		segments.includes('choose_item') ||
 		segments.includes('history') || 
-    segments.includes('fast_edit')
+    segments.includes('fast_edit') || 
+    segments.includes('account') || 
+    segments.includes('support') ||
+    segments.includes('theme')
 
   console.log(hide);
   console.log(segments);

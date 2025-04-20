@@ -17,7 +17,7 @@ type Props = {
 
 export default function ItemSettings({ item_id }: Props) {
 	const router = useRouter()
-	const { handleCloseAnother, modalAnotherRef } = useModal()
+	const { handleCloseAnother, modalAnotherRef, handleOpenExport } = useModal()
 	const { data: folders } = useGetFoldersWithItems()
 
 	const item = useMemo(() => {
@@ -48,6 +48,11 @@ export default function ItemSettings({ item_id }: Props) {
 		handleCloseAnother()
 		router.push(`/(authenticated)/(tabs)/analytics/item/${item.id}`)
 	}
+
+  const onExport = () => {
+    handleCloseAnother() 
+    handleOpenExport()  
+  }
 
 	const renderBackdrop = useCallback(
 		(props: any) => (

@@ -53,7 +53,7 @@ export default function EditFolder() {
     try {
       await updateFolder?.(id, folderName, currency.name, folderType, folderOptions || [])
       showSuccess('Folder updated successfully')
-      router.push('/(authenticated)/(tabs)/home/folder')
+      router.back()
     } catch (error) {
       showError('Update failed', (error as Error).message)
     }

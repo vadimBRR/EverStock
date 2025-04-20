@@ -4,7 +4,6 @@ import TransactionCard from './TransactionCard'
 import { useAccount } from '@/src/providers/AccountProvider'
 import { FlatList } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
-import { transactionType } from '@/src/types/types'
 import { useFolderMembersMap } from '@/src/api/users'
 
 const HistoryContainer = ({
@@ -21,7 +20,7 @@ const HistoryContainer = ({
   onExport?: () => void
 }) => {
   const router = useRouter()
-  const { getUserFullName, getAction } = useAccount()
+  const {  getAction } = useAccount()
   const { data: membersMap } = useFolderMembersMap(activeIndex)
   const handleOpenDetailedView = () => {
     router.push(`/(authenticated)/(tabs)/analytics/history?activeIndex=${activeIndex}`)

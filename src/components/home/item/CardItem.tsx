@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Href, useRouter } from 'expo-router'
 import RemoteImage from '../../RemoteImage'
-import { itemType, Tables } from '@/src/types/types'
+import { Tables } from '@/src/types/types'
 import { useAccount } from '@/src/providers/AccountProvider'
 
 dayjs.extend(relativeTime)

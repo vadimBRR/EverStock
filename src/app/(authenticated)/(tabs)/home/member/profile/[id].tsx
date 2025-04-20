@@ -40,7 +40,7 @@ const MemberProfileScreen = () => {
 	)
 	const [isErrorInput, setIsErrorInput] = useState(false)
   const myRoles = useRolesStore(state => state.roles)
-	const canManaged = myRoles?.isManager || myRoles?.isAdmin
+	const canManaged = myRoles?.isManager || myRoles?.isAdmin && !roles.isAdmin
 
 	useEffect(() => {
 		if (member) {
