@@ -67,6 +67,8 @@ type ProviderProps = {
 	getUserInfo: () => Promise<any>
 	updateUserInfo: (updates: any) => Promise<any>
   revertItemToPreviousState: (transactionId: number, folderId: number) => Promise<any>
+  deleteItem: (item_id: number, folder_id: number) => Promise<any>
+  cloneItem: (item_id: number) => Promise<any>
 	getRealtimeItemsSubscription: (
 		handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
 	) => any
@@ -565,6 +567,68 @@ export const SupabaseProvider = ({ children }: any) => {
   
     return true
   }
+
+  const deleteItem = async (item_id: number, folder_id: number) => {
+    const { error } = await client
+      .from('items')
+      .delete()
+      .eq('id', item_id)
+  
+    if (error) throw new Error('Failed to delete item')
+  
+    const { error: txError } = await client.from('transactions').insert({
+      item_id,
+      folder_id, 
+      user_id: userId,
+      action: 'deleted',
+      timestamp: new Date(),
+    })
+  
+    if (txError) console.error('Error logging delete transaction:', txError)
+  
+    return true
+  }
+
+  const cloneItem = async (item_id: number) => {
+    const { data, error } = await client
+      .from('items')
+      .select('*')
+      .eq('id', item_id)
+      .single()
+  
+    if (error || !data) throw new Error('Original item not found')
+  
+    const cloned = {
+      ...data,
+      name: data.name + ' (Copy)',
+      created_at: new Date(),
+      updated_at: new Date(),
+    }
+  
+    delete cloned.id
+  
+    const { data: newItem, error: insertError } = await client
+      .from('items')
+      .insert(cloned)
+      .select()
+      .single()
+  
+    if (insertError) throw new Error('Failed to clone item')
+  
+    const { error: txError } = await client.from('transactions').insert({
+      item_id: newItem.id,
+      folder_id: newItem.folder_id,
+      user_id: userId,
+      action: 'created',
+      timestamp: new Date(),
+    })
+  
+    if (txError) console.error('Error logging clone transaction:', txError)
+  
+    return newItem
+  }
+  
+  
   
 	const getRealtimeItemsSubscription = (
 		handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
@@ -595,7 +659,9 @@ export const SupabaseProvider = ({ children }: any) => {
 		updateFolder,
 		getWarehouseUsers,
 		addMemberToWarehouse,
-    revertItemToPreviousState
+    revertItemToPreviousState,
+    deleteItem,
+    cloneItem
 	}
 
 	return (

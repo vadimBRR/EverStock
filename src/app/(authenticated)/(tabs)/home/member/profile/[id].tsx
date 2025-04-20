@@ -12,6 +12,7 @@ import {
 	useDeleteWarehouseMember,
 } from '@/src/api/users'
 import { showSuccess, showError } from '@/src/utils/toast'
+import { useRolesStore } from '@/src/store/useUserRoles'
 
 const MemberProfileScreen = () => {
 	const { id: idString } = useLocalSearchParams()
@@ -38,6 +39,8 @@ const MemberProfileScreen = () => {
 		}
 	)
 	const [isErrorInput, setIsErrorInput] = useState(false)
+  const myRoles = useRolesStore(state => state.roles)
+	const canManaged = myRoles?.isManager || myRoles?.isAdmin
 
 	useEffect(() => {
 		if (member) {
@@ -125,7 +128,7 @@ const MemberProfileScreen = () => {
 						text='Edit'
 						isActive={roles.isEdit}
 						onClick={() => {
-							if (roles.isAdmin || roles.isManager) setRoles({ ...roles, isEdit: !roles.isEdit })
+							if (canManaged) setRoles({ ...roles, isEdit: !roles.isEdit })
 						}}
 						isIcon={true}
 						icon={require('@/src/assets/icons/member/isEdit_white.png')}
@@ -136,7 +139,7 @@ const MemberProfileScreen = () => {
 						text='Delete'
 						isActive={roles.isDeleteItem}
 						onClick={() => {
-							if (roles.isAdmin || roles.isManager)
+							if (canManaged)
 								setRoles({ ...roles, isDeleteItem: !roles.isDeleteItem })
 						}}
 						isIcon={true}
@@ -148,7 +151,7 @@ const MemberProfileScreen = () => {
 						text='Create'
 						isActive={roles.isAddItem}
 						onClick={() => {
-							if (roles.isAdmin || roles.isManager)
+							if (canManaged)
 								setRoles({ ...roles, isAddItem: !roles.isAddItem })
 						}}
 						isIcon={true}
@@ -160,7 +163,7 @@ const MemberProfileScreen = () => {
 						text='Invite'
 						isActive={roles.isCanInvite}
 						onClick={() => {
-							if (roles.isAdmin || roles.isManager)
+							if (canManaged)
 								setRoles({ ...roles, isCanInvite: !roles.isCanInvite })
 						}}
 						isIcon={true}
@@ -172,7 +175,7 @@ const MemberProfileScreen = () => {
 						text='Manager'
 						isActive={roles.isManager}
 						onClick={() => {
-							if (roles.isAdmin || roles.isManager)
+							if (canManaged)
 								setRoles({ ...roles, isManager: !roles.isManager })
 						}}
 						isIcon={true}
@@ -181,7 +184,7 @@ const MemberProfileScreen = () => {
 						customBg='dark_gray'
 					/>
 				</View>
-				{roles.isAdmin || roles.isManager && (
+				{canManaged && (
 					<View className='flex flex-row my-4'>
 						<CustomButton
 							text='Delete'

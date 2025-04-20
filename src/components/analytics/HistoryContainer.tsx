@@ -11,10 +11,12 @@ const HistoryContainer = ({
   transaction,
   activeIndex,
   folderMap,
+  isDetailedView = true
 }: {
   transaction: any
   activeIndex: number
   folderMap: any
+  isDetailedView?: boolean
 }) => {
   const router = useRouter()
   const { getUserFullName, getAction } = useAccount()
@@ -35,9 +37,11 @@ const HistoryContainer = ({
           <TouchableOpacity className='bg-main_light rounded-[17px] py-2 px-3'>
             <Text className='font-lexend_semibold text-[14px] text-white'>Export</Text>
           </TouchableOpacity>
-          <TouchableOpacity className='bg-main_light rounded-[17px] py-2 px-3' onPress={handleOpenDetailedView}>
+          {isDetailedView && (
+            <TouchableOpacity className='bg-main_light rounded-[17px] py-2 px-3' onPress={handleOpenDetailedView}>
             <Text className='font-lexend_semibold text-[14px] text-white'>Detailed View</Text>
           </TouchableOpacity>
+          )}
         </View>
       </View>
 

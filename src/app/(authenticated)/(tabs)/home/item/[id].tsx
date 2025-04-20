@@ -133,7 +133,7 @@ export default function ItemScreen() {
 						label={'Item name *'}
 						name={itemName}
 						setName={setItemName}
-						containerStyle='mb-4'
+						containerStyle='mb-3'
 						editable={!canEdit}
 					/>
 					{/* <View className='w-full flex flex-row justify-between mb-4 bg-black-600 border border-dark_gray rounded-2xl p-3'>
@@ -158,7 +158,7 @@ export default function ItemScreen() {
 						label={'Quantity'}
 						name={amount}
 						setName={setAmount}
-						containerStyle='mb-1 mt-2'
+						containerStyle='mb-1'
             
 						editable={!canEdit}
 						keyboardType='numeric'

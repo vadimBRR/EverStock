@@ -9,6 +9,8 @@ import AddButton from '@/src/components/AddButton'
 import { RefreshControl } from 'react-native-gesture-handler'
 import CardMember from '@/src/components/home/member/CardMember'
 import { useGetWarehouseUsers } from '@/src/api/users'
+import { useRolesStore } from '@/src/store/useUserRoles'
+import Toast from 'react-native-toast-message'
 
 const MembersScreen = () => {
 	const { id: idString } = useLocalSearchParams()
@@ -27,9 +29,19 @@ const MembersScreen = () => {
 	} = useGetWarehouseUsers(folder_id)
 
 	SystemUI.setBackgroundColorAsync('#1C1A1A')
+	const roles = useRolesStore(state => state.roles)
 
-	const openCreateFolder = () => {
-		router.push('/(authenticated)/home/member/create?id=' + folder_id)
+	const openCreateMember = () => {
+		if (roles?.isAdmin || roles?.isCanInvite || roles?.isManager) {
+			router.push('/(authenticated)/home/member/create?id=' + folder_id)
+		} else {
+			Toast.show({
+				type: 'error',
+				text1: 'Permission Denied',
+				text2: 'You do not have rights to add members.',
+				position: 'top',
+			})
+		}
 	}
 
 	const handleSearch = (value: string) => {
@@ -70,7 +82,7 @@ const MembersScreen = () => {
 						search={search}
 						handleSearch={handleSearch}
 					/>
-					<AddButton handlePressAdd={openCreateFolder} />
+					<AddButton handlePressAdd={openCreateMember} />
 				</View>
 
 				<FlatList

@@ -79,7 +79,7 @@ export const useGetFoldersWithItems = () => {
 		queryFn: async () => {
       console.log("get folders!!!!!!!!!!!");
 			const data = await getFoldersWithStatistic!()
-      console.log(data);
+      // console.log(data);
 			return data
 		},  
 	})

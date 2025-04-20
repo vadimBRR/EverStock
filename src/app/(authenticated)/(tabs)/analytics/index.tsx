@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import React, { useMemo } from 'react'
 import Container from '@/src/components/Container'
 import { Stack } from 'expo-router'
 import HeaderAnalytics from '@/src/components/analytics/HeaderAnalytics'
@@ -7,21 +7,19 @@ import AnalyticsChart from '@/src/components/analytics/AnalyticsChart'
 import HistoryContainer from '@/src/components/analytics/HistoryContainer'
 import { ScrollView } from 'react-native-gesture-handler'
 import { useGetFoldersWithItems } from '@/src/api/folder' 
-import { useGetTransaction } from '@/src/api/transaction' // додай свій хук тут
+import { useGetTransaction } from '@/src/api/transaction'
 import { useSyncUserRoles } from '@/src/hooks/useSyncUserRoles'
+import Loading from '@/src/components/Loading'
+import { useFolderMembersMap } from '@/src/api/users'
 
 const AnalyticsScreen = () => {
-  const { data: folders = [] } = useGetFoldersWithItems()
+  const { data: folders = [], isLoading } = useGetFoldersWithItems()
   const [activeIndex, setActiveIndex] = React.useState<number>(-1)
 
-  const folders_id = React.useMemo(() => {
-    if(folders === null) return []
-    return folders.map(folder => folder.id)
-  }, [folders])
+  const folders_id = useMemo(() => folders!.map(folder => folder.id), [folders])
 
-  const folderMap = React.useMemo(() => {
-    if(folders === null) return []
-    return folders.reduce((acc, folder) => {
+  const folderMap = useMemo(() => {
+    return folders!.reduce((acc, folder) => {
       acc[folder.id] = folder
       return acc
     }, {} as Record<number, typeof folders[0]>)
@@ -36,7 +34,34 @@ const AnalyticsScreen = () => {
   const activeFolder = folderMap[activeIndex]
   useSyncUserRoles(activeFolder as any)
 
-  const { data: transaction } = useGetTransaction(activeIndex)
+  const { data: transaction, isLoading: isTransLoading } = useGetTransaction(activeIndex)
+  const { data: membersMap } = useFolderMembersMap(activeIndex)
+
+  const totalChanges = useMemo(() => {
+    if (!transaction) return { quantityChange: 0, priceChange: 0, userStats: {} }
+
+    let quantityChange = 0
+    let priceChange = 0
+    const userStats: Record<string, number> = {}
+
+    transaction.info.forEach(t => {
+      quantityChange += t.changed_item?.quantity - t.prev_item?.quantity || 0
+      priceChange += t.changed_item?.price - t.prev_item?.price || 0
+      if (t.user_id) {
+        userStats[t.user_id] = (userStats[t.user_id] || 0) + 1
+      }
+    })
+
+    return {
+      quantityChange,
+      priceChange,
+      userStats,
+    }
+  }, [transaction])
+
+  if (isLoading || isTransLoading) {
+    return <Loading />
+  }
 
   return (
     <Container isPadding={false} container_style='mx-'>
@@ -51,63 +76,56 @@ const AnalyticsScreen = () => {
           headerTintColor: '#fff',
         }}
       />
-      {transaction ? (
-        <>
-          {transaction.info.length === 0 ? (
-            <View className='flex-1  mt-2 '>
-              <HeaderAnalytics
-                activeIndex={activeIndex}
-                setActiveIndex={setActiveIndex}
-                folders_id={folders_id}
-                folderMap={folderMap}
-              />
-              <View className='flex-1 items-center justify-center px-2'>
-                <Text className='font-lexend_semibold text-[24px] text-white text-center'>
-                  No transactions found
-                </Text>
-                <Text className='font-lexend_light text-[16px] text-white text-center'>
-                  In the "Home" tab, you can create a folder and add items
-                </Text>
+      {transaction && transaction.info.length > 0 ? (
+        <ScrollView className='flex-1 mt-2'>
+          <HeaderAnalytics
+            activeIndex={activeIndex}
+            setActiveIndex={setActiveIndex}
+            folders_id={folders_id}
+            folderMap={folderMap}
+          />
 
-              </View>
-            </View>
-          ) : folders_id.length !== 0 ? (
-            <ScrollView className='flex-1 mt-2'>
-              <HeaderAnalytics
-                activeIndex={activeIndex}
-                setActiveIndex={setActiveIndex}
-                folders_id={folders_id}
-                folderMap={folderMap}
-              />
-              
-              <AnalyticsChart transaction={transaction.info} />
+          {/* Chart */}
+          <AnalyticsChart transaction={transaction.info} />
 
-              <View className='w-full mt-2'>
-                <HistoryContainer
-                  transaction={transaction.info}
-                  activeIndex={activeIndex}
-                  folderMap={folderMap}
-                />
-              </View>
-            </ScrollView>
-          ) : (
-            <View className='flex-1 justify-center items-center'>
-              <Text className='font-lexend_semibold text-[24px]'>
-                No folders found
+          {/* Mini Dashboard */}
+          <View className='bg-black-600 mx-3 p-4 rounded-xl my-2 mt-4'>
+            <Text className='text-white font-lexend_medium text-lg mb-1'>Mini Dashboard</Text>
+            <Text className='text-white'>Total Quantity Change: {totalChanges.quantityChange}</Text>
+            <Text className='text-white'>Total Price Change: {totalChanges.priceChange.toFixed(2)}</Text>
+          </View>
+
+          {/* User stats */}
+          <View className='bg-black-600 mx-3 p-4 rounded-xl '>
+            <Text className='text-white font-lexend_medium text-lg mb-1'>Changes by Users</Text>
+            {Object.entries(totalChanges.userStats).map(([userId, count]) => (
+              <Text key={userId} className='text-white'>
+                {membersMap?.get(userId) || userId}: {count} change(s)
               </Text>
-              <Text className='font-lexend_light text-[16px]'>
-                In the "Home" tab, you can create a folder
-              </Text>
-            </View>
-          )}
-        </>
+            ))}
+          </View>
+
+          <View className='w-full mt-2'>
+            <HistoryContainer
+              transaction={transaction.info}
+              activeIndex={activeIndex}
+              folderMap={folderMap}
+            />
+          </View>
+        </ScrollView>
       ) : (
-        <View className='flex-1 justify-center items-center px-2'>
+        <View className='flex-1 mt-2 items-center justify-center px-2'>
+          <HeaderAnalytics
+            activeIndex={activeIndex}
+            setActiveIndex={setActiveIndex}
+            folders_id={folders_id}
+            folderMap={folderMap}
+          />
           <Text className='font-lexend_semibold text-[24px] text-white text-center'>
-            No folders found :(
+            No transactions found
           </Text>
           <Text className='font-lexend_light text-[16px] text-white text-center'>
-            In the "Home" tab, you can create a folder
+            In the "Home" tab, you can create a folder and add items
           </Text>
         </View>
       )}

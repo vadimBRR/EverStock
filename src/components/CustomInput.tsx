@@ -35,7 +35,7 @@ export default function CustomInput({
   disabled = false,
   onFocus = () => {},
   onBlur = () => {},
-  editable = true,
+  editable = false,
 }: Props) {
   const [borderColor, setBorderColor] = React.useState(
     isError && name.length === 0 ? 'border-red-500' : 'border-dark_gray'

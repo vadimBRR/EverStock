@@ -739,7 +739,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		type: string
 		options: string[]
 	}) => {
-		console.log(currency)
+		// console.log(currency)
 		setFolders(prevFolders => {
 			const newFolder = {
 				created_at: new Date().toISOString(),
@@ -1124,7 +1124,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 
 	const getAction = (info: infoTransactionType) => {
 
-    console.log(info);
+    // console.log(info);
 		if (info.isCreated) return 'created item ' + info.changed_item.name
 		// if (!info.isCreated) return 'edited item ' + info.changed_item.name
 

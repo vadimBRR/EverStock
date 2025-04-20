@@ -8,8 +8,6 @@ export const useGetUserById = () => {
     queryKey: ['user'],
     queryFn: async () => {
       const data = await getUserInfo!();
-      console.log("data2");
-      console.log(data);
       
       return data
     }
@@ -23,7 +21,6 @@ export const useGetWarehouseUsers = (folderId: number) => {
 		queryKey: ['warehouse_users', folderId],
 		queryFn: async () => {
 			const data = await getWarehouseUsers!(folderId)
-      console.log("members:", data);
 			return data
 		},
 		enabled: !!folderId,
@@ -64,11 +61,10 @@ export const useGetAllUsers = () => {
       const { data, error } = await client.from('users').select('email, full_name')
 
       if (error) {
-        console.error('❌ Failed to fetch all users:', error)
+        console.error('Failed to fetch all users:', error)
         return []
       }
 
-      console.log('✅ Users fetched:', data)
       return data || []
     },
   })

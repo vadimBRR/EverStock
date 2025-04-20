@@ -37,7 +37,7 @@ export default function ModalCreate({ folderId }: Props) {
 		router.push('/(authenticated)/home/member/' + folderId)
 	}
 	const onCreateItem = () => {
-		if (roles?.isAddItem) {
+		if (roles?.isAddItem || roles?.isAdmin) {
       handleCloseCreate()
       router.push(('/(authenticated)/home/item/create?id=' + folderId) as Href)
     } else {
