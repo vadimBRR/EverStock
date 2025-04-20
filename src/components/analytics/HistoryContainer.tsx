@@ -11,12 +11,14 @@ const HistoryContainer = ({
   transaction,
   activeIndex,
   folderMap,
-  isDetailedView = true
+  isDetailedView = true,
+  onExport = () => {},
 }: {
   transaction: any
   activeIndex: number
   folderMap: any
   isDetailedView?: boolean
+  onExport?: () => void
 }) => {
   const router = useRouter()
   const { getUserFullName, getAction } = useAccount()
@@ -34,7 +36,7 @@ const HistoryContainer = ({
           </Text>
         </View>
         <View className='flex-row items-center gap-2'>
-          <TouchableOpacity className='bg-main_light rounded-[17px] py-2 px-3'>
+          <TouchableOpacity className='bg-main_light rounded-[17px] py-2 px-3' onPress={onExport}>
             <Text className='font-lexend_semibold text-[14px] text-white'>Export</Text>
           </TouchableOpacity>
           {isDetailedView && (

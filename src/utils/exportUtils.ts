@@ -1,31 +1,24 @@
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
+import * as DocumentPicker from 'expo-document-picker'
+import * as MediaLibrary from 'expo-media-library'
 
-export const exportItemsAsJSON = async (items: any[]) => {
-  const jsonString = JSON.stringify(items, null, 2)
-  const fileUri = FileSystem.documentDirectory + 'items_export.json'
-  await FileSystem.writeAsStringAsync(fileUri, jsonString, {
+export const exportToJSON = async (data: any, filename = 'items_export.json') => {
+  const fileUri = FileSystem.documentDirectory + filename
+  await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(data, null, 2), {
     encoding: FileSystem.EncodingType.UTF8,
   })
-
   await Sharing.shareAsync(fileUri)
 }
 
-export const exportItemsAsCSV = async (items: any[]) => {
-  if (items.length === 0) return
+export const exportToCSV = async (data: any[], filename = 'items_export.csv') => {
+  const header = Object.keys(data[0] || {}).join(',')
+  const rows = data.map(obj => Object.values(obj).join(','))
+  const csv = [header, ...rows].join('\n')
 
-  const headers = Object.keys(items[0]).join(',')
-  const rows = items.map(item =>
-    Object.values(item)
-      .map(val => `"${String(val).replace(/"/g, '""')}"`)
-      .join(',')
-  )
-
-  const csvString = [headers, ...rows].join('\n')
-  const fileUri = FileSystem.documentDirectory + 'items_export.csv'
-  await FileSystem.writeAsStringAsync(fileUri, csvString, {
+  const fileUri = FileSystem.documentDirectory + filename
+  await FileSystem.writeAsStringAsync(fileUri, csv, {
     encoding: FileSystem.EncodingType.UTF8,
   })
-
   await Sharing.shareAsync(fileUri)
 }

@@ -11,11 +11,13 @@ import { useGetTransaction } from '@/src/api/transaction'
 import { useSyncUserRoles } from '@/src/hooks/useSyncUserRoles'
 import Loading from '@/src/components/Loading'
 import { useFolderMembersMap } from '@/src/api/users'
+import ModalExport from '@/src/components/ModalExport'
+import { useModal } from '@/src/providers/ModalProvider'
 
 const AnalyticsScreen = () => {
   const { data: folders = [], isLoading } = useGetFoldersWithItems()
   const [activeIndex, setActiveIndex] = React.useState<number>(-1)
-
+  const { handleOpenExport } = useModal()
   const folders_id = useMemo(() => folders!.map(folder => folder.id), [folders])
 
   const folderMap = useMemo(() => {
@@ -82,6 +84,7 @@ const AnalyticsScreen = () => {
             activeIndex={activeIndex}
             setActiveIndex={setActiveIndex}
             folders_id={folders_id}
+            
             folderMap={folderMap}
           />
 
@@ -110,6 +113,8 @@ const AnalyticsScreen = () => {
               transaction={transaction.info}
               activeIndex={activeIndex}
               folderMap={folderMap}
+              onExport={handleOpenExport}
+
             />
           </View>
         </ScrollView>
@@ -129,6 +134,7 @@ const AnalyticsScreen = () => {
           </Text>
         </View>
       )}
+      <ModalExport folderId={activeIndex} />
     </Container>
   )
 }

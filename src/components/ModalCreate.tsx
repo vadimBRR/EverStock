@@ -16,7 +16,7 @@ type Props = {
 }
 export default function ModalCreate({ folderId }: Props) {
 	const router = useRouter()
-
+  
 	const { handleCloseCreate, modalCreateRef } = useModal()
 	const roles = useRolesStore(state => state.roles)
 

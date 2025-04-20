@@ -10,12 +10,15 @@ import { useGetTransaction } from '@/src/api/transaction'
 import Loading from '@/src/components/Loading'
 import { Tables } from '@/src/types/types'
 import { useFolderMembersMap } from '@/src/api/users'
+import { useModal } from '@/src/providers/ModalProvider'
+import ModalExportItem from '@/src/components/ModalExportItem'
 
 export default function AnalyticsItemScreen() {
   const { id: idString } = useLocalSearchParams()
   const itemId = parseInt(typeof idString === 'string' ? idString : idString?.[0], 10)
 
   const { data: folders = [], isLoading } = useGetFoldersWithItems()
+  const { handleOpenExport } = useModal()
 
   const itemWithFolder = React.useMemo(() => {
     for (const folder of folders!) {
@@ -118,10 +121,12 @@ export default function AnalyticsItemScreen() {
               activeIndex={folder.id}
               folderMap={{ [folder.id]: folder }}
               isDetailedView={false}
+              onExport={handleOpenExport}
             />
           </View>
         </ScrollView>
       )}
+      <ModalExportItem transactions={filteredTransactions}/>
     </Container>
   )
 }
