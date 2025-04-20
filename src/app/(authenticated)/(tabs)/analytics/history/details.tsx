@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -15,6 +15,7 @@ import timezone from 'dayjs/plugin/timezone'
 import { useSupabase } from '@/src/providers/SupabaseProvider'
 import { useGetWarehouseUsers } from '@/src/api/users'
 import Loading from '@/src/components/Loading'
+import { Ionicons } from '@expo/vector-icons'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -77,6 +78,21 @@ const HistoryDetailed = () => {
 					headerTitleAlign: 'center',
 					headerStyle: { backgroundColor: '#242121' },
 					headerTintColor: '#fff',
+					headerRight: () => (
+						<TouchableOpacity
+							className='mr-4'
+							onPress={() => {
+								if (transaction?.item_id && folder_id) {
+                  router.dismissAll();
+									router.push(
+										`/(authenticated)/(tabs)/analytics/item/${transaction.item_id}`
+									)
+								}
+							}}
+						>
+							<Ionicons name='time-outline' size={24} color='white' />
+						</TouchableOpacity>
+					),
 				}}
 			/>
 			<ScrollView contentContainerStyle={{ gap: 10 }}>

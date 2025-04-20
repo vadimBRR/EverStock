@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Container from '@/src/components/Container'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import AnalyticsChart from '@/src/components/analytics/AnalyticsChart'
 import HistoryContainer from '@/src/components/analytics/HistoryContainer'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -12,6 +12,7 @@ import { Tables } from '@/src/types/types'
 import { useFolderMembersMap } from '@/src/api/users'
 import { useModal } from '@/src/providers/ModalProvider'
 import ModalExportItem from '@/src/components/ModalExportItem'
+import { Ionicons } from '@expo/vector-icons'
 
 export default function AnalyticsItemScreen() {
   const { id: idString } = useLocalSearchParams()
@@ -85,6 +86,13 @@ export default function AnalyticsItemScreen() {
             backgroundColor: '#242121',
           },
           headerTintColor: '#fff',
+          headerBackVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name='chevron-back' size={24} color='white' />
+            </TouchableOpacity>
+          )
+          
         }}
       />
       {filteredTransactions.length === 0 ? (

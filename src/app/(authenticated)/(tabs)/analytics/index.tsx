@@ -76,6 +76,7 @@ const AnalyticsScreen = () => {
             backgroundColor: '#242121',
           },
           headerTintColor: '#fff',
+
         }}
       />
       {transaction && transaction.info.length > 0 ? (
