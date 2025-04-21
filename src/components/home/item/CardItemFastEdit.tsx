@@ -12,7 +12,13 @@ type Props = {
 	activeItemId: number | null
 	setActiveItemId: (id: number | null) => void
 	handleQuantityChange: (id: number, quantity: number) => void
-	handleSaveItem: ({ item, quantity }: { item: Tables<'items'>; quantity: number }) => void
+	handleSaveItem: ({
+		item,
+		quantity,
+	}: {
+		item: Tables<'items'>
+		quantity: number
+	}) => void
 }
 
 export default function CardItemFastEdit({
@@ -24,7 +30,8 @@ export default function CardItemFastEdit({
 	handleSaveItem,
 }: Props) {
 	const router = useRouter()
-	const currencySymbol = currency.find(c => c.name === currencyName)?.value || '₴'
+	const currencySymbol =
+		currency.find(c => c.name === currencyName)?.value || '₴'
 
 	const isActive = activeItemId === item.id
 	const [quantity, setQuantity] = useState(item.quantity ?? 0)
@@ -47,37 +54,78 @@ export default function CardItemFastEdit({
 		}
 	}
 
-	const toggleActive = () => {
-		if (isActive) {
-			handleSaveItem({ item, quantity })
-			setActiveItemId(null)
-		} else {
-			setActiveItemId(item.id)
-		}
-	}
+  const toggleActive = () => {
+    if (isActive) {
+      if (quantity !== item.quantity) {
+        handleSaveItem({ item, quantity })
+      }
+      setActiveItemId(null)
+    } else {
+      setActiveItemId(item.id)
+    }
+  }
+  
 
 	return (
 		<TouchableOpacity
-			className={`w-full  rounded-[17px] py-2 px-3 mb-2 border ${isActive ? 'bg-black-700/50 border-white/10' : 'bg-black-700 border-black/10 '}`}
+			className={`w-full  rounded-[17px] py-2 px-3 mb-2 border ${
+				isActive
+					? 'bg-black-700/50 border-white/10'
+					: 'bg-black-700 border-black/10 '
+			}`}
 			onPress={toggleActive}
 		>
 			<View className='w-full flex-row items-center justify-between'>
 				<View className='flex-row items-center'>
-						<RemoteImage
-							path={item.image_url ? item.image_url[0] : null}
-							className='h-[60px] w-[60px] aspect-square mr-3 rounded-md'
-						/>
-					
+					<RemoteImage
+						path={item.image_url ? item.image_url[0] : null}
+						className='h-[60px] w-[60px] aspect-square mr-3 rounded-md'
+					/>
 
 					<View>
-						<Text className='font-lexend_regular text-xl text-white'>{item.name}</Text>
-						{!isActive && <Text className='text-gray font-poppins_regular text-sm'>{item.quantity} units</Text>}
+						{isActive ? (
+              <View>
+							{item.name.length > 20 ? (
+                
+								<Text className='font-lexend_regular text-base  text-white'>
+									{item.name.length > 18
+										? `${item.name.slice(0, 18)}...`
+										: item.name}
+								</Text>
+							) : (
+								<Text className='font-lexend_regular text-xl text-white'>
+									{item.name}
+								</Text>
+							)}
+						</View>
+            ) : (<View>
+							{item.name.length > 20 ? (
+                
+								<Text className='font-lexend_regular text-base  text-white'>
+									{item.name.length > 28
+										? `${item.name.slice(0, 28)}...`
+										: item.name}
+								</Text>
+							) : (
+								<Text className='font-lexend_regular text-xl text-white'>
+									{item.name}
+								</Text>
+							)}
+						</View>)}
+						{!isActive && (
+							<Text className='text-gray font-poppins_regular text-sm'>
+								{item.quantity} units
+							</Text>
+						)}
 					</View>
 				</View>
 
 				{isActive && (
 					<View className='flex-row items-center'>
-						<TouchableOpacity className='bg-gray-600 px-3 py-1 rounded-md' onPress={() => handleChangeLocalQuantity(quantity - 1)}>
+						<TouchableOpacity
+							className='bg-gray-600 px-3 py-1 rounded-md'
+							onPress={() => handleChangeLocalQuantity(quantity - 1)}
+						>
 							<Entypo name='minus' size={24} color='#cccccc' />
 						</TouchableOpacity>
 
@@ -96,7 +144,10 @@ export default function CardItemFastEdit({
 							)}
 						</TouchableOpacity>
 
-						<TouchableOpacity className='bg-gray-600 px-3 py-1 rounded-md' onPress={() => handleChangeLocalQuantity(quantity + 1)}>
+						<TouchableOpacity
+							className='bg-gray-600 px-3 py-1 rounded-md'
+							onPress={() => handleChangeLocalQuantity(quantity + 1)}
+						>
 							<Entypo name='plus' size={24} color='#cccccc' />
 						</TouchableOpacity>
 					</View>

@@ -262,6 +262,7 @@ const ViewSettingsScreen = () => {
 										item={item}
 										currencyName={item.typeAmount!}
 										isPressable={false}
+                    isShowWarning={false}
 									/>
 									<TouchableOpacity
 										className='absolute top-[17px] right-5 p-2 border border-white rounded-xl'

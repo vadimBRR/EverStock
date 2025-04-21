@@ -55,7 +55,8 @@ const Counter = ({
 				</View>
 				<View className='absolute top-2 self-center'>
 					<Text className='text-gray font-lexend_regular text-[12px]'>
-						{type.charAt(0).toUpperCase() + type.slice(1)}:
+						{/* {type.charAt(0).toUpperCase() + type.slice(1)}: */}
+            Quantity:
 					</Text>
 				</View>
 			</View>

@@ -1,7 +1,7 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useMemo } from 'react'
 import Container from '@/src/components/Container'
-import { Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import HeaderAnalytics from '@/src/components/analytics/HeaderAnalytics'
 import AnalyticsChart from '@/src/components/analytics/AnalyticsChart'
 import HistoryContainer from '@/src/components/analytics/HistoryContainer'
@@ -18,6 +18,7 @@ const AnalyticsScreen = () => {
 	const { data: folders = [], isLoading } = useGetFoldersWithItems()
 	const [activeIndex, setActiveIndex] = React.useState<number>(-1)
 	const { handleOpenExport } = useModal()
+
 	const folders_id = useMemo(() => folders!.map(folder => folder.id), [folders])
 
 	const folderMap = useMemo(() => {
@@ -40,15 +41,67 @@ const AnalyticsScreen = () => {
 		useGetTransaction(activeIndex)
 	const { data: membersMap } = useFolderMembersMap(activeIndex)
 
+	const belowMinItems = useMemo(() => {
+		const folderItems = activeFolder?.items || []
+		return folderItems.filter(
+			item =>
+				item.min_quantity &&
+				item.min_quantity !== 0 &&
+				item.quantity < item.min_quantity
+		)
+	}, [activeFolder])
+
+	// from charts
+	const [timeRange, setTimeRange] = React.useState<
+		'today' | '1_week' | '2_weeks' | '1_month' | 'all' | 'custom'
+	>('all')
+	const [startDate, setStartDate] = React.useState<Date | null>(null)
+	const [endDate, setEndDate] = React.useState<Date | null>(null)
+
+	const filteredTransactions = useMemo(() => {
+		if (!transaction) return []
+		const now = new Date()
+		let fromDate: Date | null = null
+
+		switch (timeRange) {
+			case 'today':
+				fromDate = new Date()
+				fromDate.setHours(0, 0, 0, 0)
+				break
+			case '1_week':
+				fromDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+				break
+			case '2_weeks':
+				fromDate = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
+				break
+			case '1_month':
+				fromDate = new Date()
+				fromDate.setMonth(now.getMonth() - 1)
+				break
+			case 'custom':
+				fromDate = startDate
+				break
+			default:
+				fromDate = null
+		}
+
+		return transaction.info.filter(t => {
+			const date = new Date(t.date)
+			const afterStart = fromDate ? date >= fromDate : true
+			const beforeEnd = endDate ? date <= endDate : true
+			return afterStart && beforeEnd
+		})
+	}, [transaction, timeRange, startDate, endDate])
+
 	const totalChanges = useMemo(() => {
-		if (!transaction)
+		if (!filteredTransactions.length)
 			return { quantityChange: 0, priceChange: 0, userStats: {} }
 
 		let quantityChange = 0
 		let priceChange = 0
 		const userStats: Record<string, number> = {}
 
-		transaction.info.forEach(t => {
+		filteredTransactions.forEach(t => {
 			quantityChange += t.changed_item?.quantity - t.prev_item?.quantity || 0
 			priceChange += t.changed_item?.price - t.prev_item?.price || 0
 			if (t.user_id) {
@@ -61,7 +114,7 @@ const AnalyticsScreen = () => {
 			priceChange,
 			userStats,
 		}
-	}, [transaction])
+	}, [filteredTransactions])
 
 	if (isLoading || isTransLoading) {
 		return <Loading />
@@ -80,7 +133,7 @@ const AnalyticsScreen = () => {
 					headerTintColor: '#fff',
 				}}
 			/>
-			{transaction && transaction.info.length > 0 ? (
+			{filteredTransactions.length > 0 ? (
 				<ScrollView className='flex-1 mt-2'>
 					<HeaderAnalytics
 						activeIndex={activeIndex}
@@ -90,7 +143,15 @@ const AnalyticsScreen = () => {
 					/>
 
 					{/* Chart */}
-					<AnalyticsChart transaction={transaction.info} />
+					<AnalyticsChart
+						transaction={filteredTransactions}
+						timeRange={timeRange}
+						setTimeRange={setTimeRange}
+						startDate={startDate}
+						setStartDate={setStartDate}
+						endDate={endDate}
+						setEndDate={setEndDate}
+					/>
 
 					{/* Mini Dashboard */}
 					<View className='bg-black-600 mx-3 p-4 rounded-xl my-2 mt-4'>
@@ -101,18 +162,82 @@ const AnalyticsScreen = () => {
 							<Text className='text-gray font-lexend_medium'>
 								Total Quantity Change:
 							</Text>
-							<Text className='text-white font-lexend_medium'>
+							<Text
+								className={`font-lexend_medium ${
+									totalChanges.quantityChange > 0
+										? 'text-green-400'
+										: totalChanges.quantityChange < 0
+										? 'text-red-400'
+										: 'text-gray'
+								}`}
+							>
+								{totalChanges.quantityChange > 0 ? '+' : ''}
 								{totalChanges.quantityChange}
 							</Text>
 						</View>
-						<View className='flex-row justify-between'>
+						<View className='flex-row justify-between mb-2'>
 							<Text className='text-gray font-lexend_medium'>
 								Total Price Change:
 							</Text>
-							<Text className='text-white font-lexend_medium'>
+							<Text
+								className={`font-lexend_medium ${
+									totalChanges.priceChange > 0
+										? 'text-green-400'
+										: totalChanges.priceChange < 0
+										? 'text-red-400'
+										: 'text-gray'
+								}`}
+							>
+								{totalChanges.priceChange > 0 ? '+' : ''}
 								{totalChanges.priceChange.toFixed(2)}
 							</Text>
 						</View>
+						<View className='flex-row justify-between '>
+							<Text className='text-gray font-lexend_medium'>
+								Items below minimum:
+							</Text>
+							<Text className='text-white font-lexend_medium'>
+								{belowMinItems.length}
+							</Text>
+						</View>
+					</View>
+
+					{/* Low Stock Overview */}
+					<View className='bg-black-600 mx-3 p-4 rounded-xl my-2'>
+						<Text className='text-white font-lexend_semibold text-lg mb-3'>
+							Low Stock Overview
+						</Text>
+
+						{belowMinItems.length > 0 && (
+							<View className='mt-2'>
+								{belowMinItems.slice(0, 3).map(item => (
+									<TouchableOpacity
+										key={item.id}
+										className='flex-row justify-between mb-1'
+										onPress={() =>
+											router.push(
+												`/(authenticated)/(tabs)/home/item/${item.id}`
+											)
+										}
+									>
+										<Text className='text-sm text-gray font-lexend_medium'>
+											{item.name.length > 28
+												? item.name.slice(0, 28) + '...'
+												: item.name}
+											:
+										</Text>
+										<Text className='text-white font-lexend_medium text-sm'>
+											{item.quantity} / {item.min_quantity}
+										</Text>
+									</TouchableOpacity>
+								))}
+								{belowMinItems.length > 3 && (
+									<Text className='text-gray text-xs mt-1 italic'>
+										+ {belowMinItems.length - 3} more
+									</Text>
+								)}
+							</View>
+						)}
 					</View>
 
 					{/* User stats */}
@@ -134,7 +259,7 @@ const AnalyticsScreen = () => {
 
 					<View className='w-full mt-2'>
 						<HistoryContainer
-							transaction={transaction.info}
+							transaction={filteredTransactions}
 							activeIndex={activeIndex}
 							folderMap={folderMap}
 							onExport={handleOpenExport}

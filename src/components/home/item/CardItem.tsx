@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React, {  } from 'react'
+import React from 'react'
 import { currency } from '@/src/constants'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -7,6 +7,7 @@ import { Href, useRouter } from 'expo-router'
 import RemoteImage from '../../RemoteImage'
 import { Tables } from '@/src/types/types'
 import { useAccount } from '@/src/providers/AccountProvider'
+import { showInfo } from '@/src/utils/toast'
 
 dayjs.extend(relativeTime)
 
@@ -15,6 +16,7 @@ type Props = {
 	currencyName: string
 	isPressable?: boolean
 	containerStyle?: string
+  isShowWarning?: boolean
 }
 
 export default function CardItem({
@@ -22,9 +24,11 @@ export default function CardItem({
 	currencyName,
 	isPressable = true,
 	containerStyle,
+  isShowWarning = true
 }: Props) {
 	const router = useRouter()
-  const currencySymbol = currency.find(c => c.name === currencyName)?.value || '₴'; 
+	const currencySymbol =
+		currency.find(c => c.name === currencyName)?.value || '₴'
 
 	const view = useAccount().viewSettings.viewOptions
 
@@ -44,43 +48,68 @@ export default function CardItem({
 					/>
 				)}
 
-				<View>
+				<View className='flex-1'>
 					{view.name && (
-						<View>
-							{item.name.length > 20 ? (
-								<Text className='font-lexend_regular text-base'>
-									{item.name.length > 28
-										? `${item.name.slice(0, 28)}...`
-										: item.name}
-								</Text>
-							) : (
-								<Text className='font-lexend_regular text-xl text-white'>
-									{item.name}
-								</Text>
-							)}
+						<View className='flex flex-row items-center justify-between'>
+							<View>
+								{item.name.length > 20 ? (
+									<Text className='font-lexend_regular text-base  text-white'>
+										{item.name.length > 24
+											? `${item.name.slice(0, 24)}...`
+											: item.name}
+									</Text>
+								) : (
+									<Text className='font-lexend_regular text-xl text-white'>
+										{item.name}
+									</Text>
+								)}
+							</View>
+              {isShowWarning && <View>
+								{item.quantity &&
+								item.min_quantity &&
+								item.min_quantity !== 0 &&
+								item.quantity < item.min_quantity ? (
+									<TouchableOpacity
+										onPress={() =>
+											showInfo(
+												`Minimum required quantity: ${item.min_quantity}`
+											)
+										}
+										className='h-6 w-10  items-center justify-center ml-2'
+									>
+										<View className='h-2 w-2 rounded-full bg-red-500' />
+									</TouchableOpacity>
+								) : (
+									<View className='h-2 w-2 rounded-full bg-transparent ml-2' />
+								)}
+							</View>}
+							
 						</View>
 					)}
 
 					<View className='flex-row'>
-						{view.quantity && item.quantity !=null ? (
+						{view.quantity && item.quantity != null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>
 								{item.quantity} units{' '}
 							</Text>
 						) : null}
 
-						{view.price && view.quantity && item.price !=null && item.quantity !=null ? (
+						{view.price &&
+						view.quantity &&
+						item.price != null &&
+						item.quantity != null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>- </Text>
 						) : null}
 
-						{view.price && item.price !=null ? (
+						{view.price && item.price != null ? (
 							<View className='flex-row'>
 								<Text className='text-gray font-poppins_regular text-sm'>
 									{currencySymbol}
-									{item.price.toFixed(2)}&nbsp; 
+									{item.price.toFixed(2)}&nbsp;
 								</Text>
 							</View>
 						) : null}
-						{item.quantity !=null && view.totalPrice && item.price !=null ? (
+						{item.quantity != null && view.totalPrice && item.price != null ? (
 							<Text className='text-gray font-poppins_regular text-sm'>
 								({currencySymbol}
 								{(item.price * item.quantity).toFixed(2)})

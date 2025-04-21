@@ -14,6 +14,13 @@ export const toastConfig = {
       {text2 ? <Text style={styles.message}>{text2}</Text> : null}
     </View>
   ),
+  info: ({ text1, text2 }: any) => (
+    <View style={styles.infoContainer}>
+      <Text style={styles.title}>{text1}</Text>
+      {text2 ? <Text style={styles.message}>{text2}</Text> : null}
+    </View>
+  ),
+  
 }
 
 export const styles = StyleSheet.create({
@@ -35,6 +42,16 @@ export const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 10,
   },
+  infoContainer: {
+    backgroundColor: '#2A2A2A',
+    borderLeftWidth: 6,
+    borderLeftColor: '#facc15', 
+    borderRadius: 12,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 10,
+  },
+  
   title: {
     color: '#fff',
     fontSize: 16,

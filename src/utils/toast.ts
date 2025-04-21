@@ -5,3 +5,6 @@ export const showSuccess = (msg: string, sub?: string) =>
 
 export const showError = (msg: string, sub?: string) =>
 	Toast.show({ type: 'error', text1: msg, text2: sub })
+
+export const showInfo = (msg: string, sub?: string) =>
+	Toast.show({ type: 'info', text1: msg, text2: sub })

@@ -18,25 +18,31 @@ import { Tables } from '@/src/types/types'
 
 type Props = {
   transaction: any
+  timeRange: string
+  setTimeRange: (v: any) => void
+  startDate: Date | null
+  setStartDate: (d: Date | null) => void
+  endDate: Date | null
+  setEndDate: (d: Date | null) => void
 }
 
-const AnalyticsChart = ({ transaction }: Props) => {
-  const [filter, setFilter] = useState<'amount' | 'price'>('amount')
-  const [timeRange, setTimeRange] = useState<
-    'today' | '1_week' | '2_weeks' | '1_month' | 'all' | 'custom'
-  >('all')
 
-  const [startDate, setStartDate] = useState<Date | null>(null)
-  const [endDate, setEndDate] = useState<Date | null>(null)
+const AnalyticsChart = ({   transaction,
+  timeRange,
+  setTimeRange,
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate, }: Props) => {
+  const [filter, setFilter] = useState<'amount' | 'price'>('amount')
+ 
 
   const handleCustomDateChange = (date: Date, isStart: boolean) => {
-    if (isStart) {
-      setStartDate(date)
-    } else {
-      setEndDate(date)
-    }
+    if (isStart) setStartDate(date)
+    else setEndDate(date)
     setTimeRange('custom')
   }
+  
 
   const filtered = useMemo(() => {
     const now = new Date()
