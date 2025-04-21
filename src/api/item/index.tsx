@@ -17,7 +17,8 @@ export const useCreateItem = () => {
 			quantity,
 			note,
       tag,
-      typeAmount
+      typeAmount,
+      min_quantity
 		}: {
 			folder_id: number
       name:string
@@ -26,7 +27,8 @@ export const useCreateItem = () => {
 			quantity: number
 			note: string,
       tag: string,
-      typeAmount: string
+      typeAmount: string,
+      min_quantity?: number
 		}) {
 			const data = await createItem!(
 				folder_id,
@@ -35,7 +37,8 @@ export const useCreateItem = () => {
 				price,
 				quantity,
 				note,
-        tag
+        tag,
+        min_quantity
 			)
 			return data
 		},

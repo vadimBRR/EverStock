@@ -50,8 +50,10 @@ export default function ItemSettings({ item_id }: Props) {
 	}
 
   const onExport = () => {
+		if (!item) return
     handleCloseAnother() 
     handleOpenExport()  
+		router.push(`/(authenticated)/(tabs)/analytics/item/${item.id}`)
   }
 
 	const renderBackdrop = useCallback(
@@ -86,7 +88,7 @@ export default function ItemSettings({ item_id }: Props) {
 					<View className='flex-col px-2'>
 						<OptionSettings onPress={onDelete} icon='delete' text='Delete' />
 						<OptionSettings onPress={onHistory} icon='history' text='History' />
-						<OptionSettings onPress={() => {}} icon='export' text='Export' />
+						<OptionSettings onPress={onExport}  icon='export' text='Export' />
 						<OptionSettings onPress={onClone} icon='clone' text='Clone' />
 					</View>
 				</View>

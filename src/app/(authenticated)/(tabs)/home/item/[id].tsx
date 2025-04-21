@@ -11,7 +11,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import CustomInput from '@/src/components/CustomInput'
 import CustomButton from '@/src/components/CustomButton'
 import ItemImagesCarusel from '@/src/components/home/item/ItemImagesCarusel'
-import { SimpleLineIcons } from '@expo/vector-icons'
+import { AntDesign, SimpleLineIcons } from '@expo/vector-icons'
 import EvilIcons from '@expo/vector-icons/EvilIcons'
 import Counter from '@/src/components/home/item/Counter'
 import CustomRadioButton from '@/src/components/CustomRadioButton'
@@ -22,6 +22,8 @@ import Loading from '@/src/components/Loading'
 import { useUpdateItem } from '@/src/api/item'
 import { showSuccess, showError } from '@/src/utils/toast'
 import { useRolesStore } from '@/src/store/useUserRoles'
+import ModalExport from '@/src/components/ModalExport'
+import ModalExportItem from '@/src/components/ModalExportItem'
 
 export default function ItemScreen() {
 	const { id: idString } = useLocalSearchParams()
@@ -39,6 +41,7 @@ export default function ItemScreen() {
 	const [itemName, setItemName] = useState(item.name || '')
 	const [amount, setAmount] = useState(item.quantity + '' || '')
 	const [price, setPrice] = useState(item.price + '' || '')
+	const [min_quantity, setMinQuantity] = useState(item.min_quantity + '' || '')
 	const [note, setNote] = useState(item.note || '')
 	const [tag, setTag] = useState<string>(item.tag || '')
 	const [images, setImages] = useState<string[]>(item.image_url || [])
@@ -58,7 +61,7 @@ export default function ItemScreen() {
 	}
 
 	const updateItem = () => {
-		if (!itemName || (amount && isNaN(+amount)) || (price && isNaN(+price))) {
+		if (!itemName || (amount && isNaN(+amount)) || (price && isNaN(+price)) || (min_quantity && isNaN(+min_quantity))) {
 			showError('Please fill all required fields correctly')
 			return
 		}
@@ -75,6 +78,7 @@ export default function ItemScreen() {
 					tag,
 					typeAmount: selectedType,
 					image_url: images,
+          min_quantity: parseInt(min_quantity),
 				},
 				previousItem: item,
 			},
@@ -126,8 +130,7 @@ export default function ItemScreen() {
 						setImages={setImages}
 						isGallery={true}
 						handleChangeImages={(images: string[]) => changeImages({ images })}
-            editable={canEdit}
-
+						editable={canEdit}
 					/>
 					<CustomInput
 						label={'Item name *'}
@@ -147,25 +150,23 @@ export default function ItemScreen() {
 							/>
 						))}
 					</View> */}
-          {
-            canEdit ? (<Counter
-              type={selectedType}
-              quantity={amount}
-              item_id={item_id}
-              setQuantity={(quantity: number) => setAmount(quantity + '')}
-            />) : (
-              <CustomInput
-						label={'Quantity'}
-						name={amount}
-						setName={setAmount}
-						containerStyle='mb-1'
-            
-						editable={!canEdit}
-						keyboardType='numeric'
-					/>
-            )
-          }
-					
+					{canEdit ? (
+						<Counter
+							type={selectedType}
+							quantity={amount}
+							item_id={item_id}
+							setQuantity={(quantity: number) => setAmount(quantity + '')}
+						/>
+					) : (
+						<CustomInput
+							label={'Quantity'}
+							name={amount}
+							setName={setAmount}
+							containerStyle='mb-1'
+							editable={!canEdit}
+							keyboardType='numeric'
+						/>
+					)}
 					<CustomInput
 						label={'Price'}
 						name={price}
@@ -191,6 +192,16 @@ export default function ItemScreen() {
 							Total price: {(+price * +amount).toFixed(2)}
 						</Text>
 					</View>
+
+					<CustomInput
+						label={'Min quantity'}
+            name={min_quantity}
+            setName={setMinQuantity}
+						containerStyle='mb-3'
+						keyboardType='numeric'
+						editable={!canEdit}
+					/>
+
 					<View className='bg-black-600 border border-dark_gray rounded-2xl mb-2'>
 						<Text className='absolute top-2 left-4 font-lexend_regular text-gray'>
 							Note
@@ -215,10 +226,18 @@ export default function ItemScreen() {
 			</ScrollView>
 			{canEdit && (
 				<View className='mx-4'>
+					{item.quantity && item.min_quantity && item.min_quantity !== 0 && item.quantity < item.min_quantity && (
+						<View className='flex-row items-center space-x-2 bg-black-600 border border-red-400 rounded-xl px-4 py-2 mb-3 '>
+							<AntDesign name='exclamationcircleo' size={24} color='#ff5353' />
+							<Text className='text-red-400 font-lexend_medium'>
+								Quantity below minimum ({item.min_quantity})
+							</Text>
+						</View>
+					)}
 					<CustomButton
 						text='Apply'
 						onClick={updateItem}
-						styleContainer='my-4 mx-0'
+						styleContainer='mb-4 mx-0'
 						disabled={
 							!itemName ||
 							(amount ? isNaN(parseFloat(amount)) : false) ||

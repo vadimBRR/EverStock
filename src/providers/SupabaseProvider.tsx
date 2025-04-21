@@ -27,7 +27,8 @@ type ProviderProps = {
 		quantity: number,
 		note: string,
 		tag?: string,
-		typeAmount?: string
+		typeAmount?: string,
+    min_quantity?: number
 	) => Promise<InsertTables<'items'>[] | null>
 	getItems: (folderId: number) => Promise<Tables<'items'>[]>
 	getFoldersWithStatistic: () => Promise<
@@ -150,7 +151,8 @@ export const SupabaseProvider = ({ children }: any) => {
 		quantity: number,
 		note: string,
 		tag?: string,
-		typeAmount?: string
+		typeAmount?: string,
+    min_quantity?: number
 	) => {
 		const { data, error } = await client
 			.from(ITEMS_TABLE)
@@ -165,6 +167,7 @@ export const SupabaseProvider = ({ children }: any) => {
 				tag,
 				typeAmount,
 				created_at: new Date(),
+        min_quantity: min_quantity || 0
 			})
 			.select()
 
