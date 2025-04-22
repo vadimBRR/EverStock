@@ -26,7 +26,6 @@ export const useCreateFolder = () => {
 			const folder = folderData?.[0]
 			if (!folder) throw new Error('Failed to create folder.')
 
-			// ✅ Додаємо власника в warehouse_users
 			const { error } = await client.from('warehouse_users').insert({
 				folder_id: folder.id,
 				user_id: userId,
@@ -50,6 +49,25 @@ export const useCreateFolder = () => {
 			return folderData
 		},
 
+		async onSuccess() {
+			queryClient.invalidateQueries({
+				queryKey: ['folders'],
+			})
+		},
+	})
+}
+
+export const useDeleteFolder = () => {
+	const queryClient = useQueryClient()
+	const { deleteFolder } = useSupabase()
+
+	return useMutation({
+		mutationKey: ['deleteFolder'],
+		mutationFn: async (id: number) => {
+			const result = await deleteFolder?.(id)
+			// if (!result) throw new Error('Failed to delete folder')
+			return result
+		},
 		async onSuccess() {
 			queryClient.invalidateQueries({
 				queryKey: ['folders'],
@@ -84,3 +102,4 @@ export const useGetFoldersWithItems = () => {
 		},  
 	})
 }
+

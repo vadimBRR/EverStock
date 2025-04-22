@@ -69,6 +69,7 @@ export default function HomeScreen() {
 						backgroundColor: '#242121',
 					},
 					headerTintColor: '#fff',
+          headerBackVisible: false,
 				}}
 			/>
 			<View className='flex-1'>

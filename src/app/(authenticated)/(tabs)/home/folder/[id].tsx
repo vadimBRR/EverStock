@@ -20,6 +20,7 @@ import Loading from '@/src/components/Loading'
 import { Tables } from '@/src/types/types'
 import { useSyncUserRoles } from '@/src/hooks/useSyncUserRoles'
 import { useRolesStore } from '@/src/store/useUserRoles'
+import { useAccount } from '@/src/providers/AccountProvider'
 
 export default function FolderScreen() {
 	const { id: idString } = useLocalSearchParams()
@@ -31,7 +32,7 @@ export default function FolderScreen() {
 	const { handleOpenCreate } = useModal()
 
 	const { data, isLoading, isError, refetch } = useGetFoldersWithItems()
-
+  const { viewSettings } = useAccount()
 	const folder = useMemo(
 		() => data?.find((folder: Tables<'folders'>) => folder.id === id),
 		[data, id]
@@ -60,15 +61,57 @@ export default function FolderScreen() {
 	}, [refetch])
 
 	const sortedItems = useMemo(() => {
-		return items
-			.filter(
-				(item: Tables<'items'>) =>
-					!search || item.name.toLowerCase().includes(search.toLowerCase())
-			)
-			.sort((a: Tables<'items'>, b: Tables<'items'>) =>
-				a.name < b.name ? -1 : 1
-			)
-	}, [items, search])
+    const filtered = items.filter(
+      (item: Tables<'items'>) =>
+        !search || item.name.toLowerCase().includes(search.toLowerCase())
+    )
+  
+    const { sortBy, isAsc } = viewSettings
+  
+    return filtered.filter(item => {
+      const passesSearch = !search || item.name.toLowerCase().includes(search.toLowerCase())
+      const passesLowStock = !viewSettings.viewOptions.lowStockOnly || 
+        (item.min_quantity && item.quantity! < item.min_quantity)
+      return passesSearch && passesLowStock
+    })
+    .sort((a, b) => {
+      let aValue: any
+      let bValue: any
+  
+      switch (sortBy) {
+        case 'name':
+          aValue = a.name.toLowerCase()
+          bValue = b.name.toLowerCase()
+          break
+        case 'quantity':
+          aValue = a.quantity
+          bValue = b.quantity
+          break
+        case 'price':
+          aValue = a.price
+          bValue = b.price
+          break
+        case 'total price':
+          aValue = a.price! * a.quantity!
+          bValue = b.price! * b.quantity!
+          break
+        case 'last updated':
+          aValue = new Date(a.updated_at || a.created_at || 0).getTime()
+          bValue = new Date(b.updated_at || b.created_at || 0).getTime()
+          break
+        default:
+          aValue = a.name.toLowerCase()
+          bValue = b.name.toLowerCase()
+      }
+  
+      if (aValue < bValue) return isAsc ? -1 : 1
+      if (aValue > bValue) return isAsc ? 1 : -1
+      return 0
+    })
+  }, [items, search, viewSettings])
+  
+
+
 
 	if (isLoading) return <Loading />
 	if (isError)
@@ -127,7 +170,7 @@ export default function FolderScreen() {
 						No items found :(
 					</Text>
 					<Text className='font-lexend_light text-[16px] text-white text-center'>
-						Click on the + button at the top to add item
+						Click on the + button at the top to add item or clear the search
 					</Text>
 				</View>
 			) : (

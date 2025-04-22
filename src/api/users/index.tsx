@@ -121,6 +121,7 @@ export const useDeleteWarehouseMember = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['warehouse_users'] })
       queryClient.invalidateQueries({ queryKey: ['all-users'] })
+      queryClient.invalidateQueries({ queryKey: ['folders'] })
     },
 	})
 }

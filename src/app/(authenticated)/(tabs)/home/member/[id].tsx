@@ -1,6 +1,6 @@
 import { View, FlatList } from 'react-native'
 import React, { useCallback, useState } from 'react'
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import * as SystemUI from 'expo-system-ui'
 import Loading from '@/src/components/Loading'
 import Container from '@/src/components/Container'
@@ -8,12 +8,18 @@ import SearchBar from '@/src/components/SearchBar'
 import AddButton from '@/src/components/AddButton'
 import { RefreshControl } from 'react-native-gesture-handler'
 import CardMember from '@/src/components/home/member/CardMember'
-import { useGetWarehouseUsers } from '@/src/api/users'
+import { useDeleteWarehouseMember, useGetWarehouseUsers } from '@/src/api/users'
 import { useRolesStore } from '@/src/store/useUserRoles'
 import Toast from 'react-native-toast-message'
+import { useSupabase } from '@/src/providers/SupabaseProvider'
+import { TouchableOpacity } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { showError, showSuccess } from '@/src/utils/toast'
+import ConfirmDialog from '@/src/components/home/ConfirmDialog'
 
 const MembersScreen = () => {
 	const { id: idString } = useLocalSearchParams()
+  const navigation = useNavigation()
 	const folder_id = parseFloat(
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	)
@@ -30,6 +36,10 @@ const MembersScreen = () => {
 
 	SystemUI.setBackgroundColorAsync('#1C1A1A')
 	const roles = useRolesStore(state => state.roles)
+	const [isLeaveVisible, setIsLeaveVisible] = useState(false)
+
+	const { mutate: deleteMember } = useDeleteWarehouseMember()
+	const { userId } = useSupabase()
 
 	const openCreateMember = () => {
 		if (roles?.isAdmin || roles?.isCanInvite || roles?.isManager) {
@@ -72,6 +82,16 @@ const MembersScreen = () => {
 					headerStyle: {
 						backgroundColor: '#242121',
 					},
+					headerRight: () =>
+						!roles?.isAdmin ? (
+							<TouchableOpacity
+								onPress={() => setIsLeaveVisible(true)}
+								className=' p-1'
+							>
+								<Ionicons name='exit-outline' size={22} color='white' />
+							</TouchableOpacity>
+						) : null,
+
 					headerTintColor: '#fff',
 				}}
 			/>
@@ -97,6 +117,36 @@ const MembersScreen = () => {
 					}
 				/>
 			</View>
+			<ConfirmDialog
+				isVisible={isLeaveVisible}
+				onCancel={() => setIsLeaveVisible(false)}
+				onConfirm={() => {
+					if (!userId) return
+					deleteMember(
+						{ folderId: folder_id, userId },
+						{
+							onSuccess: () => {
+								setIsLeaveVisible(false)
+								showSuccess('You have left the folder.')
+                console.log("byee");
+                setTimeout(() => {
+                  router.back()
+                  router.replace('/(authenticated)/(tabs)/home/folder')
+                  router.setParams({})
+                  
+                }, 300);
+							},
+							onError: (err: any) => {
+								setIsLeaveVisible(false)
+								showError('Failed to leave folder', err.message)
+							},
+						}
+					)
+				}}
+				title='Leave Folder'
+				description='Are you sure you want to leave this folder? You will lose access to it.'
+				confirmText='Leave'
+			/>
 		</Container>
 	)
 }

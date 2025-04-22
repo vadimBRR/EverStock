@@ -10,12 +10,16 @@ import OptionSettings from './OptionSettings'
 import { useRouter } from 'expo-router'
 import { useDeleteItem, useCloneItem } from '@/src/api/item'
 import { useGetFoldersWithItems } from '@/src/api/folder'
+import { showError } from '@/src/utils/toast'
+import { useRolesStore } from '@/src/store/useUserRoles'
 
 type Props = {
 	item_id: number
+  openConfirmDelete: () => void
+
 }
 
-export default function ItemSettings({ item_id }: Props) {
+export default function ItemSettings({ item_id, openConfirmDelete }: Props) {
 	const router = useRouter()
 	const { handleCloseAnother, modalAnotherRef, handleOpenExport } = useModal()
 	const { data: folders } = useGetFoldersWithItems()
@@ -29,15 +33,27 @@ export default function ItemSettings({ item_id }: Props) {
 
 	const snapPoints = useMemo(() => ['40%', '60%'], [])
 
+	const roles = useRolesStore(state => state.roles)
+	const canDelete = roles?.isDeleteItem || roles?.isAdmin
+	const canClone = roles?.isAddItem || roles?.isAdmin
+
 	const onDelete = () => {
-		if (!item) return
-		deleteItem({ id: item.id, item })
-		handleCloseAnother()
-		router.back()
-	}
+    if (!item) return
+    if (!canDelete) {
+      showError("You don't have permission to delete this item.")
+      return
+    }
+    handleCloseAnother()
+    openConfirmDelete()
+  }
+  
 
 	const onClone = () => {
 		if (!item) return
+		if (!canClone) {
+			showError("You don't have permission to clone this item.")
+			return
+		}
 		cloneItem(item)
 		handleCloseAnother()
 		router.back()
@@ -49,12 +65,12 @@ export default function ItemSettings({ item_id }: Props) {
 		router.push(`/(authenticated)/(tabs)/analytics/item/${item.id}`)
 	}
 
-  const onExport = () => {
+	const onExport = () => {
 		if (!item) return
-    handleCloseAnother() 
-    handleOpenExport()  
+		handleCloseAnother()
+		handleOpenExport()
 		router.push(`/(authenticated)/(tabs)/analytics/item/${item.id}`)
-  }
+	}
 
 	const renderBackdrop = useCallback(
 		(props: any) => (
@@ -88,7 +104,7 @@ export default function ItemSettings({ item_id }: Props) {
 					<View className='flex-col px-2'>
 						<OptionSettings onPress={onDelete} icon='delete' text='Delete' />
 						<OptionSettings onPress={onHistory} icon='history' text='History' />
-						<OptionSettings onPress={onExport}  icon='export' text='Export' />
+						<OptionSettings onPress={onExport} icon='export' text='Export' />
 						<OptionSettings onPress={onClone} icon='clone' text='Clone' />
 					</View>
 				</View>

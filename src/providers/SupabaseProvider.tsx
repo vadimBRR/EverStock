@@ -70,6 +70,7 @@ type ProviderProps = {
   revertItemToPreviousState: (transactionId: number, folderId: number) => Promise<any>
   deleteItem: (item_id: number, folder_id: number) => Promise<any>
   cloneItem: (item_id: number) => Promise<any>
+  deleteFolder: (id: number) => Promise<any>
 	getRealtimeItemsSubscription: (
 		handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
 	) => any
@@ -342,6 +343,14 @@ export const SupabaseProvider = ({ children }: any) => {
     })
   
     return foldersWithStatistic
+  }
+
+  const deleteFolder = async (id: number) => {
+    const { error } = await client.from('folders').delete().eq('id', id)
+    if (error) {
+      console.error('Error deleting folder:', error)
+      throw new Error(error.message)
+    }
   }
   
 
@@ -660,6 +669,7 @@ export const SupabaseProvider = ({ children }: any) => {
 		getRealtimeItemsSubscription,
 		getFoldersWithStatistic,
 		updateFolder,
+    deleteFolder,
 		getWarehouseUsers,
 		addMemberToWarehouse,
     revertItemToPreviousState,

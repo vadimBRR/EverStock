@@ -67,7 +67,7 @@ const CreateMemberScreen = () => {
 				permissions: [],
 			})
 
-			showSuccess('Member added successfully 🎉')
+			showSuccess('Member added successfully')
 			router.back()
 		} catch (error: any) {
 			console.error('Error adding member:', error.message)

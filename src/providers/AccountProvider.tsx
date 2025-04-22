@@ -47,6 +47,7 @@ type AccountType = {
 			quantity: boolean
 			price: boolean
 			totalPrice: boolean
+      lowStockOnly: boolean
 		}
 	}
 	handleUpdateViewSettings: (data: {
@@ -58,6 +59,7 @@ type AccountType = {
 			quantity: boolean
 			price: boolean
 			totalPrice: boolean
+      lowStockOnly: boolean
 		}
 	}) => void
 	handleSignIn: ({ email }: { email: string }) => void
@@ -386,6 +388,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			quantity: boolean
 			price: boolean
 			totalPrice: boolean
+      lowStockOnly: boolean
 		}
 	}>({
 		sortBy: 'name',
@@ -396,6 +399,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			quantity: true,
 			price: true,
 			totalPrice: true,
+      lowStockOnly: false
 		},
 	})
 
@@ -639,6 +643,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			quantity: boolean
 			price: boolean
 			totalPrice: boolean
+      lowStockOnly: boolean
 		}
 	}) => {
 		setSettings(data)

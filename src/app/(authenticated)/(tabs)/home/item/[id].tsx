@@ -19,11 +19,12 @@ import { useModal } from '@/src/providers/ModalProvider'
 import ItemSettings from '@/src/components/home/item/ItemSettings'
 import { useGetFoldersWithItems } from '@/src/api/folder'
 import Loading from '@/src/components/Loading'
-import { useUpdateItem } from '@/src/api/item'
+import { useDeleteItem, useUpdateItem } from '@/src/api/item'
 import { showSuccess, showError } from '@/src/utils/toast'
 import { useRolesStore } from '@/src/store/useUserRoles'
 import ModalExport from '@/src/components/ModalExport'
 import ModalExportItem from '@/src/components/ModalExportItem'
+import ConfirmDialog from '@/src/components/home/ConfirmDialog'
 
 export default function ItemScreen() {
 	const { id: idString } = useLocalSearchParams()
@@ -56,12 +57,29 @@ export default function ItemScreen() {
 	const canEdit = roles?.isEdit || roles?.isAdmin
 	console.log('canEdit: ', canEdit)
 
+	const [isConfirmVisible, setIsConfirmVisible] = useState(false)
+	const { handleCloseAnother } = useModal()
+	const { mutate: deleteItem } = useDeleteItem()
+	const handleConfirmDelete = () => {
+		if (!item) return
+		deleteItem({ id: item.id, item })
+    showSuccess('Item deleted successfully')
+		setIsConfirmVisible(false)
+		handleCloseAnother()
+		router.back()
+	}
+
 	const changeImages = ({ images }: { images: string[] }) => {
 		setImages(images)
 	}
 
 	const updateItem = () => {
-		if (!itemName || (amount && isNaN(+amount)) || (price && isNaN(+price)) || (min_quantity && isNaN(+min_quantity))) {
+		if (
+			!itemName ||
+			(amount && isNaN(+amount)) ||
+			(price && isNaN(+price)) ||
+			(min_quantity && isNaN(+min_quantity))
+		) {
 			showError('Please fill all required fields correctly')
 			return
 		}
@@ -78,7 +96,7 @@ export default function ItemScreen() {
 					tag,
 					typeAmount: selectedType,
 					image_url: images,
-          min_quantity: parseInt(min_quantity),
+					min_quantity: parseInt(min_quantity),
 				},
 				previousItem: item,
 			},
@@ -195,8 +213,8 @@ export default function ItemScreen() {
 
 					<CustomInput
 						label={'Min quantity'}
-            name={min_quantity}
-            setName={setMinQuantity}
+						name={min_quantity}
+						setName={setMinQuantity}
 						containerStyle='mb-3'
 						keyboardType='numeric'
 						editable={!canEdit}
@@ -226,14 +244,19 @@ export default function ItemScreen() {
 			</ScrollView>
 			{canEdit && (
 				<View className='mx-4'>
-					{item.quantity && item.min_quantity && item.min_quantity !== 0 && item.quantity < item.min_quantity ? (
+					{item.quantity &&
+					item.min_quantity &&
+					item.min_quantity !== 0 &&
+					item.quantity < item.min_quantity ? (
 						<View className='flex-row items-center space-x-2 bg-black-600 border border-red-400 rounded-xl px-4 py-2 mb-3 '>
 							<AntDesign name='exclamationcircleo' size={24} color='#ff5353' />
 							<Text className='text-red-400 font-lexend_medium'>
 								Quantity below minimum ({item.min_quantity})
 							</Text>
 						</View>
-					) : <View></View>}
+					) : (
+						<View></View>
+					)}
 					<CustomButton
 						text='Apply'
 						onClick={updateItem}
@@ -248,7 +271,17 @@ export default function ItemScreen() {
 				</View>
 			)}
 
-			<ItemSettings item_id={item_id} />
+			<ItemSettings
+				item_id={item_id}
+				openConfirmDelete={() => setIsConfirmVisible(true)}
+			/>
+			<ConfirmDialog
+				isVisible={isConfirmVisible}
+				onCancel={() => setIsConfirmVisible(false)}
+				onConfirm={handleConfirmDelete}
+				title='Delete Item'
+				description='Are you sure you want to delete this item? This action cannot be undone.'
+			/>
 		</Container>
 	)
 }

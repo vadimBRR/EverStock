@@ -52,7 +52,7 @@ export default function CardFolder({ data }: Props) {
 						</View>
 						<View className='flex-row items-center mr-2'>
 							<Text className='font-lexend_regular text-gray text-lg'>
-								{currency.find(c => c.name === data.currency.name)?.value ||
+								{currency.find(c => c.name === data.currency)?.value ||
 									'&'}
 								{data.totalPrice.toFixed(2)}
 							</Text>
@@ -73,7 +73,7 @@ export default function CardFolder({ data }: Props) {
 				<View className='flex flex-row justify-between items-center'>
 					<Text className='font-lexend_extralight text-gray text-md'>
 						{/* {dayjs(data.lastUpdated).fromNow()} */}
-            {dayjs.utc(data.lastUpdated).local().format('YYYY-MM-DD HH:mm:ss')}
+            {dayjs.utc(data.lastUpdated).local().format('DD.MM.YYYY HH:mm:ss')}
 
             </Text>
             {isOwner ? (

@@ -5,12 +5,13 @@ import { Stack, useRouter } from 'expo-router'
 import CustomButton from '@/src/components/CustomButton'
 import { useAccount } from '@/src/providers/AccountProvider'
 import RectangleCheckBox from '@/src/components/RectangleCheckBox'
+import { ScrollView } from 'react-native-gesture-handler'
 
 const ViewSettingsTransactionScreen = () => {
-
 	const router = useRouter()
 	const { viewSettings, handleUpdateViewSettings } = useAccount()
 	const [settings, setSettings] = React.useState(viewSettings)
+
 	const sortOptions = [
 		'name',
 		'quantity',
@@ -65,6 +66,8 @@ const ViewSettingsTransactionScreen = () => {
 				}}
 			/>
 			<View className='mx-4 mt-2 flex-1 justify-between'>
+        <ScrollView>
+
 				<View>
 					<Text className='font-lexend_light text-white text-2xl mb-2'>
 						Sort By:
@@ -104,12 +107,30 @@ const ViewSettingsTransactionScreen = () => {
 					))}
 				</View>
 
+				<Text className='font-lexend_light text-white text-2xl my-2'>
+					Filters:
+				</Text>
+
+				<RectangleCheckBox
+					text='Show items below min. quantity'
+					isActive={viewOptions.lowStockOnly}
+					onClick={() =>
+						handleToggleViewOption('lowStockOnly' as keyof typeof viewOptions)
+					}
+					isIcon={false}
+					styleContainer='items-start m-0 p-1 px-4 mb-2'
+					customBg='dark_gray'
+					imageStyle='w-4 h-4 aspect-square'
+				/>
+
+        </ScrollView>
 				<CustomButton
 					text='Apply'
 					onClick={applySettings}
 					styleContainer={`my-4 mx-0`}
 					// disabled={!folderName}
 				/>
+
 			</View>
 		</Container>
 	)
