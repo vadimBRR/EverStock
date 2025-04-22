@@ -8,18 +8,20 @@ import CardFolder from '@/src/components/home/folder/CardFolder'
 import Loading from '@/src/components/Loading'
 import { useSupabase } from '@/src/providers/SupabaseProvider'
 import * as SystemUI from 'expo-system-ui'
-import { folderType, Tables } from '@/src/types/types'
+import { Tables } from '@/src/types/types'
 
 export default function HomeScreen() {
 	const [search, setSearch] = useState('')
-	const [folders, setFolders] = useState<(Tables<'folders'> & {
-    totalPrice: number
-    totalQuantity: number
-    totalMembers: number
-    lastUpdated: Date | string | null
-    items: Tables<'items'>[]
-    warehouse_users: Tables<'warehouse_users'>[]
-  })[]>([])
+	const [folders, setFolders] = useState<
+		(Tables<'folders'> & {
+			totalPrice: number
+			totalQuantity: number
+			totalMembers: number
+			lastUpdated: Date | string | null
+			items: Tables<'items'>[]
+			warehouse_users: Tables<'warehouse_users'>[]
+		})[]
+	>([])
 	const [refreshing, setRefreshing] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
 	const router = useRouter()
@@ -36,7 +38,6 @@ export default function HomeScreen() {
 		}
 		setIsLoading(false)
 	}
-  
 
 	useEffect(() => {
 		fetchFolders()
@@ -69,21 +70,33 @@ export default function HomeScreen() {
 						backgroundColor: '#242121',
 					},
 					headerTintColor: '#fff',
-          headerBackVisible: false,
+					headerBackVisible: false,
 				}}
 			/>
 			<View className='flex-1'>
 				<View className='flex-row w-full justify-center my-2 '>
-					<SearchBar containerStyle='mr-2' search={search} handleSearch={handleSearch} />
+					<SearchBar
+						containerStyle='mr-2'
+						search={search}
+						handleSearch={handleSearch}
+					/>
 					<AddButton handlePressAdd={openCreateFolder} />
 				</View>
 				{folders.length ? (
 					<FlatList
 						className='mx-3 '
-						data={search ? folders.filter(folder => folder.name.toLowerCase().includes(search.toLowerCase())) : folders}
+						data={
+							search
+								? folders.filter(folder =>
+										folder.name.toLowerCase().includes(search.toLowerCase())
+								  )
+								: folders
+						}
 						keyExtractor={folder => folder.id.toString()}
 						renderItem={({ item }) => <CardFolder data={item} />}
-						refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+						refreshControl={
+							<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+						}
 					/>
 				) : (
 					<View className='flex-1 justify-center items-center px-2'>

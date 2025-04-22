@@ -14,7 +14,6 @@ import ItemImagesCarusel from '@/src/components/home/item/ItemImagesCarusel'
 import { AntDesign, SimpleLineIcons } from '@expo/vector-icons'
 import EvilIcons from '@expo/vector-icons/EvilIcons'
 import Counter from '@/src/components/home/item/Counter'
-import CustomRadioButton from '@/src/components/CustomRadioButton'
 import { useModal } from '@/src/providers/ModalProvider'
 import ItemSettings from '@/src/components/home/item/ItemSettings'
 import { useGetFoldersWithItems } from '@/src/api/folder'
@@ -22,8 +21,6 @@ import Loading from '@/src/components/Loading'
 import { useDeleteItem, useUpdateItem } from '@/src/api/item'
 import { showSuccess, showError } from '@/src/utils/toast'
 import { useRolesStore } from '@/src/store/useUserRoles'
-import ModalExport from '@/src/components/ModalExport'
-import ModalExportItem from '@/src/components/ModalExportItem'
 import ConfirmDialog from '@/src/components/home/ConfirmDialog'
 
 export default function ItemScreen() {
@@ -51,7 +48,6 @@ export default function ItemScreen() {
 	)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const router = useRouter()
-	const typesAmount = ['quantity', 'weight', 'volume']
 	const { mutate: updateItemMutation } = useUpdateItem()
 	const roles = useRolesStore(state => state.roles)
 	const canEdit = roles?.isEdit || roles?.isAdmin

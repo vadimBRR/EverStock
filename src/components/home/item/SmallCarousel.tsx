@@ -1,10 +1,5 @@
 import React, { useRef, useState } from 'react'
-import {
-	View,
-	FlatList,
-	Dimensions,
-	TouchableOpacity,
-} from 'react-native'
+import { View, FlatList, Dimensions, TouchableOpacity } from 'react-native'
 import { Colors } from '@/src/constants/Colors'
 import RemoteImage from '../../RemoteImage'
 

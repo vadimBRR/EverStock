@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { currency } from '@/src/constants'
 import { useRouter } from 'expo-router'
 import { Entypo } from '@expo/vector-icons'
-import { itemType, Tables } from '@/src/types/types'
+import { Tables } from '@/src/types/types'
 import RemoteImage from '../../RemoteImage'
 
 type Props = {
@@ -54,17 +54,16 @@ export default function CardItemFastEdit({
 		}
 	}
 
-  const toggleActive = () => {
-    if (isActive) {
-      if (quantity !== item.quantity) {
-        handleSaveItem({ item, quantity })
-      }
-      setActiveItemId(null)
-    } else {
-      setActiveItemId(item.id)
-    }
-  }
-  
+	const toggleActive = () => {
+		if (isActive) {
+			if (quantity !== item.quantity) {
+				handleSaveItem({ item, quantity })
+			}
+			setActiveItemId(null)
+		} else {
+			setActiveItemId(item.id)
+		}
+	}
 
 	return (
 		<TouchableOpacity
@@ -84,34 +83,34 @@ export default function CardItemFastEdit({
 
 					<View>
 						{isActive ? (
-              <View>
-							{item.name.length > 20 ? (
-                
-								<Text className='font-lexend_regular text-base  text-white'>
-									{item.name.length > 18
-										? `${item.name.slice(0, 18)}...`
-										: item.name}
-								</Text>
-							) : (
-								<Text className='font-lexend_regular text-xl text-white'>
-									{item.name}
-								</Text>
-							)}
-						</View>
-            ) : (<View>
-							{item.name.length > 20 ? (
-                
-								<Text className='font-lexend_regular text-base  text-white'>
-									{item.name.length > 28
-										? `${item.name.slice(0, 28)}...`
-										: item.name}
-								</Text>
-							) : (
-								<Text className='font-lexend_regular text-xl text-white'>
-									{item.name}
-								</Text>
-							)}
-						</View>)}
+							<View>
+								{item.name.length > 20 ? (
+									<Text className='font-lexend_regular text-base  text-white'>
+										{item.name.length > 18
+											? `${item.name.slice(0, 18)}...`
+											: item.name}
+									</Text>
+								) : (
+									<Text className='font-lexend_regular text-xl text-white'>
+										{item.name}
+									</Text>
+								)}
+							</View>
+						) : (
+							<View>
+								{item.name.length > 20 ? (
+									<Text className='font-lexend_regular text-base  text-white'>
+										{item.name.length > 28
+											? `${item.name.slice(0, 28)}...`
+											: item.name}
+									</Text>
+								) : (
+									<Text className='font-lexend_regular text-xl text-white'>
+										{item.name}
+									</Text>
+								)}
+							</View>
+						)}
 						{!isActive && (
 							<Text className='text-gray font-poppins_regular text-sm'>
 								{item.quantity} units

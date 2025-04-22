@@ -32,7 +32,7 @@ export default function FolderScreen() {
 	const { handleOpenCreate } = useModal()
 
 	const { data, isLoading, isError, refetch } = useGetFoldersWithItems()
-  const { viewSettings } = useAccount()
+	const { viewSettings } = useAccount()
 	const folder = useMemo(
 		() => data?.find((folder: Tables<'folders'>) => folder.id === id),
 		[data, id]
@@ -61,57 +61,57 @@ export default function FolderScreen() {
 	}, [refetch])
 
 	const sortedItems = useMemo(() => {
-    const filtered = items.filter(
-      (item: Tables<'items'>) =>
-        !search || item.name.toLowerCase().includes(search.toLowerCase())
-    )
-  
-    const { sortBy, isAsc } = viewSettings
-  
-    return filtered.filter(item => {
-      const passesSearch = !search || item.name.toLowerCase().includes(search.toLowerCase())
-      const passesLowStock = !viewSettings.viewOptions.lowStockOnly || 
-        (item.min_quantity && item.quantity! < item.min_quantity)
-      return passesSearch && passesLowStock
-    })
-    .sort((a, b) => {
-      let aValue: any
-      let bValue: any
-  
-      switch (sortBy) {
-        case 'name':
-          aValue = a.name.toLowerCase()
-          bValue = b.name.toLowerCase()
-          break
-        case 'quantity':
-          aValue = a.quantity
-          bValue = b.quantity
-          break
-        case 'price':
-          aValue = a.price
-          bValue = b.price
-          break
-        case 'total price':
-          aValue = a.price! * a.quantity!
-          bValue = b.price! * b.quantity!
-          break
-        case 'last updated':
-          aValue = new Date(a.updated_at || a.created_at || 0).getTime()
-          bValue = new Date(b.updated_at || b.created_at || 0).getTime()
-          break
-        default:
-          aValue = a.name.toLowerCase()
-          bValue = b.name.toLowerCase()
-      }
-  
-      if (aValue < bValue) return isAsc ? -1 : 1
-      if (aValue > bValue) return isAsc ? 1 : -1
-      return 0
-    })
-  }, [items, search, viewSettings])
-  
+		const filtered = items.filter(
+			(item: Tables<'items'>) =>
+				!search || item.name.toLowerCase().includes(search.toLowerCase())
+		)
 
+		const { sortBy, isAsc } = viewSettings
 
+		return filtered
+			.filter(item => {
+				const passesSearch =
+					!search || item.name.toLowerCase().includes(search.toLowerCase())
+				const passesLowStock =
+					!viewSettings.viewOptions.lowStockOnly ||
+					(item.min_quantity && item.quantity! < item.min_quantity)
+				return passesSearch && passesLowStock
+			})
+			.sort((a, b) => {
+				let aValue: any
+				let bValue: any
+
+				switch (sortBy) {
+					case 'name':
+						aValue = a.name.toLowerCase()
+						bValue = b.name.toLowerCase()
+						break
+					case 'quantity':
+						aValue = a.quantity
+						bValue = b.quantity
+						break
+					case 'price':
+						aValue = a.price
+						bValue = b.price
+						break
+					case 'total price':
+						aValue = a.price! * a.quantity!
+						bValue = b.price! * b.quantity!
+						break
+					case 'last updated':
+						aValue = new Date(a.updated_at || a.created_at || 0).getTime()
+						bValue = new Date(b.updated_at || b.created_at || 0).getTime()
+						break
+					default:
+						aValue = a.name.toLowerCase()
+						bValue = b.name.toLowerCase()
+				}
+
+				if (aValue < bValue) return isAsc ? -1 : 1
+				if (aValue > bValue) return isAsc ? 1 : -1
+				return 0
+			})
+	}, [items, search, viewSettings])
 
 	if (isLoading) return <Loading />
 	if (isError)

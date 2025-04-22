@@ -1,5 +1,5 @@
 import { useSupabase } from '@/src/providers/SupabaseProvider'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {  useQuery } from '@tanstack/react-query'
 
 export const useGetTransaction = (folderId: number) => {
   const { getTransactions } = useSupabase()

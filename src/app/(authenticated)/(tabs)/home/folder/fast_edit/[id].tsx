@@ -29,7 +29,9 @@ export default function FastEditScreen() {
 	const [refreshing, setRefreshing] = useState(false)
 	const [activeItemId, setActiveItemId] = useState<number | null>(null)
 	const [prevActiveItemId, setPrevActiveItemId] = useState<number | null>(null)
-	const [editedQuantities, setEditedQuantities] = useState<Record<number, number>>({})
+	const [editedQuantities, setEditedQuantities] = useState<
+		Record<number, number>
+	>({})
 	const [initialOrder, setInitialOrder] = useState<number[]>([])
 
 	const folder = useMemo(() => folders!.find(f => f.id === id), [folders, id])
@@ -37,7 +39,9 @@ export default function FastEditScreen() {
 		if (!folder) return []
 		const items = folder.items || []
 		return search
-			? items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
+			? items.filter(item =>
+					item.name.toLowerCase().includes(search.toLowerCase())
+			  )
 			: items
 	}, [folder, search])
 
@@ -78,7 +82,13 @@ export default function FastEditScreen() {
 		setEditedQuantities(prev => ({ ...prev, [id]: quantity }))
 	}
 
-	const handleSaveItem = ({ item, quantity }: { item: Tables<'items'>; quantity: number }) => {
+	const handleSaveItem = ({
+		item,
+		quantity,
+	}: {
+		item: Tables<'items'>
+		quantity: number
+	}) => {
 		if (!item || quantity < 0) return
 		updateItem.mutate({
 			updatedItem: { ...item, quantity },
@@ -100,7 +110,10 @@ export default function FastEditScreen() {
 	}, [activeItemId])
 
 	if (isLoading) return <Loading />
-	if (!folder) return <Text className='text-white text-center mt-10'>Folder not found</Text>
+	if (!folder)
+		return (
+			<Text className='text-white text-center mt-10'>Folder not found</Text>
+		)
 
 	return (
 		<Container isPadding={false}>
@@ -113,7 +126,10 @@ export default function FastEditScreen() {
 					headerTintColor: '#fff',
 					headerRight: () => (
 						<View className='flex flex-row'>
-							<TouchableOpacity className='flex-row items-center p-2' onPress={handleBack}>
+							<TouchableOpacity
+								className='flex-row items-center p-2'
+								onPress={handleBack}
+							>
 								<MaterialIcons name='done-outline' size={24} color='white' />
 							</TouchableOpacity>
 						</View>
@@ -121,7 +137,11 @@ export default function FastEditScreen() {
 				}}
 			/>
 			<View className='w-full items-center my-2 relative'>
-				<SearchBar containerStyle='w-[95%]' search={search} handleSearch={handleSearch} />
+				<SearchBar
+					containerStyle='w-[95%]'
+					search={search}
+					handleSearch={handleSearch}
+				/>
 			</View>
 
 			<FlatList
@@ -139,7 +159,9 @@ export default function FastEditScreen() {
 						handleSaveItem={handleSaveItem}
 					/>
 				)}
-				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+				refreshControl={
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+				}
 			/>
 		</Container>
 	)

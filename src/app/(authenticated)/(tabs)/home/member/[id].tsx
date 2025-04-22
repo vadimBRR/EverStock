@@ -1,6 +1,11 @@
 import { View, FlatList } from 'react-native'
 import React, { useCallback, useState } from 'react'
-import { Stack, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
+import {
+	Stack,
+	useLocalSearchParams,
+	useNavigation,
+	useRouter,
+} from 'expo-router'
 import * as SystemUI from 'expo-system-ui'
 import Loading from '@/src/components/Loading'
 import Container from '@/src/components/Container'
@@ -19,7 +24,6 @@ import ConfirmDialog from '@/src/components/home/ConfirmDialog'
 
 const MembersScreen = () => {
 	const { id: idString } = useLocalSearchParams()
-  const navigation = useNavigation()
 	const folder_id = parseFloat(
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
 	)
@@ -128,13 +132,12 @@ const MembersScreen = () => {
 							onSuccess: () => {
 								setIsLeaveVisible(false)
 								showSuccess('You have left the folder.')
-                console.log("byee");
-                setTimeout(() => {
-                  router.back()
-                  router.replace('/(authenticated)/(tabs)/home/folder')
-                  router.setParams({})
-                  
-                }, 300);
+								console.log('byee')
+								setTimeout(() => {
+									router.back()
+									router.replace('/(authenticated)/(tabs)/home/folder')
+									router.setParams({})
+								}, 300)
 							},
 							onError: (err: any) => {
 								setIsLeaveVisible(false)

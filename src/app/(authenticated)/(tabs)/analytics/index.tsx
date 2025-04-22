@@ -22,10 +22,10 @@ const AnalyticsScreen = () => {
 	const folders_id = useMemo(() => folders!.map(folder => folder.id), [folders])
 
 	const folderMap = useMemo(() => {
-		return folders!.reduce((acc, folder) => {
+		return folders!.reduce((acc: { [key: number]: any }, folder) => {
 			acc[folder.id] = folder
 			return acc
-		}, {} as Record<number, (typeof folders)[0]>)
+		}, {} )
 	}, [folders])
 
 	React.useEffect(() => {
@@ -44,7 +44,7 @@ const AnalyticsScreen = () => {
 	const belowMinItems = useMemo(() => {
 		const folderItems = activeFolder?.items || []
 		return folderItems.filter(
-			item =>
+      (item: any)  =>
 				item.min_quantity &&
 				item.min_quantity !== 0 &&
 				item.quantity < item.min_quantity
@@ -210,7 +210,7 @@ const AnalyticsScreen = () => {
 
 						{belowMinItems.length > 0 && (
 							<View className='mt-2'>
-								{belowMinItems.slice(0, 3).map(item => (
+								{belowMinItems.slice(0, 3).map( (item: any)  => (
 									<TouchableOpacity
 										key={item.id}
 										className='flex-row justify-between mb-1'

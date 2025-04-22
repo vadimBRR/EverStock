@@ -19,7 +19,7 @@ interface ImageUploaderProps {
 	setImages: React.Dispatch<React.SetStateAction<string[]>>
 	isGallery?: boolean
 	handleChangeImages?: (images: string[]) => void
-  editable?:boolean
+	editable?: boolean
 }
 
 const ItemImagesCarousel = ({
@@ -27,7 +27,7 @@ const ItemImagesCarousel = ({
 	setImages,
 	isGallery = false,
 	handleChangeImages,
-  editable = true
+	editable = true,
 }: ImageUploaderProps) => {
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -174,35 +174,43 @@ const ItemImagesCarousel = ({
 						))}
 					</View>
 				</View>
-        {editable && (
-          <View className='bg-black-600 flex-row justify-around p-4 rounded-t-2xl'>
-            {images.length < 3 && (
-              <TouchableOpacity className='flex items-center' onPress={pickImage}>
-                <Ionicons name='add' size={24} color={'white'} />
-                <Text className='text-lg text-white font-lexend_regular'>
-                  Add
-                </Text>
-              </TouchableOpacity>
-            )}
+				{editable && (
+					<View className='bg-black-600 flex-row justify-around p-4 rounded-t-2xl'>
+						{images.length < 3 && (
+							<TouchableOpacity
+								className='flex items-center'
+								onPress={pickImage}
+							>
+								<Ionicons name='add' size={24} color={'white'} />
+								<Text className='text-lg text-white font-lexend_regular'>
+									Add
+								</Text>
+							</TouchableOpacity>
+						)}
 
-            {activeIndex !== 0 && (
-              <TouchableOpacity className='flex items-center' onPress={setAsMain}>
-                <Ionicons name='star-outline' size={24} color='white' />
-                <Text className='text-lg text-white font-lexend_regular'>
-                  Set as Main
-                </Text>
-              </TouchableOpacity>
-            )}
+						{activeIndex !== 0 && (
+							<TouchableOpacity
+								className='flex items-center'
+								onPress={setAsMain}
+							>
+								<Ionicons name='star-outline' size={24} color='white' />
+								<Text className='text-lg text-white font-lexend_regular'>
+									Set as Main
+								</Text>
+							</TouchableOpacity>
+						)}
 
-            <TouchableOpacity className='flex items-center' onPress={deleteImage}>
-              <Ionicons name='trash-outline' size={24} color={'white'} />
-              <Text className='text-lg text-white font-lexend_regular'>
-                Delete
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-        )}
+						<TouchableOpacity
+							className='flex items-center'
+							onPress={deleteImage}
+						>
+							<Ionicons name='trash-outline' size={24} color={'white'} />
+							<Text className='text-lg text-white font-lexend_regular'>
+								Delete
+							</Text>
+						</TouchableOpacity>
+					</View>
+				)}
 			</Modal>
 		</View>
 	)

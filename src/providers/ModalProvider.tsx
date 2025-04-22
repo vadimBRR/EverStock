@@ -14,29 +14,29 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 type ModalType = {
 	modalCreateRef: React.RefObject<BottomSheetModal> | null
 	modalAnotherRef: React.RefObject<BottomSheetModal> | null
-  modalExportRef: React.RefObject<BottomSheetModal> | null
+	modalExportRef: React.RefObject<BottomSheetModal> | null
 	isModalCreateDebtOpen: boolean
 	setIsModalCreateDebtOpen: (value: boolean) => void
 	handleOpenCreate: () => void
 	handleCloseCreate: () => void
 	handleOpenAnother: () => void
 	handleCloseAnother: () => void
-  handleOpenExport: () => void
-  handleCloseExport: () => void
+	handleOpenExport: () => void
+	handleCloseExport: () => void
 }
 
 const ModalContext = createContext<ModalType>({
 	modalCreateRef: null,
 	modalAnotherRef: null,
-  modalExportRef: null,
+	modalExportRef: null,
 	isModalCreateDebtOpen: false,
 	setIsModalCreateDebtOpen: () => {},
 	handleOpenCreate: () => {},
 	handleCloseCreate: () => {},
 	handleOpenAnother: () => {},
 	handleCloseAnother: () => {},
-  handleOpenExport: () => {},
-  handleCloseExport: () => {},
+	handleOpenExport: () => {},
+	handleCloseExport: () => {},
 })
 
 export default function ModalProvider({ children }: PropsWithChildren) {
@@ -75,15 +75,15 @@ export default function ModalProvider({ children }: PropsWithChildren) {
 					value={{
 						modalCreateRef,
 						modalAnotherRef,
-            modalExportRef,
+						modalExportRef,
 						isModalCreateDebtOpen,
 						setIsModalCreateDebtOpen,
 						handleOpenCreate,
 						handleCloseCreate,
 						handleOpenAnother,
 						handleCloseAnother,
-            handleOpenExport,
-            handleCloseExport
+						handleOpenExport,
+						handleCloseExport,
 					}}
 				>
 					{children}

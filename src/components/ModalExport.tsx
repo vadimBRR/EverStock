@@ -74,7 +74,11 @@ export default function ModalExport({ folderId }: Props) {
 						Export Items
 					</Text>
 					<CustomButton text='Export as JSON' onClick={exportAsJSON} />
-					<CustomButton text='Export as CSV' onClick={exportAsCSV} styleContainer='mt-3' />
+					<CustomButton
+						text='Export as CSV'
+						onClick={exportAsCSV}
+						styleContainer='mt-3'
+					/>
 				</View>
 			</TouchableWithoutFeedback>
 		</BottomSheetModal>

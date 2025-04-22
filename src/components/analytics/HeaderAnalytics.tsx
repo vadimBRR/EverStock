@@ -40,9 +40,7 @@ const HeaderAnalytics = ({
 			/>
 			<TotalInfo
 				currencyFolder={
-					currentFolder?.currency
-						? currentFolder.currency.toUpperCase()
-						: 'USD'
+					currentFolder?.currency ? currentFolder.currency.toUpperCase() : 'USD'
 				}
 				totalQuantity={currentFolder?.totalQuantity || 0}
 				totalPrice={currentFolder?.totalPrice || 0}

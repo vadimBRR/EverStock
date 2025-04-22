@@ -30,11 +30,9 @@ const SmallCarousel = ({ images, handleOpenImage }: SmallCarouselProps) => {
 		}
 	}).current
 
-
 	const openImage = () => {
 		handleOpenImage(images[activeIndex], activeIndex)
 	}
-
 
 	return (
 		<View
@@ -42,7 +40,6 @@ const SmallCarousel = ({ images, handleOpenImage }: SmallCarouselProps) => {
 			className='bg-black-600 border border-dark_gray pt-2 pb-1 rounded-2xl overflow-hidden mb-5'
 		>
 			<View style={{ position: 'relative', width: width }}>
-
 				<FlatList
 					ref={flatListRef}
 					horizontal
@@ -76,7 +73,6 @@ const SmallCarousel = ({ images, handleOpenImage }: SmallCarouselProps) => {
 					viewabilityConfig={viewabilityConfig}
 					showsHorizontalScrollIndicator={false}
 				/>
-
 			</View>
 
 			<View style={{ flexDirection: 'row', marginTop: 10 }}>

@@ -16,7 +16,7 @@ type Props = {
 }
 export default function ModalCreate({ folderId }: Props) {
 	const router = useRouter()
-  
+
 	const { handleCloseCreate, modalCreateRef } = useModal()
 	const roles = useRolesStore(state => state.roles)
 
@@ -38,16 +38,16 @@ export default function ModalCreate({ folderId }: Props) {
 	}
 	const onCreateItem = () => {
 		if (roles?.isAddItem || roles?.isAdmin) {
-      handleCloseCreate()
-      router.push(('/(authenticated)/home/item/create?id=' + folderId) as Href)
-    } else {
-      Toast.show({
-        type: 'error',
-        text1: 'Permission Denied',
-        text2: 'You do not have rights to add items.',
-        position: 'top',
-      })
-    }
+			handleCloseCreate()
+			router.push(('/(authenticated)/home/item/create?id=' + folderId) as Href)
+		} else {
+			Toast.show({
+				type: 'error',
+				text1: 'Permission Denied',
+				text2: 'You do not have rights to add items.',
+				position: 'top',
+			})
+		}
 	}
 	return (
 		<BottomSheetModal
@@ -56,7 +56,6 @@ export default function ModalCreate({ folderId }: Props) {
 			backdropComponent={renderBackdrop}
 			enablePanDownToClose={true}
 			backgroundStyle={{ backgroundColor: '#2A2A2A' }}
-
 			style={{ flex: 1 }}
 		>
 			<TouchableWithoutFeedback
@@ -69,8 +68,6 @@ export default function ModalCreate({ folderId }: Props) {
 							<Text className='text-2xl font-lexend_regular text-white'>
 								Create
 							</Text>
-
-
 						</View>
 						<View className=' flex-col'>
 							<Text className='font-lexend_light text-lg text-center mb-3 text-white'>

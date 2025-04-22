@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import React from 'react'
 import Loading from '../../Loading'
 import dayjs from 'dayjs'
@@ -7,8 +7,16 @@ import CardFolder from './CardFolder'
 
 dayjs.extend(relativeTime)
 export default function CardsList() {
-  const data = [{id: 1, name: 'test', totalQuantity: 12, totalPrice: 12.12, currency: 'USD'}]
-  const [isLoading, setIsLoading] = React.useState(false);
+	const data = [
+		{
+			id: 1,
+			name: 'test',
+			totalQuantity: 12,
+			totalPrice: 12.12,
+			currency: 'USD',
+		},
+	]
+	const [isLoading, setIsLoading] = React.useState(false)
 	if (isLoading) return <Loading />
 
 	return (

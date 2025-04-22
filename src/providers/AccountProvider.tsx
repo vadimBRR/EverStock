@@ -7,8 +7,6 @@ import {
 	itemType,
 	transactionType,
 } from '../types/types'
-import { currency } from '../constants'
-import { parse } from '@babel/core'
 
 type AccountType = {
 	isAuthenticated: boolean
@@ -47,7 +45,7 @@ type AccountType = {
 			quantity: boolean
 			price: boolean
 			totalPrice: boolean
-      lowStockOnly: boolean
+			lowStockOnly: boolean
 		}
 	}
 	handleUpdateViewSettings: (data: {
@@ -59,7 +57,7 @@ type AccountType = {
 			quantity: boolean
 			price: boolean
 			totalPrice: boolean
-      lowStockOnly: boolean
+			lowStockOnly: boolean
 		}
 	}) => void
 	handleSignIn: ({ email }: { email: string }) => void
@@ -200,9 +198,9 @@ type AccountType = {
 	getChangesByField: (
 		folder_id: number,
 		field: 'price' | 'amount',
-    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' | 'custom',
-    startDate: Date | null,
-    endDate: Date | null
+		timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' | 'custom',
+		startDate: Date | null,
+		endDate: Date | null
 	) => { date: string; value: number }[]
 	// getUserFullName: ({
 	// 	user_id,
@@ -234,8 +232,8 @@ type AccountType = {
 	deleteFilterMemberId: (id: number) => void
 	addFilterItemId: (id: number) => void
 	deleteFilterItemId: (id: number) => void
-  setFolders: (folders: folderType[]) => void
-  setTransactions: (transactions: transactionType[]) => void
+	setFolders: (folders: folderType[]) => void
+	setTransactions: (transactions: transactionType[]) => void
 }
 
 const AccountContext = createContext<AccountType>({
@@ -252,6 +250,7 @@ const AccountContext = createContext<AccountType>({
 			isEdit: false,
 			isCanInvite: false,
 			isAdmin: true,
+      isManager: false
 		},
 	},
 	folders: [],
@@ -265,6 +264,7 @@ const AccountContext = createContext<AccountType>({
 			quantity: true,
 			price: true,
 			totalPrice: true,
+      lowStockOnly: false,
 		},
 	},
 	transactions: [],
@@ -308,8 +308,8 @@ const AccountContext = createContext<AccountType>({
 	deleteFilterMemberId: () => {},
 	addFilterItemId: () => {},
 	deleteFilterItemId: () => {},
-  setFolders: () => {},
-  setTransactions: () => {},
+	setFolders: () => {},
+	setTransactions: () => {},
 })
 
 export default function AccountProvider({ children }: PropsWithChildren) {
@@ -326,6 +326,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			isEdit: false,
 			isCanInvite: false,
 			isAdmin: true,
+      isManager: false,
 		},
 	})
 
@@ -388,7 +389,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			quantity: boolean
 			price: boolean
 			totalPrice: boolean
-      lowStockOnly: boolean
+			lowStockOnly: boolean
 		}
 	}>({
 		sortBy: 'name',
@@ -399,7 +400,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			quantity: true,
 			price: true,
 			totalPrice: true,
-      lowStockOnly: false
+			lowStockOnly: false,
 		},
 	})
 
@@ -499,8 +500,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		isReverted = false,
 	}: {
 		folder_id: number
-		prev_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
-		changed_item: Omit<itemType, 'created_at' | 'folder_id' | 'user_id'>
+		prev_item: any
+		changed_item: any
 		isCreated?: boolean
 		isEdited?: boolean
 		isDeleted?: boolean
@@ -578,61 +579,59 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		})
 	}
 	const getChangesByField = (
-    folder_id: number,
-    field: 'price' | 'amount',
-    timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' | 'custom',
-    startDate: Date | null,
-    endDate: Date | null
-  ) => {
-    const folderTransactions = transactions.find(
-      transaction => transaction.folder_id === folder_id
-    )
-  
-    if (!folderTransactions) return []
-  
-    const now = new Date()
-  
-    const getStartDate = (range: string) => {
-      const startDate = new Date(now)
-      switch (range) {
-        case 'today':
-          startDate.setHours(0, 0, 0, 0)
-          break
-        case '1_week':
-          startDate.setDate(now.getDate() - 7)
-          break
-        case '2_weeks':
-          startDate.setDate(now.getDate() - 14)
-          break
-        case '1_month':
-          startDate.setMonth(now.getMonth() - 1)
-          break
-        case 'all':
-        default:
-          return null
-      }
-      return startDate
-    }
-  
-    // Визначаємо, які дати використовувати
-    let finalStartDate = timeRange === 'custom' ? startDate : getStartDate(timeRange)
-    let finalEndDate = timeRange === 'custom' ? endDate ?? now : now
-  
-    const changes =
-      field === 'amount'
-        ? folderTransactions.amount_changes
-        : folderTransactions.price_changes
-  
-    return changes.filter(change => {
-      const changeDate = new Date(change.date)
-      if (finalStartDate && finalEndDate) {
-        return changeDate >= finalStartDate && changeDate <= finalEndDate
-      }
-      return true
-    })
-  }
-  
+		folder_id: number,
+		field: 'price' | 'amount',
+		timeRange: 'today' | '1_week' | '2_weeks' | '1_month' | 'all' | 'custom',
+		startDate: Date | null,
+		endDate: Date | null
+	) => {
+		const folderTransactions = transactions.find(
+			transaction => transaction.folder_id === folder_id
+		)
 
+		if (!folderTransactions) return []
+
+		const now = new Date()
+
+		const getStartDate = (range: string) => {
+			const startDate = new Date(now)
+			switch (range) {
+				case 'today':
+					startDate.setHours(0, 0, 0, 0)
+					break
+				case '1_week':
+					startDate.setDate(now.getDate() - 7)
+					break
+				case '2_weeks':
+					startDate.setDate(now.getDate() - 14)
+					break
+				case '1_month':
+					startDate.setMonth(now.getMonth() - 1)
+					break
+				case 'all':
+				default:
+					return null
+			}
+			return startDate
+		}
+
+		let finalStartDate =
+			timeRange === 'custom' ? startDate : getStartDate(timeRange)
+		let finalEndDate = timeRange === 'custom' ? endDate ?? now : now
+
+		const changes =
+			field === 'amount'
+				? folderTransactions.amount_changes
+				: folderTransactions.price_changes
+
+		return changes.filter(change => {
+			const changeDate = new Date(change.date)
+			if (finalStartDate && finalEndDate) {
+				return changeDate >= finalStartDate && changeDate <= finalEndDate
+			}
+			return true
+		})
+	}
 
 	const handleUpdateViewSettings = (data: {
 		sortBy: string
@@ -643,7 +642,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			quantity: boolean
 			price: boolean
 			totalPrice: boolean
-      lowStockOnly: boolean
+			lowStockOnly: boolean
 		}
 	}) => {
 		setSettings(data)
@@ -745,7 +744,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		options: string[]
 	}) => {
 		// console.log(currency)
-		setFolders(prevFolders => {
+		setFolders((prevFolders:any) => {
 			const newFolder = {
 				created_at: new Date().toISOString(),
 				lastUpdated: new Date().toISOString(),
@@ -827,7 +826,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		note?: string
 		tag?: string
 	}) => {
-		setItems(prevItems => {
+		setItems((prevItems:any) => {
 			const newItem = {
 				name: data.name,
 				folder_id: data.folder_id,
@@ -863,7 +862,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 		item_id: number
 	}) => {
 		if (quantity < 0) return
-    console.log("change quantity" + quantity, item_id);
+		console.log('change quantity' + quantity, item_id)
 		setItems(
 			items.map(item =>
 				item.id === item_id ? { ...item, quantity } : { ...item }
@@ -913,14 +912,14 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			isAdmin: boolean
 		}
 	}) => {
-		setFolders(prevFolders => {
-			const folderExists = prevFolders.some(folder => folder.id === folderId)
+		setFolders((prevFolders:any) => {
+			const folderExists = prevFolders.some((folder:any) => folder.id === folderId)
 			if (!folderExists) {
 				console.error(`Folder with ID ${folderId} not found.`)
 				return prevFolders
 			}
 
-			return prevFolders.map(folder =>
+			return prevFolders.map((folder:any) =>
 				folder.id === folderId
 					? {
 							...folder,
@@ -1064,19 +1063,19 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 			isAdmin: boolean
 		}
 	}) => {
-		setFolders(prevFolders => {
-			const folderExists = prevFolders.some(folder => folder.id === folderId)
+		setFolders((prevFolders:any) => {
+			const folderExists = prevFolders.some((folder:any) => folder.id === folderId)
 			if (!folderExists) {
 				console.error(`Folder with ID ${folderId} not found.`)
 				return prevFolders
 			}
 
-			return prevFolders.map(folder =>
+			return prevFolders.map((folder:any) =>
 				folder.id === folderId
 					? {
 							...folder,
 							lastUpdated: new Date().toISOString(),
-							members: folder.members.map(member =>
+							members: folder.members.map((member:any) =>
 								member.id === id ? { ...member, email, roles } : member
 							),
 					  }
@@ -1128,8 +1127,7 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 	// }
 
 	const getAction = (info: infoTransactionType) => {
-
-    // console.log(info);
+		// console.log(info);
 		if (info.isCreated) return 'created item ' + info.changed_item.name
 		// if (!info.isCreated) return 'edited item ' + info.changed_item.name
 
@@ -1180,8 +1178,8 @@ export default function AccountProvider({ children }: PropsWithChildren) {
 				deleteFilterMemberId,
 				addFilterItemId,
 				deleteFilterItemId,
-        setFolders,
-        setTransactions
+				setFolders,
+				setTransactions,
 			}}
 		>
 			{children}

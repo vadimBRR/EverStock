@@ -16,7 +16,7 @@ type Props = {
 	currencyName: string
 	isPressable?: boolean
 	containerStyle?: string
-  isShowWarning?: boolean
+	isShowWarning?: boolean
 }
 
 export default function CardItem({
@@ -24,7 +24,7 @@ export default function CardItem({
 	currencyName,
 	isPressable = true,
 	containerStyle,
-  isShowWarning = true
+	isShowWarning = true,
 }: Props) {
 	const router = useRouter()
 	const currencySymbol =
@@ -64,26 +64,27 @@ export default function CardItem({
 									</Text>
 								)}
 							</View>
-              {isShowWarning && <View>
-								{item.quantity &&
-								item.min_quantity &&
-								item.min_quantity !== 0 &&
-								item.quantity < item.min_quantity ? (
-									<TouchableOpacity
-										onPress={() =>
-											showInfo(
-												`Minimum required quantity: ${item.min_quantity}`
-											)
-										}
-										className='h-6 w-10  items-center justify-center ml-2'
-									>
-										<View className='h-2 w-2 rounded-full bg-red-500' />
-									</TouchableOpacity>
-								) : (
-									<View className='h-2 w-2 rounded-full bg-transparent ml-2' />
-								)}
-							</View>}
-							
+							{isShowWarning && (
+								<View>
+									{item.quantity &&
+									item.min_quantity &&
+									item.min_quantity !== 0 &&
+									item.quantity < item.min_quantity ? (
+										<TouchableOpacity
+											onPress={() =>
+												showInfo(
+													`Minimum required quantity: ${item.min_quantity}`
+												)
+											}
+											className='h-6 w-10  items-center justify-center ml-2'
+										>
+											<View className='h-2 w-2 rounded-full bg-red-500' />
+										</TouchableOpacity>
+									) : (
+										<View className='h-2 w-2 rounded-full bg-transparent ml-2' />
+									)}
+								</View>
+							)}
 						</View>
 					)}
 

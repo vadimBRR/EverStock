@@ -10,13 +10,11 @@ import { useSupabase } from '@/src/providers/SupabaseProvider'
 import { showSuccess, showError } from '@/src/utils/toast'
 import { Ionicons } from '@expo/vector-icons'
 import ConfirmDialog from '@/src/components/home/ConfirmDialog'
-import { useQueryClient } from '@tanstack/react-query'
 import { useDeleteFolder } from '@/src/api/folder'
 
 export default function EditFolder() {
 	const router = useRouter()
 	const params = useLocalSearchParams()
-	const queryClient = useQueryClient()
 	const { id: idString, type, options } = params
 	const { getFoldersWithStatistic, updateFolder } = useSupabase()
 	const { mutate: deleteFolderMutation } = useDeleteFolder()
@@ -166,7 +164,7 @@ export default function EditFolder() {
 						onSuccess: () => {
 							showSuccess('Folder deleted successfully')
 							router.replace('/(authenticated)/(tabs)/home/folder')
-              router.setParams({})
+							router.setParams({})
 						},
 						onError: (err: any) => {
 							showError('Delete failed', err.message)

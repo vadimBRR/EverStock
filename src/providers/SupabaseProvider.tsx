@@ -26,9 +26,9 @@ type ProviderProps = {
 		price: number,
 		quantity: number,
 		note: string,
+		min_quantity: number,
 		tag?: string,
-		typeAmount?: string,
-    min_quantity?: number
+		typeAmount?: string
 	) => Promise<InsertTables<'items'>[] | null>
 	getItems: (folderId: number) => Promise<Tables<'items'>[]>
 	getFoldersWithStatistic: () => Promise<
@@ -57,29 +57,32 @@ type ProviderProps = {
 		itemId: number,
 		folderId: number,
 		action: string,
-    extras?: {
-      prev_item?: any
-      changed_item?: any,
-      changes?: any[]
-    }
+		extras?: {
+			prev_item?: any
+			changed_item?: any
+			changes?: any[]
+		}
 	) => Promise<any>
 	getTransactions: (folderId: number) => Promise<Tables<'transactions'>[]>
 	getWarehouseUsers: (folderId: number) => Promise<WarehouseUserType[]>
 	getUserInfo: () => Promise<any>
 	updateUserInfo: (updates: any) => Promise<any>
-  revertItemToPreviousState: (transactionId: number, folderId: number) => Promise<any>
-  deleteItem: (item_id: number, folder_id: number) => Promise<any>
-  cloneItem: (item_id: number) => Promise<any>
-  deleteFolder: (id: number) => Promise<any>
+	revertItemToPreviousState: (
+		transactionId: number,
+		folderId: number
+	) => Promise<any>
+	deleteItem: (item_id: number, folder_id: number) => Promise<any>
+	cloneItem: (item_id: number) => Promise<any>
+	deleteFolder: (id: number) => Promise<any>
 	getRealtimeItemsSubscription: (
 		handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
 	) => any
 	addMemberToWarehouse: (params: {
-		folderId: number,
-		email: string,
-		roles: Record<string, boolean>,
-		permissions: string[]}
-	) => Promise<any>
+		folderId: number
+		email: string
+		roles: Record<string, boolean>
+		permissions: string[]
+	}) => Promise<any>
 }
 
 const SupabaseContext = createContext<Partial<ProviderProps>>({})
@@ -151,9 +154,9 @@ export const SupabaseProvider = ({ children }: any) => {
 		price: number,
 		quantity: number,
 		note: string,
+		min_quantity: number,
 		tag?: string,
-		typeAmount?: string,
-    min_quantity?: number
+		typeAmount?: string
 	) => {
 		const { data, error } = await client
 			.from(ITEMS_TABLE)
@@ -168,7 +171,7 @@ export const SupabaseProvider = ({ children }: any) => {
 				tag,
 				typeAmount,
 				created_at: new Date(),
-        min_quantity: min_quantity || 0
+				min_quantity: min_quantity || 0,
 			})
 			.select()
 
@@ -226,7 +229,7 @@ export const SupabaseProvider = ({ children }: any) => {
 				isedited: true,
 				amountchange: amountChange,
 				pricechange: priceChange,
-				action, 
+				action,
 				timestamp: new Date(),
 			})
 
@@ -244,115 +247,120 @@ export const SupabaseProvider = ({ children }: any) => {
 			.eq('folder_id', folderId)
 		return data || []
 	}
-  const getFoldersWithStatistic = async () => {
-    const { data: ownerFolders, error: ownerError } = await client
-      .from(FOLDERS_TABLE)
-      .select('*, items(*), warehouse_users(*)')
-      .eq('user_id', userId)
-  
-    if (ownerError) {
-      console.error('Error getting owned folders:', ownerError)
-    }
-  
-    const { data: warehouseMemberships, error: memberError } = await client
-      .from('warehouse_users')
-      .select('folder_id')
-      .eq('user_id', userId)
-  
-    if (memberError) {
-      console.error('Error getting memberships:', memberError)
-      return []
-    }
-  
-    const folderIds = warehouseMemberships.map(m => m.folder_id)
-  
-    let memberFolders: any[] = []
-    if (folderIds.length > 0) {
-      const { data, error } = await client
-        .from(FOLDERS_TABLE)
-        .select('*, items(*), warehouse_users(*)')
-        .in('id', folderIds)
-  
-      if (error) {
-        console.error('Error getting member folders:', error)
-      } else {
-        memberFolders = data
-      }
-    }
-  
-    const allFoldersRaw = [...(ownerFolders || []), ...memberFolders]
-    const allFolders = Array.from(
-      new Map(allFoldersRaw.map(folder => [folder.id, folder])).values()
-    )
-  
-    const foldersWithStatistic = allFolders.map(folder => {
-      const warehouseUsers = Array.isArray(folder.warehouse_users)
-        ? folder.warehouse_users
-        : folder.warehouse_users
-        ? [folder.warehouse_users]
-        : []
-  
-      const totalPrice = folder.items.reduce(
-        (sum: number, item: { price: number; quantity: number }) =>
-          sum + item.price * item.quantity,
-        0
-      )
-  
-      const totalQuantity = folder.items.reduce(
-        (sum: number, item: { quantity: number }) => sum + item.quantity,
-        0
-      )
-  
-      const totalMembers = warehouseUsers.length
-  
-      const lastUpdatedItem = folder.items.reduce(
-        (latest: string, item: { updated_at: string }) =>
-          item.updated_at &&
-          (!latest || new Date(item.updated_at) > new Date(latest))
-            ? item.updated_at
-            : latest,
-        null
-      )
-  
-      const lastUpdatedUser = warehouseUsers.reduce(
-        (latest: string, user: { added_at: string }) =>
-          user.added_at &&
-          (!latest || new Date(user.added_at) > new Date(latest))
-            ? user.added_at
-            : latest,
-        null
-      )
-  
-      const lastUpdated = [lastUpdatedItem, lastUpdatedUser, folder.created_at].reduce(
-        (latest, date) =>
-          date && (!latest || new Date(date) > new Date(latest)) ? date : latest,
-        null
-      )
-  
-      const { items, warehouse_users, ...folderWithoutItems } = folder
-  
-      return {
-        ...folderWithoutItems,
-        totalPrice,
-        totalQuantity,
-        totalMembers,
-        lastUpdated,
-        items,
-        warehouse_users: warehouseUsers,
-      }
-    })
-  
-    return foldersWithStatistic
-  }
+	const getFoldersWithStatistic = async () => {
+		const { data: ownerFolders, error: ownerError } = await client
+			.from(FOLDERS_TABLE)
+			.select('*, items(*), warehouse_users(*)')
+			.eq('user_id', userId)
 
-  const deleteFolder = async (id: number) => {
-    const { error } = await client.from('folders').delete().eq('id', id)
-    if (error) {
-      console.error('Error deleting folder:', error)
-      throw new Error(error.message)
-    }
-  }
-  
+		if (ownerError) {
+			console.error('Error getting owned folders:', ownerError)
+		}
+
+		const { data: warehouseMemberships, error: memberError } = await client
+			.from('warehouse_users')
+			.select('folder_id')
+			.eq('user_id', userId)
+
+		if (memberError) {
+			console.error('Error getting memberships:', memberError)
+			return []
+		}
+
+		const folderIds = warehouseMemberships.map(m => m.folder_id)
+
+		let memberFolders: any[] = []
+		if (folderIds.length > 0) {
+			const { data, error } = await client
+				.from(FOLDERS_TABLE)
+				.select('*, items(*), warehouse_users(*)')
+				.in('id', folderIds)
+
+			if (error) {
+				console.error('Error getting member folders:', error)
+			} else {
+				memberFolders = data
+			}
+		}
+
+		const allFoldersRaw = [...(ownerFolders || []), ...memberFolders]
+		const allFolders = Array.from(
+			new Map(allFoldersRaw.map(folder => [folder.id, folder])).values()
+		)
+
+		const foldersWithStatistic = allFolders.map(folder => {
+			const warehouseUsers = Array.isArray(folder.warehouse_users)
+				? folder.warehouse_users
+				: folder.warehouse_users
+				? [folder.warehouse_users]
+				: []
+
+			const totalPrice = folder.items.reduce(
+				(sum: number, item: { price: number; quantity: number }) =>
+					sum + item.price * item.quantity,
+				0
+			)
+
+			const totalQuantity = folder.items.reduce(
+				(sum: number, item: { quantity: number }) => sum + item.quantity,
+				0
+			)
+
+			const totalMembers = warehouseUsers.length
+
+			const lastUpdatedItem = folder.items.reduce(
+				(latest: string, item: { updated_at: string }) =>
+					item.updated_at &&
+					(!latest || new Date(item.updated_at) > new Date(latest))
+						? item.updated_at
+						: latest,
+				null
+			)
+
+			const lastUpdatedUser = warehouseUsers.reduce(
+				(latest: string, user: { added_at: string }) =>
+					user.added_at &&
+					(!latest || new Date(user.added_at) > new Date(latest))
+						? user.added_at
+						: latest,
+				null
+			)
+
+			const lastUpdated = [
+				lastUpdatedItem,
+				lastUpdatedUser,
+				folder.created_at,
+			].reduce(
+				(latest, date) =>
+					date && (!latest || new Date(date) > new Date(latest))
+						? date
+						: latest,
+				null
+			)
+
+			const { items, warehouse_users, ...folderWithoutItems } = folder
+
+			return {
+				...folderWithoutItems,
+				totalPrice,
+				totalQuantity,
+				totalMembers,
+				lastUpdated,
+				items,
+				warehouse_users: warehouseUsers,
+			}
+		})
+
+		return foldersWithStatistic
+	}
+
+	const deleteFolder = async (id: number) => {
+		const { error } = await client.from('folders').delete().eq('id', id)
+		if (error) {
+			console.error('Error deleting folder:', error)
+			throw new Error(error.message)
+		}
+	}
 
 	const updateFolder = async (
 		id: number,
@@ -380,37 +388,37 @@ export const SupabaseProvider = ({ children }: any) => {
 	}
 
 	const createTransaction = async (
-    itemId: number,
-    folderId: number,
-    action: string,
-    extras?: {
-      prev_item?: any
-      changed_item?: any
-      changes?: string[]
-    }
-  ) => {
-    const { data, error } = await client
-      .from(TRANSACTIONS_TABLE)
-      .insert({
-        item_id: itemId,
-        folder_id: folderId,
-        action,
-        user_id: userId,
-        timestamp: new Date(),
-        isedited: action === 'edited',
-        prev_item: extras?.prev_item || null,
-        changed_item: extras?.changed_item || null,
-        changes: extras?.changes || [],
-      })
-      .select()
-  
-    if (error) {
-      console.error('Error creating transaction:', error)
-    }
-  
-    return data
-  }
-  
+		itemId: number,
+		folderId: number,
+		action: string,
+		extras?: {
+			prev_item?: any
+			changed_item?: any
+			changes?: string[]
+		}
+	) => {
+		const { data, error } = await client
+			.from(TRANSACTIONS_TABLE)
+			.insert({
+				item_id: itemId,
+				folder_id: folderId,
+				action,
+				user_id: userId,
+				timestamp: new Date(),
+				isedited: action === 'edited',
+				prev_item: extras?.prev_item || null,
+				changed_item: extras?.changed_item || null,
+				changes: extras?.changes || [],
+			})
+			.select()
+
+		if (error) {
+			console.error('Error creating transaction:', error)
+		}
+
+		return data
+	}
+
 	const getTransactions = async (folderId: number) => {
 		const { data } = await client
 			.from(TRANSACTIONS_TABLE)
@@ -475,20 +483,19 @@ export const SupabaseProvider = ({ children }: any) => {
 		roles: Record<string, boolean>
 		permissions: string[]
 	}) => {
-    console.log("email to find: ", email);
-    const allUsers = await client.from('users').select('*')
-    console.log('All users:', allUsers.data)
+		console.log('email to find: ', email)
+		const allUsers = await client.from('users').select('*')
+		console.log('All users:', allUsers.data)
 
-    const user = allUsers.data?.find(u => u.email?.trim() === email.trim())
-    if (!user) {
-      throw new Error('User with this email not found.')
-    }
-    const userId = user.id
+		const user = allUsers.data?.find(u => u.email?.trim() === email.trim())
+		if (!user) {
+			throw new Error('User with this email not found.')
+		}
+		const userId = user.id
 		// const { data: user, error: userError } = await client
 		// 	.from('users')
 		// 	.select('id')
 		// 	.eq('email', email.trim().toLowerCase()).maybeSingle()
-			
 
 		// if (userError || !user) {
 		// 	throw new Error('User with this email not found.')
@@ -525,123 +532,118 @@ export const SupabaseProvider = ({ children }: any) => {
 		return data
 	}
 
-  const revertItemToPreviousState = async (
-    transactionId: number,
-    folderId: number
-  ) => {
-    const { data: transaction, error: fetchError } = await client
-      .from(TRANSACTIONS_TABLE)
-      .select('*')
-      .eq('id', transactionId)
-      .single()
-  
-    if (fetchError) {
-      console.error('Error fetching transaction:', fetchError)
-      return null
-    }
-  
-    const prevItem = transaction.prev_item
-    const itemId = transaction.item_id
-  
-    if (!prevItem || !itemId) {
-      console.warn('No previous item found for transaction.')
-      return null
-    }
-  
-    const { error: updateError } = await client
-      .from(ITEMS_TABLE)
-      .update({
-        ...prevItem,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', itemId)
-  
-    if (updateError) {
-      console.error('Error reverting item:', updateError)
-      return null
-    }
-  
-    const { error: logError } = await client.from(TRANSACTIONS_TABLE).insert({
-      action: 'reverted',
-      folder_id: folderId,
-      item_id: itemId,
-      user_id: userId,
-      prev_item: transaction.changed_item,
-      changed_item: prevItem,
-      changes: transaction.changes,
-      isreverted: true,
-      timestamp: new Date().toISOString(),
-    })
-  
-    if (logError) {
-      console.error('Error logging revert transaction:', logError)
-    }
-  
-    return true
-  }
+	const revertItemToPreviousState = async (
+		transactionId: number,
+		folderId: number
+	) => {
+		const { data: transaction, error: fetchError } = await client
+			.from(TRANSACTIONS_TABLE)
+			.select('*')
+			.eq('id', transactionId)
+			.single()
 
-  const deleteItem = async (item_id: number, folder_id: number) => {
-    const { error } = await client
-      .from('items')
-      .delete()
-      .eq('id', item_id)
-  
-    if (error) throw new Error('Failed to delete item')
-  
-    const { error: txError } = await client.from('transactions').insert({
-      item_id,
-      folder_id, 
-      user_id: userId,
-      action: 'deleted',
-      timestamp: new Date(),
-    })
-  
-    if (txError) console.error('Error logging delete transaction:', txError)
-  
-    return true
-  }
+		if (fetchError) {
+			console.error('Error fetching transaction:', fetchError)
+			return null
+		}
 
-  const cloneItem = async (item_id: number) => {
-    const { data, error } = await client
-      .from('items')
-      .select('*')
-      .eq('id', item_id)
-      .single()
-  
-    if (error || !data) throw new Error('Original item not found')
-  
-    const cloned = {
-      ...data,
-      name: data.name + ' (Copy)',
-      created_at: new Date(),
-      updated_at: new Date(),
-    }
-  
-    delete cloned.id
-  
-    const { data: newItem, error: insertError } = await client
-      .from('items')
-      .insert(cloned)
-      .select()
-      .single()
-  
-    if (insertError) throw new Error('Failed to clone item')
-  
-    const { error: txError } = await client.from('transactions').insert({
-      item_id: newItem.id,
-      folder_id: newItem.folder_id,
-      user_id: userId,
-      action: 'created',
-      timestamp: new Date(),
-    })
-  
-    if (txError) console.error('Error logging clone transaction:', txError)
-  
-    return newItem
-  }
-  
-  
-  
+		const prevItem = transaction.prev_item
+		const itemId = transaction.item_id
+
+		if (!prevItem || !itemId) {
+			console.warn('No previous item found for transaction.')
+			return null
+		}
+
+		const { error: updateError } = await client
+			.from(ITEMS_TABLE)
+			.update({
+				...prevItem,
+				updated_at: new Date().toISOString(),
+			})
+			.eq('id', itemId)
+
+		if (updateError) {
+			console.error('Error reverting item:', updateError)
+			return null
+		}
+
+		const { error: logError } = await client.from(TRANSACTIONS_TABLE).insert({
+			action: 'reverted',
+			folder_id: folderId,
+			item_id: itemId,
+			user_id: userId,
+			prev_item: transaction.changed_item,
+			changed_item: prevItem,
+			changes: transaction.changes,
+			isreverted: true,
+			timestamp: new Date().toISOString(),
+		})
+
+		if (logError) {
+			console.error('Error logging revert transaction:', logError)
+		}
+
+		return true
+	}
+
+	const deleteItem = async (item_id: number, folder_id: number) => {
+		const { error } = await client.from('items').delete().eq('id', item_id)
+
+		if (error) throw new Error('Failed to delete item')
+
+		const { error: txError } = await client.from('transactions').insert({
+			item_id,
+			folder_id,
+			user_id: userId,
+			action: 'deleted',
+			timestamp: new Date(),
+		})
+
+		if (txError) console.error('Error logging delete transaction:', txError)
+
+		return true
+	}
+
+	const cloneItem = async (item_id: number) => {
+		const { data, error } = await client
+			.from('items')
+			.select('*')
+			.eq('id', item_id)
+			.single()
+
+		if (error || !data) throw new Error('Original item not found')
+
+		const cloned = {
+			...data,
+			name: data.name + ' (Copy)',
+			created_at: new Date(),
+			updated_at: new Date(),
+		}
+
+		delete cloned.id
+
+		const { data: newItem, error: insertError } = await client
+			.from('items')
+			.insert(cloned)
+			.select()
+			.single()
+
+		if (insertError) throw new Error('Failed to clone item')
+
+		const { error: txError } = await client.from('transactions').insert({
+			item_id: newItem.id,
+			folder_id: newItem.folder_id,
+			user_id: userId,
+			action: 'created',
+			timestamp: new Date(),
+		})
+
+		if (txError) console.error('Error logging clone transaction:', txError)
+
+		return newItem
+	}
+
 	const getRealtimeItemsSubscription = (
 		handleRealtimeChanges: (update: RealtimePostgresChangesPayload<any>) => void
 	) => {
@@ -669,12 +671,12 @@ export const SupabaseProvider = ({ children }: any) => {
 		getRealtimeItemsSubscription,
 		getFoldersWithStatistic,
 		updateFolder,
-    deleteFolder,
+		deleteFolder,
 		getWarehouseUsers,
 		addMemberToWarehouse,
-    revertItemToPreviousState,
-    deleteItem,
-    cloneItem
+		revertItemToPreviousState,
+		deleteItem,
+		cloneItem,
 	}
 
 	return (

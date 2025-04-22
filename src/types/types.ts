@@ -1,35 +1,34 @@
 import { Database } from './database.types'
 
 export type Tables<T extends keyof Database['public']['Tables']> =
-  Database['public']['Tables'][T]['Row'];
+	Database['public']['Tables'][T]['Row']
 
-  export type InsertTables<T extends keyof Database['public']['Tables']> =
-  Database['public']['Tables'][T]['Insert'];
-  export type UpdateTables<T extends keyof Database['public']['Tables']> =
-  Database['public']['Tables'][T]['Update'];
+export type InsertTables<T extends keyof Database['public']['Tables']> =
+	Database['public']['Tables'][T]['Insert']
+export type UpdateTables<T extends keyof Database['public']['Tables']> =
+	Database['public']['Tables'][T]['Update']
 
 export type Enums<T extends keyof Database['public']['Enums']> =
-  Database['public']['Enums'][T];
-  
+	Database['public']['Enums'][T]
 
 export interface WarehouseUserType {
-  id: string 
-  fullName: string
-  email: string
-  roles: {
-    isView: boolean
-    isAddItem: boolean
-    isDeleteItem: boolean
-    isEdit: boolean
-    isCanInvite: boolean
-    isAdmin: boolean,
-    isManager: false,
-  } 
-  permissions: string[]
-  added_at: string | null
-  folder_id: number | null
+	id: string
+	fullName: string
+	email: string
+	roles: {
+		isView: boolean
+		isAddItem: boolean
+		isDeleteItem: boolean
+		isEdit: boolean
+		isCanInvite: boolean
+		isAdmin: boolean
+		isManager: false
+	}
+	permissions: string[]
+	added_at: string | null
+	folder_id: number | null
 }
-  
+
 export type currencyType = {
 	name: string
 	value: string
@@ -38,7 +37,7 @@ export type currencyType = {
 
 export type folderType = {
 	created_at: string
-  lastUpdated: string
+	lastUpdated: string
 	currency: currencyType
 	id: number
 	name: string
@@ -53,8 +52,8 @@ export type folderType = {
 			isAddItem: boolean
 			isDeleteItem: boolean
 			isEdit: boolean
-			isCanInvite: boolean,
-      isManager: boolean,
+			isCanInvite: boolean
+			isManager: boolean
 			isAdmin: boolean
 		}
 	}[]
@@ -88,26 +87,26 @@ export type accountType = {
 		isAddItem: boolean
 		isDeleteItem: boolean
 		isEdit: boolean
-		isCanInvite: boolean,
-    isManager: boolean,
+		isCanInvite: boolean
+		isManager: boolean
 		isAdmin: boolean
 	}
 }
 
 export type warehouseUserRoles = {
-    isView: boolean
-    isAddItem: boolean
-    isDeleteItem: boolean
-    isEdit: boolean
-    isCanInvite: boolean
-    isAdmin: boolean,
-    isManager: boolean,
+	isView: boolean
+	isAddItem: boolean
+	isDeleteItem: boolean
+	isEdit: boolean
+	isCanInvite: boolean
+	isAdmin: boolean
+	isManager: boolean
 }
 export type FolderWithUsers = Tables<'folders'> & {
-  warehouse_users: {
-    user_id: string
-    roles: Record<string, warehouseUserRoles>
-  }[]
+	warehouse_users: {
+		user_id: string
+		roles: Record<string, warehouseUserRoles>
+	}[]
 }
 export type transactionType = {
 	folder_id: number

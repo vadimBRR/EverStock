@@ -8,7 +8,12 @@ type RemoteImageProps = {
 } & Omit<ComponentProps<typeof Image>, 'source'>
 
 const isLocalOrFullUrl = (uri: string) => {
-	return uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('http://') || uri.startsWith('https://')
+	return (
+		uri.startsWith('file://') ||
+		uri.startsWith('content://') ||
+		uri.startsWith('http://') ||
+		uri.startsWith('https://')
+	)
 }
 
 const RemoteImage = ({ path, ...imageProps }: RemoteImageProps) => {
@@ -51,7 +56,10 @@ const RemoteImage = ({ path, ...imageProps }: RemoteImageProps) => {
 			{imageUrl ? (
 				<Image source={{ uri: imageUrl }} {...imageProps} />
 			) : (
-				<Image source={require('@/src/assets/no_image_dark.png')} {...imageProps} />
+				<Image
+					source={require('@/src/assets/no_image_dark.png')}
+					{...imageProps}
+				/>
 			)}
 		</>
 	)

@@ -1,5 +1,5 @@
 import { useSupabase } from '@/src/providers/SupabaseProvider'
-import { InsertTables, Tables } from '@/src/types/types'
+import {  Tables } from '@/src/types/types'
 import { client } from '@/src/utils/supabaseClient'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -28,7 +28,7 @@ export const useCreateItem = () => {
 			note: string,
       tag: string,
       typeAmount: string,
-      min_quantity?: number
+      min_quantity: number
 		}) {
 			const data = await createItem!(
 				folder_id,
@@ -37,8 +37,9 @@ export const useCreateItem = () => {
 				price,
 				quantity,
 				note,
+        min_quantity,
         tag,
-        min_quantity
+        typeAmount
 			)
 			return data
 		},
@@ -86,7 +87,6 @@ export const useDeleteItem = () => {
 			id: number
 			item: Tables<'items'>
 		}) => {
-			// // 🔁 1. Створюємо транзакцію ДО видалення
 			await createTransaction?.(id, item.folder_id!, 'deleted', {
 				prev_item: item,
 				changed_item: null,
@@ -119,8 +119,9 @@ export const useCloneItem = () => {
 				item.price || 0,
 				item.quantity || 0,
 				item.note || '',
+        item.min_quantity || 0,
 				item.tag || '',
-				item.typeAmount || ''
+        item.typeAmount || '',
 			)
 
 			const newItem = cloned?.[0]

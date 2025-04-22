@@ -28,31 +28,30 @@ export default function CreateFolder() {
 	const { mutate: createFolder } = useCreateFolder()
 
 	const handleCreateFolder = async () => {
-    if (!folderName || !currency || !folderType) {
-      setIsErrorInput(true)
-      showError('Folder name is required')
-      return
-    }
-  
-    await createFolder(
-      {
-        name: folderName,
-        currency: currency.name,
-        folderType,
-        options: folderOptions || [],
-      },
-      {
-        onSuccess: () => {
-          showSuccess('Folder created successfully')
-          router.push('/(authenticated)/(tabs)/home/folder')
-        },
-        onError: (error: any) => {
-          showError('Creation failed', error.message)
-        },
-      }
-    )
-  }
-  
+		if (!folderName || !currency || !folderType) {
+			setIsErrorInput(true)
+			showError('Folder name is required')
+			return
+		}
+
+		await createFolder(
+			{
+				name: folderName,
+				currency: currency.name,
+				folderType,
+				options: folderOptions || [],
+			},
+			{
+				onSuccess: () => {
+					showSuccess('Folder created successfully')
+					router.push('/(authenticated)/(tabs)/home/folder')
+				},
+				onError: (error: any) => {
+					showError('Creation failed', error.message)
+				},
+			}
+		)
+	}
 
 	const handleChangeType = () => {
 		router.push('/(authenticated)/(tabs)/home/folder/choose_type')

@@ -15,8 +15,7 @@ import { useRolesStore } from '@/src/store/useUserRoles'
 
 type Props = {
 	item_id: number
-  openConfirmDelete: () => void
-
+	openConfirmDelete: () => void
 }
 
 export default function ItemSettings({ item_id, openConfirmDelete }: Props) {
@@ -28,7 +27,6 @@ export default function ItemSettings({ item_id, openConfirmDelete }: Props) {
 		return folders?.flatMap(f => f.items).find(i => i.id === item_id)
 	}, [folders, item_id])
 
-	const { mutate: deleteItem } = useDeleteItem()
 	const { mutate: cloneItem } = useCloneItem()
 
 	const snapPoints = useMemo(() => ['40%', '60%'], [])
@@ -38,15 +36,14 @@ export default function ItemSettings({ item_id, openConfirmDelete }: Props) {
 	const canClone = roles?.isAddItem || roles?.isAdmin
 
 	const onDelete = () => {
-    if (!item) return
-    if (!canDelete) {
-      showError("You don't have permission to delete this item.")
-      return
-    }
-    handleCloseAnother()
-    openConfirmDelete()
-  }
-  
+		if (!item) return
+		if (!canDelete) {
+			showError("You don't have permission to delete this item.")
+			return
+		}
+		handleCloseAnother()
+		openConfirmDelete()
+	}
 
 	const onClone = () => {
 		if (!item) return

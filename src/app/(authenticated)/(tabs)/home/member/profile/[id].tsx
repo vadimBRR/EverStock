@@ -39,8 +39,8 @@ const MemberProfileScreen = () => {
 		}
 	)
 	const [isErrorInput, setIsErrorInput] = useState(false)
-  const myRoles = useRolesStore(state => state.roles)
-	const canManaged = myRoles?.isManager || myRoles?.isAdmin && !roles.isAdmin
+	const myRoles = useRolesStore(state => state.roles)
+	const canManaged = myRoles?.isManager || (myRoles?.isAdmin && !roles.isAdmin)
 
 	useEffect(() => {
 		if (member) {
@@ -111,7 +111,7 @@ const MemberProfileScreen = () => {
 						setName={() => {}}
 						isError={isErrorInput}
 						containerStyle='mb-4'
-            editable={true}
+						editable={true}
 					/>
 					<Text className='font-lexend_light text-white text-2xl mb-1'>
 						Permissions:
@@ -190,7 +190,7 @@ const MemberProfileScreen = () => {
 							text='Delete'
 							onClick={remove}
 							styleContainer='mx-0 flex-1 mr-2'
-							isActive={!!email }
+							isActive={!!email}
 						/>
 						<CustomButton
 							text='Apply'

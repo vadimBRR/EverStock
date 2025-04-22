@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Touchable } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { currency } from '@/src/constants'
 import dayjs from 'dayjs'
@@ -14,9 +14,7 @@ dayjs.extend(utc)
 
 dayjs.extend(timezone)
 
-
 type Props = {
-
 	data: any
 }
 
@@ -52,8 +50,7 @@ export default function CardFolder({ data }: Props) {
 						</View>
 						<View className='flex-row items-center mr-2'>
 							<Text className='font-lexend_regular text-gray text-lg'>
-								{currency.find(c => c.name === data.currency)?.value ||
-									'&'}
+								{currency.find(c => c.name === data.currency)?.value || '&'}
 								{data.totalPrice.toFixed(2)}
 							</Text>
 						</View>
@@ -73,28 +70,24 @@ export default function CardFolder({ data }: Props) {
 				<View className='flex flex-row justify-between items-center'>
 					<Text className='font-lexend_extralight text-gray text-md'>
 						{/* {dayjs(data.lastUpdated).fromNow()} */}
-            {dayjs.utc(data.lastUpdated).local().format('DD.MM.YYYY HH:mm:ss')}
-
-            </Text>
-            {isOwner ? (
-
-					<TouchableOpacity
-						className='border border-gray p-1 rounded-md'
-						onPress={() => {
-							router.push('/(authenticated)/(tabs)/home/folder/edit/' + data.id)
-						}}
-					>
-						<Ionicons name='pencil-outline' size={16} color='white' />
-					</TouchableOpacity>
-            ) : ((
-
-              <View
-                className='border border-[#323232] p-1 rounded-md'
-                
-              >
-                {/* <Ionicons name='pencil-outline' size={16} color='#323232' /> */}
-              </View>
-                ))}
+						{dayjs.utc(data.lastUpdated).local().format('DD.MM.YYYY HH:mm:ss')}
+					</Text>
+					{isOwner ? (
+						<TouchableOpacity
+							className='border border-gray p-1 rounded-md'
+							onPress={() => {
+								router.push(
+									'/(authenticated)/(tabs)/home/folder/edit/' + data.id
+								)
+							}}
+						>
+							<Ionicons name='pencil-outline' size={16} color='white' />
+						</TouchableOpacity>
+					) : (
+						<View className='border border-[#323232] p-1 rounded-md'>
+							{/* <Ionicons name='pencil-outline' size={16} color='#323232' /> */}
+						</View>
+					)}
 				</View>
 			</View>
 		</View>

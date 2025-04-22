@@ -13,8 +13,14 @@ const TransactionCard = ({
 	date: string
 	containerStyle?: string
 }) => {
-	const fontSizeClass = action.length > 40 ? 'text-sm' : action.length > 32 ? 'text-base' : 'text-lg'
-	const displayedAction = action.length > 39 ? `${action.slice(0, 37)}...` : action
+	const fontSizeClass =
+		action.length > 40
+			? 'text-sm'
+			: action.length > 32
+			? 'text-base'
+			: 'text-lg'
+	const displayedAction =
+		action.length > 39 ? `${action.slice(0, 37)}...` : action
 
 	return (
 		<View className={`bg-black-700 px-3 py-1 ${containerStyle}`}>
@@ -25,7 +31,9 @@ const TransactionCard = ({
 				</Text>
 			</View>
 			<View className='flex-row justify-between items-center'>
-				<Text className={`text-white font-poppins_light flex-1 ${fontSizeClass}`}>
+				<Text
+					className={`text-white font-poppins_light flex-1 ${fontSizeClass}`}
+				>
 					{displayedAction}
 				</Text>
 				<Text className='text-white font-poppins_light text-sm text-right w-[80px]'>
