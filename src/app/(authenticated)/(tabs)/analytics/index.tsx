@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React, { useMemo } from 'react'
 import Container from '@/src/components/Container'
-import { router, Stack } from 'expo-router'
+import { router, Stack, usePathname } from 'expo-router'
 import HeaderAnalytics from '@/src/components/analytics/HeaderAnalytics'
 import AnalyticsChart from '@/src/components/analytics/AnalyticsChart'
 import HistoryContainer from '@/src/components/analytics/HistoryContainer'
@@ -13,12 +13,17 @@ import Loading from '@/src/components/Loading'
 import { useFolderMembersMap } from '@/src/api/users'
 import ModalExport from '@/src/components/ModalExport'
 import { useModal } from '@/src/providers/ModalProvider'
+import { useIsFocused } from '@react-navigation/native'
 
 const AnalyticsScreen = () => {
+  const isFocused = useIsFocused()
 	const { data: folders = [], isLoading } = useGetFoldersWithItems()
 	const [activeIndex, setActiveIndex] = React.useState<number>(-1)
 	const { handleOpenExport } = useModal()
-
+  const pathname = usePathname()
+  console.log("pathname", pathname);
+  console.log("isFocused", isFocused);
+  
 	const folders_id = useMemo(() => folders!.map(folder => folder.id), [folders])
 
 	const folderMap = useMemo(() => {
@@ -39,7 +44,7 @@ const AnalyticsScreen = () => {
 
 	const { data: transaction, isLoading: isTransLoading } =
 		useGetTransaction(activeIndex)
-	const { data: membersMap } = useFolderMembersMap(activeIndex)
+	const { data: membersMap, isLoading: isMembersLoading } = useFolderMembersMap(activeIndex)
 
 	const belowMinItems = useMemo(() => {
 		const folderItems = activeFolder?.items || []
@@ -116,7 +121,9 @@ const AnalyticsScreen = () => {
 		}
 	}, [filteredTransactions])
 
-	if (isLoading || isTransLoading) {
+  if (!isFocused) return null
+
+	if (isLoading || isTransLoading || isMembersLoading) {
 		return <Loading />
 	}
 
@@ -141,18 +148,17 @@ const AnalyticsScreen = () => {
 						folders_id={folders_id}
 						folderMap={folderMap}
 					/>
-
-					{/* Chart */}
-					<AnalyticsChart
-						transaction={filteredTransactions}
-						timeRange={timeRange}
-						setTimeRange={setTimeRange}
-						startDate={startDate}
-						setStartDate={setStartDate}
-						endDate={endDate}
-						setEndDate={setEndDate}
-					/>
-
+        {pathname.includes('/analytics') && (
+  <AnalyticsChart
+    transaction={filteredTransactions}
+    timeRange={timeRange}
+    setTimeRange={setTimeRange}
+    startDate={startDate}
+    setStartDate={setStartDate}
+    endDate={endDate}
+    setEndDate={setEndDate}
+  />
+)}
 					{/* Mini Dashboard */}
 					<View className='bg-black-600 mx-3 p-4 rounded-xl my-2 mt-4'>
 						<Text className='text-white font-lexend_semibold text-lg mb-3'>

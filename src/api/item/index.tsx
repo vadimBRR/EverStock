@@ -93,7 +93,6 @@ export const useDeleteItem = () => {
 				changes: Object.keys(item),
 			})
 
-			// 🗑️ 2. Видаляємо item
 			const { error } = await client.from('items').delete().eq('id', id)
 			if (error) throw error
 		},

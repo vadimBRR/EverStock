@@ -21,8 +21,11 @@ import { Tables } from '@/src/types/types'
 import { useSyncUserRoles } from '@/src/hooks/useSyncUserRoles'
 import { useRolesStore } from '@/src/store/useUserRoles'
 import { useAccount } from '@/src/providers/AccountProvider'
+import { useIsFocused } from '@react-navigation/native'
 
 export default function FolderScreen() {
+  const isFocused = useIsFocused()
+
 	const { id: idString } = useLocalSearchParams()
 	const id = parseFloat(
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
@@ -112,6 +115,7 @@ export default function FolderScreen() {
 				return 0
 			})
 	}, [items, search, viewSettings])
+  if (!isFocused) return null
 
 	if (isLoading) return <Loading />
 	if (isError)

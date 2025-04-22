@@ -15,8 +15,11 @@ import Loading from '@/src/components/Loading'
 import { Tables } from '@/src/types/types'
 import { useGetFoldersWithItems } from '@/src/api/folder'
 import { useUpdateItem } from '@/src/api/item'
+import { useIsFocused } from '@react-navigation/native'
 
 export default function FastEditScreen() {
+  const isFocused = useIsFocused()
+
 	const { id: idString } = useLocalSearchParams()
 	const id = parseFloat(
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
@@ -108,6 +111,7 @@ export default function FastEditScreen() {
 		}
 		setPrevActiveItemId(activeItemId)
 	}, [activeItemId])
+  if (!isFocused) return null
 
 	if (isLoading) return <Loading />
 	if (!folder)

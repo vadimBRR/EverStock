@@ -209,13 +209,7 @@ export const SupabaseProvider = ({ children }: any) => {
 		const priceChange = (updatedItem.price || 0) - (previousItem.price || 0)
 
 		let action = 'edited'
-		// if (changes.includes("quantity") && changes.includes("price")) {
-		//   action = "updated quantity & price";
-		// } else if (changes.includes("quantity")) {
-		//   action = "updated quantity";
-		// } else if (changes.includes("price")) {
-		//   action = "updated price";
-		// }
+		
 
 		const { error: transactionError } = await client
 			.from(TRANSACTIONS_TABLE)
@@ -492,16 +486,7 @@ export const SupabaseProvider = ({ children }: any) => {
 			throw new Error('User with this email not found.')
 		}
 		const userId = user.id
-		// const { data: user, error: userError } = await client
-		// 	.from('users')
-		// 	.select('id')
-		// 	.eq('email', email.trim().toLowerCase()).maybeSingle()
 
-		// if (userError || !user) {
-		// 	throw new Error('User with this email not found.')
-		// }
-
-		// const userId = user.id
 
 		const { data: existing, error: existingError } = await client
 			.from('warehouse_users')

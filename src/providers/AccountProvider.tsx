@@ -202,13 +202,7 @@ type AccountType = {
 		startDate: Date | null,
 		endDate: Date | null
 	) => { date: string; value: number }[]
-	// getUserFullName: ({
-	// 	user_id,
-	// 	activeIndex,
-	// }: {
-	// 	user_id: number
-	// 	activeIndex: number
-	// }) => string
+	
 	getAction: (info: infoTransactionType) => string
 	handleUpdateTransactionSettings: ({
 		sortBy,
@@ -289,7 +283,6 @@ const AccountContext = createContext<AccountType>({
 	handleUpdateViewSettings: () => {},
 	handleAddTransaction: () => {},
 	getChangesByField: () => [],
-	// getUserFullName: () => '',
 	getAction: () => '',
 	transactionSettings: {
 		sortBy: 'last updated',

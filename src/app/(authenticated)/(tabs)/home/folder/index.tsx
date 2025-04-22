@@ -9,9 +9,12 @@ import Loading from '@/src/components/Loading'
 import { useSupabase } from '@/src/providers/SupabaseProvider'
 import * as SystemUI from 'expo-system-ui'
 import { Tables } from '@/src/types/types'
+import { useIsFocused } from '@react-navigation/native'
 
 export default function HomeScreen() {
 	const [search, setSearch] = useState('')
+  const isFocused = useIsFocused()
+
 	const [folders, setFolders] = useState<
 		(Tables<'folders'> & {
 			totalPrice: number
@@ -56,6 +59,8 @@ export default function HomeScreen() {
 	const handleSearch = (value: string) => {
 		setSearch(value)
 	}
+
+  if (!isFocused) return null
 
 	if (isLoading) return <Loading />
 

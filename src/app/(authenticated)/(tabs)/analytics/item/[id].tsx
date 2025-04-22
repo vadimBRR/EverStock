@@ -13,8 +13,11 @@ import { useFolderMembersMap } from '@/src/api/users'
 import { useModal } from '@/src/providers/ModalProvider'
 import ModalExportItem from '@/src/components/ModalExportItem'
 import { Ionicons } from '@expo/vector-icons'
+import { useIsFocused } from '@react-navigation/native'
 
 export default function AnalyticsItemScreen() {
+  const isFocused = useIsFocused()
+
 	const { id: idString } = useLocalSearchParams()
 	const itemId = parseInt(
 		typeof idString === 'string' ? idString : idString?.[0],
@@ -104,6 +107,8 @@ export default function AnalyticsItemScreen() {
 	}, [filteredTransactions])
 	const { data: membersMap } = useFolderMembersMap(folder?.id || -1)
 
+  if (!isFocused) return null
+
 	if (isLoading || isTransLoading) {
 		return <Loading />
 	}
@@ -154,7 +159,7 @@ export default function AnalyticsItemScreen() {
 						setStartDate={setStartDate}
 						endDate={endDate}
 						setEndDate={setEndDate}
-					/>{' '}
+					/>
 					{/* Mini Dashboard */}
 					<View className='bg-black-600 mx-3 p-4 rounded-xl my-2 mt-4'>
 						<Text className='text-white font-lexend_semibold text-lg mb-3'>

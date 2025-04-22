@@ -25,6 +25,7 @@ const HeaderAnalytics = ({
 				showsHorizontalScrollIndicator={false}
 				contentContainerStyle={{ gap: 5 }}
 				style={{ marginBottom: 15, marginLeft: 10, marginRight: 10 }}
+        
 				renderItem={({ item }) => (
 					<TouchableOpacity
 						onPress={() => setActiveIndex(item)}
