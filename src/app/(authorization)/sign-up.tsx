@@ -89,18 +89,24 @@ export default function SignUpScreen() {
           </View>
         )}
 
-        {pendingVerification && (
-          <View className='w-full'>
-            <Text className='font-lexend_semibold text-xl text-white'>Verification Code</Text>
-            <Text className='font-lexend_semibold text-lg text-dark_gray'>
-              We have sent the verification code to your email address
-            </Text>
-            <View className='w-full mt-[30px] '>
-              <VerificationCodeInput />
-              <CustomButton text='Verify Email' onClick={onPressVerify} styleContainer='mt-[30px] mb-[20px] mx-0' />
-            </View>
-          </View>
-        )}
+{pendingVerification && (
+  <View className='w-full'>
+    <Text className='font-lexend_semibold text-xl text-white'>Verification Code</Text>
+    <Text className='font-lexend_semibold text-lg text-dark_gray'>
+      We have sent the verification code to your email address
+    </Text>
+    <View className='w-full mt-[30px] '>
+      <VerificationCodeInput onChange={setCode} />
+      <CustomButton
+        text='Verify Email'
+        onClick={onPressVerify}
+        disabled={code.length !== 6}
+        styleContainer='mt-[30px] mb-[20px] mx-0'
+      />
+    </View>
+  </View>
+)}
+
 
         <View className='w-full'>
           <View className='w-full bg-dark_gray/20 h-[1px]' />
