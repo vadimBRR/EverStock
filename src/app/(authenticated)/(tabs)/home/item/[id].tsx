@@ -5,7 +5,7 @@ import {
 	TouchableOpacity,
 	ScrollView,
 } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Container from '@/src/components/Container'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import CustomInput from '@/src/components/CustomInput'
@@ -63,7 +63,7 @@ export default function ItemScreen() {
 	const handleConfirmDelete = () => {
 		if (!item) return
 		deleteItem({ id: item.id, item })
-    showSuccess('Item deleted successfully')
+		showSuccess('Item deleted successfully')
 		setIsConfirmVisible(false)
 		handleCloseAnother()
 		router.back()
@@ -113,6 +113,22 @@ export default function ItemScreen() {
 			}
 		)
 	}
+
+	const [hasChanges, setHasChanges] = useState(false)
+
+	useEffect(() => {
+		const changes =
+			item.name !== itemName ||
+			item.quantity !== parseInt(amount) ||
+			item.price !== parseFloat(price) ||
+			item.min_quantity !== parseInt(min_quantity) ||
+			item.note !== note ||
+			item.tag !== tag ||
+			item.typeAmount !== selectedType ||
+			JSON.stringify(item.image_url || []) !== JSON.stringify(images)
+
+		setHasChanges(changes)
+	}, [itemName, amount, price, min_quantity, note, tag, selectedType, images])
 
 	return (
 		<Container isPadding={false}>
@@ -262,6 +278,7 @@ export default function ItemScreen() {
 						onClick={updateItem}
 						styleContainer='mb-4 mx-0'
 						disabled={
+							!hasChanges ||
 							!itemName ||
 							(amount ? isNaN(parseFloat(amount)) : false) ||
 							(price ? isNaN(parseFloat(price)) : false)

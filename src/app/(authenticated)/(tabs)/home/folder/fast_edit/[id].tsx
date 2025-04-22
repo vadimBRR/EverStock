@@ -12,9 +12,9 @@ import SearchBar from '@/src/components/SearchBar'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import CardItemFastEdit from '@/src/components/home/item/CardItemFastEdit'
 import Loading from '@/src/components/Loading'
-import { itemType, Tables } from '@/src/types/types'
-import { useGetFoldersWithItems } from '@/src/api/folder' 
-import { useUpdateItem } from '@/src/api/item' 
+import { Tables } from '@/src/types/types'
+import { useGetFoldersWithItems } from '@/src/api/folder'
+import { useUpdateItem } from '@/src/api/item'
 
 export default function FastEditScreen() {
 	const { id: idString } = useLocalSearchParams()
@@ -30,6 +30,7 @@ export default function FastEditScreen() {
 	const [activeItemId, setActiveItemId] = useState<number | null>(null)
 	const [prevActiveItemId, setPrevActiveItemId] = useState<number | null>(null)
 	const [editedQuantities, setEditedQuantities] = useState<Record<number, number>>({})
+	const [initialOrder, setInitialOrder] = useState<number[]>([])
 
 	const folder = useMemo(() => folders!.find(f => f.id === id), [folders, id])
 	const folderItems = useMemo(() => {
@@ -39,6 +40,19 @@ export default function FastEditScreen() {
 			? items.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
 			: items
 	}, [folder, search])
+
+	useEffect(() => {
+		if (folderItems.length && initialOrder.length === 0) {
+			setInitialOrder(folderItems.map(item => item.id))
+		}
+	}, [folderItems])
+
+	const orderedItems = useMemo(() => {
+		if (!initialOrder.length) return folderItems
+		return [...folderItems].sort(
+			(a, b) => initialOrder.indexOf(a.id) - initialOrder.indexOf(b.id)
+		)
+	}, [folderItems, initialOrder])
 
 	const onRefresh = useCallback(async () => {
 		setRefreshing(true)
@@ -112,7 +126,7 @@ export default function FastEditScreen() {
 
 			<FlatList
 				className='mx-3'
-				data={folderItems}
+				data={orderedItems}
 				keyExtractor={item => item.id.toString()}
 				extraData={activeItemId}
 				renderItem={({ item }) => (
