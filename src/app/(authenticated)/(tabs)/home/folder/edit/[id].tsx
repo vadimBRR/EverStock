@@ -128,7 +128,7 @@ export default function EditFolder() {
 						setName={setFolderName}
 						isError={isErrorInput}
 					/>
-					<TouchableOpacity
+					{/* <TouchableOpacity
 						className='w-full rounded-2xl border-dark_gray border py-[12px] flex-row justify-between bg-black-600 px-4 mt-2 items-center'
 						onPress={handleChangeType}
 					>
@@ -138,7 +138,7 @@ export default function EditFolder() {
 						<Text className='text-xl font-lexend_light text-white rounded-lg border border-dark_gray p-1 px-2 w-[120px] text-center'>
 							{folderType}
 						</Text>
-					</TouchableOpacity>
+					</TouchableOpacity> */}
 					<SelectDropDownCurency
 						selectedValue={currency}
 						setSelectedValue={setCurrency}

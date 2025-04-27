@@ -1,7 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { currency } from '@/src/constants'
-import { useRouter } from 'expo-router'
 import { Entypo } from '@expo/vector-icons'
 import { Tables } from '@/src/types/types'
 import RemoteImage from '../../RemoteImage'
@@ -29,7 +28,6 @@ export default function CardItemFastEdit({
 	handleQuantityChange,
 	handleSaveItem,
 }: Props) {
-	const router = useRouter()
 	const currencySymbol =
 		currency.find(c => c.name === currencyName)?.value || '₴'
 
@@ -48,26 +46,26 @@ export default function CardItemFastEdit({
 		if (!isNaN(num) && num >= 0) {
 			setQuantity(num)
 			handleQuantityChange(item.id, num)
-		} else {
-			setQuantity(0)
-			handleQuantityChange(item.id, 0)
 		}
 	}
 
 	const toggleActive = () => {
 		if (isActive) {
-			if (quantity !== item.quantity) {
-				handleSaveItem({ item, quantity })
-			}
 			setActiveItemId(null)
 		} else {
 			setActiveItemId(item.id)
 		}
 	}
 
+	const isBelowMin =
+		!isActive &&
+		item.min_quantity &&
+		item.min_quantity > 0 &&
+		quantity < item.min_quantity
+
 	return (
 		<TouchableOpacity
-			className={`w-full  rounded-[17px] py-2 px-3 mb-2 border ${
+			className={`w-full rounded-[17px] py-2 px-3 mb-2 border ${
 				isActive
 					? 'bg-black-700/50 border-white/10'
 					: 'bg-black-700 border-black/10 '
@@ -80,44 +78,26 @@ export default function CardItemFastEdit({
 						path={item.image_url ? item.image_url[0] : null}
 						className='h-[60px] w-[60px] aspect-square mr-3 rounded-md'
 					/>
-
-					<View>
-						{isActive ? (
-							<View>
-								{item.name.length > 20 ? (
-									<Text className='font-lexend_regular text-base  text-white'>
-										{item.name.length > 18
-											? `${item.name.slice(0, 18)}...`
-											: item.name}
-									</Text>
-								) : (
-									<Text className='font-lexend_regular text-xl text-white'>
-										{item.name}
-									</Text>
-								)}
-							</View>
-						) : (
-							<View>
-								{item.name.length > 20 ? (
-									<Text className='font-lexend_regular text-base  text-white'>
-										{item.name.length > 28
-											? `${item.name.slice(0, 28)}...`
-											: item.name}
-									</Text>
-								) : (
-									<Text className='font-lexend_regular text-xl text-white'>
-										{item.name}
-									</Text>
-								)}
-							</View>
-						)}
+					<View style={{ maxWidth: 250 }}>
+						<Text
+							numberOfLines={1}
+							ellipsizeMode='tail'
+							className='font-lexend_regular text-base text-white'
+							style={{ maxWidth: isActive ? 120 : 250 }}
+						>
+							{item.name}
+						</Text>
 						{!isActive && (
 							<Text className='text-gray font-poppins_regular text-sm'>
-								{item.quantity} units
+								{quantity} units
 							</Text>
 						)}
 					</View>
 				</View>
+
+				{isBelowMin ? (
+					<View className='w-[12px] h-[12px] bg-red-500 rounded-full mr-1' />
+				) : <View className='w-[12px] h-[12px]  rounded-full mr-1' />}
 
 				{isActive && (
 					<View className='flex-row items-center'>

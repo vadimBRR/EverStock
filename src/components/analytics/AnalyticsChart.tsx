@@ -8,12 +8,11 @@ import {
 } from 'react-native'
 import { LineChart } from 'react-native-chart-kit'
 import {
-	FlatList,
+	ScrollView,
 	GestureHandlerRootView,
 	PinchGestureHandler,
-	ScrollView,
 } from 'react-native-gesture-handler'
-import ChooseDate from '@/src/components/analytics/ChooseDate'
+import CustomInput from '@/src/components/CustomInput'
 import { Tables } from '@/src/types/types'
 
 type Props = {
@@ -29,19 +28,12 @@ type Props = {
 const AnalyticsChart = ({
 	transaction,
 	timeRange,
-	setTimeRange,
 	startDate,
-	setStartDate,
 	endDate,
-	setEndDate,
 }: Props) => {
 	const [filter, setFilter] = useState<'amount' | 'price'>('amount')
-
-	const handleCustomDateChange = (date: Date, isStart: boolean) => {
-		if (isStart) setStartDate(date)
-		else setEndDate(date)
-		setTimeRange('custom')
-	}
+	const [samplingRateInput, setSamplingRateInput] = useState('30')
+	const [samplingRate, setSamplingRate] = useState(30)
 
 	const filtered = useMemo(() => {
 		const now = new Date()
@@ -53,13 +45,14 @@ const AnalyticsChart = ({
 				fromDate.setHours(0, 0, 0, 0)
 				break
 			case '1_week':
-				fromDate = new Date(now.setDate(now.getDate() - 7))
+				fromDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
 				break
 			case '2_weeks':
-				fromDate = new Date(now.setDate(now.getDate() - 14))
+				fromDate = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
 				break
 			case '1_month':
-				fromDate = new Date(now.setMonth(now.getMonth() - 1))
+				fromDate = new Date()
+				fromDate.setMonth(now.getMonth() - 1)
 				break
 			case 'custom':
 				fromDate = startDate
@@ -92,12 +85,18 @@ const AnalyticsChart = ({
 			})
 	}, [filtered, filter])
 
-	const labels = changes.map(change => {
+	const sampledChanges = useMemo(() => {
+		if (changes.length <= samplingRate) return changes
+		const rate = Math.ceil(changes.length / samplingRate)
+		return changes.filter((_, index) => index % rate === 0)
+	}, [changes, samplingRate])
+
+	const labels = sampledChanges.map(change => {
 		const date = new Date(change.date)
 		return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
 	})
 
-	const dataPoints = changes.map(change => change.value)
+	const dataPoints = sampledChanges.map(change => change.value)
 
 	const [chartWidth, setChartWidth] = useState(
 		Math.max(Dimensions.get('window').width, dataPoints.length * 50)
@@ -117,6 +116,16 @@ const AnalyticsChart = ({
 		setChartWidth(newWidth)
 	}
 
+	const handleSamplingBlur = () => {
+		const parsed = parseInt(samplingRateInput)
+		if (!isNaN(parsed) && parsed > 0) {
+			setSamplingRate(parsed)
+		} else {
+			setSamplingRate(30)
+			setSamplingRateInput('30')
+		}
+	}
+
 	return (
 		<GestureHandlerRootView className='bg-bg'>
 			<View className='mx-4 mt-2'>
@@ -125,59 +134,11 @@ const AnalyticsChart = ({
 				</Text>
 			</View>
 
-			<View className='p-4 pt-2 pb-0'>
-				<FlatList
-					data={['all', 'today', '1_week', '2_weeks', '1_month', 'custom']}
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					contentContainerStyle={{ gap: 10 }}
-					style={{ marginBottom: 15 }}
-					renderItem={({ item }) => (
-						<TouchableOpacity
-							onPress={() => {
-								setTimeRange(item as any)
-								setStartDate(null)
-								setEndDate(null)
-							}}
-							className={`rounded-lg border ${
-								timeRange === item ? 'bg-main_light' : 'border-white'
-							} p-2 px-4`}
-						>
-							<Text className='font-lexend_light text-white'>
-								{item.replace('_', ' ')}
-							</Text>
-						</TouchableOpacity>
-					)}
-				/>
-			</View>
-
-			{timeRange === 'custom' && (
-				<View className='border border-white rounded-lg mb-2 mx-4'>
-					<View className='flex-row justify-center items-center'>
-						<ChooseDate
-							selectedDate={startDate}
-							setSelectedDate={date =>
-								handleCustomDateChange(date ?? new Date(), true)
-							}
-							isSwitchOn={true}
-						/>
-						<Text className='text-white text-lg'>to</Text>
-						<ChooseDate
-							selectedDate={endDate}
-							setSelectedDate={date =>
-								handleCustomDateChange(date ?? new Date(), false)
-							}
-							isSwitchOn={true}
-						/>
-					</View>
-				</View>
-			)}
-
-			<View className='flex-row justify-between mb-4 w-full items-center'>
+			<View className='flex-row justify-between items-center mx-4 my-2'>
 				{['amount', 'price'].map(field => (
 					<Text
 						key={field}
-						className={`py-2 rounded-lg text-white text-center cursor-pointer flex-1 mx-4 ${
+						className={`py-2 rounded-lg text-white text-center cursor-pointer flex-1 mx-2 ${
 							filter === field ? 'bg-main_light' : 'border border-white'
 						}`}
 						onPress={() => setFilter(field as any)}
@@ -186,6 +147,8 @@ const AnalyticsChart = ({
 					</Text>
 				))}
 			</View>
+
+			
 
 			<View>
 				{!changes || changes.length === 0 ? (

@@ -16,10 +16,11 @@ import { Tables } from '@/src/types/types'
 import { useGetFoldersWithItems } from '@/src/api/folder'
 import { useUpdateItem } from '@/src/api/item'
 import { useIsFocused } from '@react-navigation/native'
+import { showSuccess } from '@/src/utils/toast'
+import ConfirmDialog from '@/src/components/home/ConfirmDialog'
 
 export default function FastEditScreen() {
-  const isFocused = useIsFocused()
-
+	const isFocused = useIsFocused()
 	const { id: idString } = useLocalSearchParams()
 	const id = parseFloat(
 		idString ? (typeof idString === 'string' ? idString : idString[0]) : ''
@@ -31,11 +32,11 @@ export default function FastEditScreen() {
 	const [search, setSearch] = useState('')
 	const [refreshing, setRefreshing] = useState(false)
 	const [activeItemId, setActiveItemId] = useState<number | null>(null)
-	const [prevActiveItemId, setPrevActiveItemId] = useState<number | null>(null)
 	const [editedQuantities, setEditedQuantities] = useState<
 		Record<number, number>
 	>({})
 	const [initialOrder, setInitialOrder] = useState<number[]>([])
+	const [isConfirmVisible, setIsConfirmVisible] = useState(false)
 
 	const folder = useMemo(() => folders!.find(f => f.id === id), [folders, id])
 	const folderItems = useMemo(() => {
@@ -72,17 +73,32 @@ export default function FastEditScreen() {
 	}
 
 	const handleBack = () => {
-		Object.entries(editedQuantities).forEach(([itemIdStr, quantity]) => {
-			const item = folderItems.find(i => i.id === parseInt(itemIdStr))
-			if (item) {
-				handleSaveItem({ item, quantity })
+		const hasUnsavedChanges = Object.entries(editedQuantities).some(
+			([itemIdStr, quantity]) => {
+				const item = folderItems.find(i => i.id === parseInt(itemIdStr))
+				return item && quantity !== item.quantity
 			}
-		})
-		router.back()
+		)
+		console.log('back function')
+		if (hasUnsavedChanges) {
+			setIsConfirmVisible(true)
+		} else {
+			router.back()
+		}
 	}
 
 	const handleQuantityChange = (id: number, quantity: number) => {
 		setEditedQuantities(prev => ({ ...prev, [id]: quantity }))
+	}
+	const handleApplyChanges = () => {
+		Object.entries(editedQuantities).forEach(([itemIdStr, quantity]) => {
+			const item = folderItems.find(i => i.id === parseInt(itemIdStr))
+			if (item && quantity !== item.quantity) {
+				handleSaveItem({ item, quantity })
+				showSuccess('Item updated successfully')
+			}
+		})
+		router.back()
 	}
 
 	const handleSaveItem = ({
@@ -93,26 +109,20 @@ export default function FastEditScreen() {
 		quantity: number
 	}) => {
 		if (!item || quantity < 0) return
+
 		updateItem.mutate({
 			updatedItem: { ...item, quantity },
 			previousItem: item,
 		})
+
+		setEditedQuantities(prev => {
+			const updated = { ...prev }
+			delete updated[item.id]
+			return updated
+		})
 	}
 
-	useEffect(() => {
-		if (prevActiveItemId !== null && prevActiveItemId !== activeItemId) {
-			const quantity = editedQuantities[prevActiveItemId]
-			if (quantity !== undefined) {
-				const item = folderItems.find(i => i.id === prevActiveItemId)
-				if (item) {
-					handleSaveItem({ item, quantity })
-				}
-			}
-		}
-		setPrevActiveItemId(activeItemId)
-	}, [activeItemId])
-  if (!isFocused) return null
-
+	if (!isFocused) return null
 	if (isLoading) return <Loading />
 	if (!folder)
 		return (
@@ -128,18 +138,19 @@ export default function FastEditScreen() {
 					headerTitleAlign: 'center',
 					headerStyle: { backgroundColor: '#242121' },
 					headerTintColor: '#fff',
+					headerLeft: () => (
+						<TouchableOpacity onPress={handleBack} className='pl-4'>
+							<MaterialIcons name='close' size={24} color='white' />
+						</TouchableOpacity>
+					),
 					headerRight: () => (
-						<View className='flex flex-row'>
-							<TouchableOpacity
-								className='flex-row items-center p-2'
-								onPress={handleBack}
-							>
-								<MaterialIcons name='done-outline' size={24} color='white' />
-							</TouchableOpacity>
-						</View>
+						<TouchableOpacity onPress={handleApplyChanges} className='pr-4'>
+							<MaterialIcons name='done' size={24} color='white' />
+						</TouchableOpacity>
 					),
 				}}
 			/>
+
 			<View className='w-full items-center my-2 relative'>
 				<SearchBar
 					containerStyle='w-[95%]'
@@ -166,6 +177,17 @@ export default function FastEditScreen() {
 				refreshControl={
 					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 				}
+			/>
+			<ConfirmDialog
+				isVisible={isConfirmVisible}
+				onCancel={() => setIsConfirmVisible(false)}
+				onConfirm={() => {
+					setIsConfirmVisible(false)
+					router.back()
+				}}
+				title='Discard changes?'
+				description='You have unsaved changes. Are you sure you want to leave and discard them?'
+				confirmText='Leave'
 			/>
 		</Container>
 	)

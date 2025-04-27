@@ -59,11 +59,13 @@ const HistoryContainer = ({
 			</View>
 
 			<FlatList
-				data={transaction?.sort((a: any, b: any) =>
-					b.date.localeCompare(a.date)
-				)}
+				data={transaction
+          ?.sort((a: any, b: any) => b.date.localeCompare(a.date))
+          .slice(0, 10)
+				}
 				scrollEnabled={false}
 				contentContainerStyle={{ gap: 10 }}
+
 				renderItem={({ item, index }) => (
 					<TouchableOpacity
 						onPress={() => {
@@ -82,6 +84,23 @@ const HistoryContainer = ({
 				)}
 				keyExtractor={(item, index) => index.toString()}
 			/>
+      {transaction?.length > 10 && (
+        <TouchableOpacity
+          onPress={handleOpenDetailedView}
+          className='mt-4 flex-row items-center justify-center'
+        >
+          <Text className='text-center text-white text-sm underline'>
+            Go to
+          </Text>
+          <Text className='text-center text-main_light text-lg underline font-bold'>
+          {' '}Detailed View{' '}
+          </Text>
+          <Text className='text-center text-white text-sm underline'>
+          to see more transactions
+          </Text>
+        </TouchableOpacity>
+      )}
+
 		</View>
 	)
 }

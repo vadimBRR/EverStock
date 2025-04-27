@@ -294,6 +294,7 @@ export default function ItemScreen() {
 				onConfirm={handleConfirmDelete}
 				title='Delete Item'
 				description='Are you sure you want to delete this item? This action cannot be undone.'
+        confirmText='Delete'
 			/>
 		</Container>
 	)

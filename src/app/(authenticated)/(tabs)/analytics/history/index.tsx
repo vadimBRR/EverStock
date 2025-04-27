@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import Container from '@/src/components/Container'
 import {
@@ -12,8 +12,10 @@ import SearchBar from '@/src/components/SearchBar'
 import { useAccount } from '@/src/providers/AccountProvider'
 import { useGetTransaction } from '@/src/api/transaction'
 import { useFolderMembersMap } from '@/src/api/users'
+import { useIsFocused } from '@react-navigation/native'
 
 const HistoryScreen = () => {
+  const isFocused = useIsFocused()
 	const { activeIndex: idString } = useLocalSearchParams()
 	const router = useRouter()
 
@@ -25,6 +27,8 @@ const HistoryScreen = () => {
 	const info = transaction?.info || []
 	const { data: membersMap } = useFolderMembersMap(id)
 	const [search, setSearch] = useState('')
+  const [visibleCount, setVisibleCount] = useState(10)
+
 
 	const handleSearch = (value: string) => {
 		setSearch(value)
@@ -87,10 +91,22 @@ const HistoryScreen = () => {
 		return result
 	}, [info, transactionSettings, id, search])
 
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + 3)
+  }
+  
 	const handleOpenViewSettings = () => {
 		router.push('/(authenticated)/(tabs)/analytics/history/settings?id=' + id)
 	}
 
+  useEffect(() => {
+    if (!isFocused) {
+      setSearch('')
+      setVisibleCount(10)
+    }
+  }, [isFocused])
+
+  if (!isFocused) return null
 	return (
 		<Container isPadding={false} container_style='mx-2 pt-2'>
 			<Stack.Screen
@@ -122,7 +138,7 @@ const HistoryScreen = () => {
 					handleSearch={handleSearch}
 				/>
 				<FlatList
-					data={filteredTransactions}
+					data={filteredTransactions.slice(0, visibleCount)}
 					scrollEnabled={false}
 					contentContainerStyle={{ gap: 10 }}
 					renderItem={({ item, index }) => (
@@ -143,6 +159,8 @@ const HistoryScreen = () => {
 						</TouchableOpacity>
 					)}
 					keyExtractor={(item, index) => index.toString()}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
 				/>
 			</ScrollView>
 		</Container>
