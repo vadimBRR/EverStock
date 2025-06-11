@@ -142,7 +142,7 @@ export default function CreateItem() {
 							setName={setItemName}
 							containerStyle='mb-2'
 						/>
-						<View className='w-full flex flex-row justify-between mb-2 bg-black-600 border border-dark_gray rounded-2xl p-3'>
+						{/* <View className='w-full flex flex-row justify-between mb-2 bg-black-600 border border-dark_gray rounded-2xl p-3'>
 							{typesAmount.map((type, index) => (
 								<CustomRadioButton
 									key={index}
@@ -151,7 +151,7 @@ export default function CreateItem() {
 									onPress={() => setSelectedType(type)}
 								/>
 							))}
-						</View>
+						</View> */}
 						<CustomInput
 							label={
 								selectedType.charAt(0).toUpperCase() + selectedType.slice(1)

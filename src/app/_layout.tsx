@@ -1,3 +1,5 @@
+import 'react-native-url-polyfill/auto'
+
 import React, { useEffect, useState } from 'react'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import * as Font from 'expo-font'
@@ -13,6 +15,7 @@ import AccountProvider from '../providers/AccountProvider'
 import * as SystemUI from 'expo-system-ui'
 import Toast from 'react-native-toast-message'
 import { toastConfig } from '../utils/toastConfig'
+import { View } from 'react-native'
 
 const tokenCache = {
 	async getToken(key: string) {
@@ -48,10 +51,12 @@ const InitialLayout = () => {
 	const { isLoaded, isSignedIn } = useAuth()
 	const segments = useSegments()
 
-	SystemUI.setBackgroundColorAsync('#1C1A1A')
-
+	// SystemUI.setBackgroundColorAsync('#1C1A1A')
+  useEffect(() => {
+		SystemUI.setBackgroundColorAsync('#1C1A1A')
+	}, [])
 	useEffect(() => {
-		NavigationBar.setBackgroundColorAsync('#123456')
+		NavigationBar.setBackgroundColorAsync('#242121')
 		NavigationBar.setButtonStyleAsync('dark')
 
 		const loadFonts = async () => {
@@ -113,14 +118,20 @@ const InitialLayout = () => {
 }
 
 const RootLayoutNav = () => {
+  useEffect(() => {
+		SystemUI.setBackgroundColorAsync('#1C1A1A')
+    console.log("ui color changed");
+	}, [])
 	return (
 		<ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
 			<ClerkLoaded>
 				<QueryProvider>
 					<ModalProvider>
 						<PaperProvider>
-							<InitialLayout />
-							<Toast config={toastConfig} />
+							<View style={{ flex: 1, backgroundColor: '#1C1A1A' }}>
+								<InitialLayout />
+								<Toast config={toastConfig} />
+							</View>
 						</PaperProvider>
 					</ModalProvider>
 				</QueryProvider>

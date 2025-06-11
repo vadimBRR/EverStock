@@ -22,6 +22,7 @@ import { useDeleteItem, useUpdateItem } from '@/src/api/item'
 import { showSuccess, showError } from '@/src/utils/toast'
 import { useRolesStore } from '@/src/store/useUserRoles'
 import ConfirmDialog from '@/src/components/home/ConfirmDialog'
+import { currency } from '@/src/constants'
 
 export default function ItemScreen() {
 	const { id: idString } = useLocalSearchParams()
@@ -30,6 +31,9 @@ export default function ItemScreen() {
 	)
 
 	const { data: folders, isLoading } = useGetFoldersWithItems()
+  const folder = folders?.find(folder => folder.items?.some(i => i.id === item_id))
+const currency_folder = currency.find(c => c.name ===  folder?.currency || 'USD')?.value || '&'
+
 	const folderItems = folders?.flatMap(f => f.items) || []
 	const item = folderItems.find(item => item.id === item_id)
 	if (isLoading) return <Loading />
@@ -87,7 +91,7 @@ export default function ItemScreen() {
 					...item,
 					name: itemName,
 					quantity: parseInt(amount),
-					price: parseFloat(price),
+					price: parseFloat(price ? price : '0'),
 					note,
 					tag,
 					typeAmount: selectedType,
@@ -137,6 +141,9 @@ export default function ItemScreen() {
 					},
 					headerTintColor: '#fff',
 					headerTitleAlign: 'center',
+          contentStyle: {
+            backgroundColor: '#1C1A1A',
+          },
 					headerRight: () => (
 						<TouchableOpacity onPress={handleOpenAnother} className='p-2'>
 							<SimpleLineIcons
@@ -198,7 +205,7 @@ export default function ItemScreen() {
 						/>
 					)}
 					<CustomInput
-						label={'Price'}
+						label={'Price('+currency_folder+')'}
 						name={price}
 						setName={setPrice}
 						containerStyle='mb-3 mt-2'
@@ -219,7 +226,7 @@ export default function ItemScreen() {
 					</View>
 					<View className='bg-black-600 h-[54px] border border-dark_gray rounded-2xl justify-center mb-3'>
 						<Text className='font-lexend_regular text-lg text-gray mx-3'>
-							Total price: {(+price * +amount).toFixed(2)}
+							Total price: {(+price * +amount).toFixed(2)}{currency_folder}
 						</Text>
 					</View>
 

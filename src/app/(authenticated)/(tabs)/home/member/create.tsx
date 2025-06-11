@@ -221,13 +221,13 @@ const CreateMemberScreen = () => {
 							customBg='dark_gray'
 						/>
 
+					</ScrollView>
 						<CustomButton
 							text='Add Member'
 							onClick={handleCreateMember}
 							styleContainer='my-4 mx-0'
 							isActive={!!email && !isPending}
 						/>
-					</ScrollView>
 				</View>
 			</Container>
 		</TouchableWithoutFeedback>

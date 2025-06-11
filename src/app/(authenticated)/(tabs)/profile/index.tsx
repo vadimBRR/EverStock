@@ -11,18 +11,14 @@ export default function ProfileScreen() {
 		{
 			img: require('@/src/assets/icons/profile/account_dark.png'),
 			title: 'Account',
-			href: '/(authenticated)/(tabs)/profile/account',
+			href: '/(authenticated)/(tabs)/profile/t_account',
 		},
 		{
 			img: require('@/src/assets/icons/profile/theme_dark.png'),
 			title: 'Theme',
 			href: '/(authenticated)/(tabs)/profile/theme',
 		},
-		{
-			img: require('@/src/assets/icons/profile/export_dark.png'),
-			title: 'Export',
-			href: '/(authenticated)/(tabs)/profile/export',
-		},
+		
 		{
 			img: require('@/src/assets/icons/profile/support_dark.png'),
 			title: 'Help & Support',

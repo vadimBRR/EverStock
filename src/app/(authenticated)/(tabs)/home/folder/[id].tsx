@@ -115,6 +115,8 @@ export default function FolderScreen() {
 				return 0
 			})
 	}, [items, search, viewSettings])
+
+
   if (!isFocused) return null
 
 	if (isLoading) return <Loading />
@@ -134,6 +136,9 @@ export default function FolderScreen() {
 					headerTitleAlign: 'center',
 					headerStyle: { backgroundColor: '#242121' },
 					headerTintColor: '#fff',
+          contentStyle: {
+            backgroundColor: '#1C1A1A',
+          },
 					headerRight: () => (
 						<View className='flex flex-row'>
 							{canAdd && (

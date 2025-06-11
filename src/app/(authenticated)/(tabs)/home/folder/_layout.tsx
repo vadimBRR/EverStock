@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Stack } from 'expo-router'
 import * as SystemUI from 'expo-system-ui'
 
 export default function FolderLayout() {
-	SystemUI.setBackgroundColorAsync('#1C1A1A')
-
+  useEffect(() => {
+		SystemUI.setBackgroundColorAsync('#1C1A1A')
+    console.log("ui color changed");
+	}, [])
 	return (
 		<Stack
 			screenOptions={{

@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import { Colors } from '@/src/constants/Colors'
 import * as SystemUI from 'expo-system-ui'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function TabsLayout() {
 	// const { isSignedIn} = useAuth()
@@ -13,7 +14,7 @@ export default function TabsLayout() {
 
 	// if(!isSignedIn) return <Redirect href="/(authorization)/sign-in" />
 	const segments = useSegments()
-
+  const insets = useSafeAreaInsets();
 	const hide =
 		segments.includes('create') ||
 		segments.includes('account') ||
@@ -37,15 +38,16 @@ export default function TabsLayout() {
 			<Tabs
 				screenOptions={{
 					headerShown: false,
+          tabBarHideOnKeyboard: true,
 					tabBarShowLabel: false,
 					tabBarStyle: {
 						display: hide ? 'none' : 'flex',
 						// position: 'absolute',
 						backgroundColor: '#242121',
-						height: 65,
 						paddingTop: 10,
 						borderColor: '#272424',
-            
+            // height:60,
+            paddingBottom: insets.bottom + 50
 					},
 				}}
 			>
