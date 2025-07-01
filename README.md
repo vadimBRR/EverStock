@@ -10,7 +10,7 @@ It is aimed at individuals, small teams, and micro-businesses who need a fast, e
 
 ## 🎥 Demo Video
 
-▶️ **[Click here to watch the demo on YouTube](https://www.youtube.com/watch?v=Y9T3hE1a6ls)**
+▶️ **[Click here to watch the demo on YouTube](https://www.youtube.com/watch?v=BSBHvQrJYF8)**
 
 > The video shows puzzle setup, solving with each algorithm, parallel solving in Together mode, and the results dashboard.
 
