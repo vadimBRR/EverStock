@@ -20,9 +20,11 @@ It is aimed at individuals, small teams, and micro-businesses who need a fast, e
 
 ---
 
-## 🎥 Demo
+## 🎥 Demo Video
 
-[![Watch the video](https://img.youtube.com/vi/BSBHvQrJYF8/maxresdefault.jpg)](https://www.youtube.com/watch?v=BSBHvQrJYF8)
+▶️ **[Click here to watch the demo on YouTube](https://www.youtube.com/watch?v=Y9T3hE1a6ls)**
+
+> The video shows puzzle setup, solving with each algorithm, parallel solving in Together mode, and the results dashboard.
 
 ---
 
