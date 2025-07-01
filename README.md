@@ -8,7 +8,15 @@ It is aimed at individuals, small teams, and micro-businesses who need a fast, e
 
 ---
 
-## 🖥️ Screenshots
+## 🎥 Demo Video
+
+▶️ **[Click here to watch the demo on YouTube](https://www.youtube.com/watch?v=Y9T3hE1a6ls)**
+
+> The video shows puzzle setup, solving with each algorithm, parallel solving in Together mode, and the results dashboard.
+
+---
+
+## 🖼️ UI Previews
 
 | Warehouse List & Editing | Item List & Settings |
 |--------------------------|----------------------|
@@ -17,14 +25,6 @@ It is aimed at individuals, small teams, and micro-businesses who need a fast, e
 | Team Member Management | Warehouse Analytics & Item History |
 |------------------------|------------------------------------|
 | ![](assets/screenshots/photo_3.jpg) | ![](assets/screenshots/photo_4.jpg) |
-
----
-
-## 🎥 Demo Video
-
-▶️ **[Click here to watch the demo on YouTube](https://www.youtube.com/watch?v=Y9T3hE1a6ls)**
-
-> The video shows puzzle setup, solving with each algorithm, parallel solving in Together mode, and the results dashboard.
 
 ---
 
@@ -57,12 +57,6 @@ It is aimed at individuals, small teams, and micro-businesses who need a fast, e
 - 🌍 **Multilingual UI** (planned)
 - 📶 **Offline Support** (planned)
 - 📷 **Barcode Scanning** (planned)
-
----
-
-## 🖥️ Screenshots
-
-
 
 ---
 
@@ -127,3 +121,4 @@ This project is open-source under the **MIT License**.
 ## 👤 Author
 
 Developed by [Vadym Brovych](mailto:vadmabos.programming@gmail.com)
+🗓️ Original development: May 2024
